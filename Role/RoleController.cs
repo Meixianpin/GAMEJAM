@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(SpriteRenderer))] // È·±£¹ÒÔØ±ØÒª×é¼ş
+[RequireComponent(typeof(Rigidbody2D), typeof(SpriteRenderer))] // ç¡®ä¿æŒ‚è½½å¿…è¦ç»„ä»¶
 public class RoleController : MonoBehaviour
 {
-    //²ÄÖÊÃ¶¾Ù
+    //æè´¨æšä¸¾
     public enum CharacterMaterial
     {
         Cloud,
@@ -16,12 +16,12 @@ public class RoleController : MonoBehaviour
         Honey
     }
 
-    // µ±Ç°²ÄÖÊ - Ä¬ÈÏÉèÖÃÎªDirt
-    [Header("²ÄÖÊÏµÍ³")]
-    [Tooltip("½ÇÉ«µ±Ç°Ê¹ÓÃµÄ²ÄÖÊÀàĞÍ")]
+    // å½“å‰æè´¨ - é»˜è®¤è®¾ç½®ä¸ºDirt
+    [Header("æè´¨ç³»ç»Ÿ")]
+    [Tooltip("è§’è‰²å½“å‰ä½¿ç”¨çš„æè´¨ç±»å‹")]
     public CharacterMaterial currentMaterial = CharacterMaterial.Dirt;
 
-    [Tooltip("²»Í¬²ÄÖÊ¶ÔÓ¦µÄÔ¤ÖÆÌå")]
+    [Tooltip("ä¸åŒæè´¨å¯¹åº”çš„é¢„åˆ¶ä½“")]
     public GameObject CloudPrefab;
     public GameObject SlimePrefab;
     public GameObject DirtPrefab;
@@ -29,7 +29,7 @@ public class RoleController : MonoBehaviour
     public GameObject SandPrefab;
     public GameObject HoneyPrefab;
 
-    [Tooltip("²»Í¬²ÄÖÊ¶ÔÓ¦µÄSprite£¨ÓÃÓÚ½ÇÉ«±¾ÌåÏÔÊ¾£©")]
+    [Tooltip("ä¸åŒæè´¨å¯¹åº”çš„Spriteï¼ˆç”¨äºè§’è‰²æœ¬ä½“æ˜¾ç¤ºï¼‰")]
     public Sprite CloudSprite;
     public Sprite SlimeSprite;
     public Sprite DirtSprite;
@@ -37,94 +37,100 @@ public class RoleController : MonoBehaviour
     public Sprite SandSprite;
     public Sprite HoneySprite;
 
-    // ÀäÈ´ÉèÖÃ
-    [Header("ÀäÈ´ÉèÖÃ")]
-    [Tooltip("K¼üÉú³É¹¦ÄÜµÄÀäÈ´Ê±¼ä£¨Ãë£©")]
-    public float spawnCooldown = 2f; // 2ÃëÀäÈ´
+    // å†·å´è®¾ç½®
+    [Header("å†·å´è®¾ç½®")]
+    [Tooltip("Ké”®ç”ŸæˆåŠŸèƒ½çš„å†·å´æ—¶é—´ï¼ˆç§’ï¼‰")]
+    public float spawnCooldown = 0.1f; // 2ç§’å†·å´
 
-    // ÒÆ¶¯²ÎÊı
-    [Header("ÒÆ¶¯ÉèÖÃ")]
-    [Tooltip("ÒÆ¶¯ËÙ¶ÈÏµÊı")]
+    // ç§»åŠ¨å‚æ•°
+    [Header("ç§»åŠ¨è®¾ç½®")]
+    [Tooltip("ç§»åŠ¨é€Ÿåº¦ç³»æ•°")]
     private float moveSpeed = 5f;
     public float Get_moveSpeed() { return moveSpeed; }
     public void Set_moveSpeed(float speed) { moveSpeed = speed; }
 
-    // ÌøÔ¾²ÎÊı
-    [Header("ÌøÔ¾ÉèÖÃ")]
-    [Tooltip("ÌøÔ¾Á¦¶È")]
+    // è·³è·ƒå‚æ•°
+    [Header("è·³è·ƒè®¾ç½®")]
+    [Tooltip("è·³è·ƒåŠ›åº¦")]
     private float jumpForce = 7f;
     public float Get_jumpForce() { return jumpForce; }
     public void Set_jumpForce(float force) { jumpForce = force; }
 
-    public string groundTag = "Jumpable";//½Ó´¥ºó¿ÉÌøÔ¾µÄÅö×²Ìå
+    public string groundTag = "Jumpable";//æ¥è§¦åå¯è·³è·ƒçš„ç¢°æ’ä½“
 
-    // ×´Ì¬´æ´¢±äÁ¿
-    [Header("×´Ì¬´æ´¢")]
-    [Tooltip("½ÇÉ«µ±Ç°Î»ÖÃ")]
+    // çŠ¶æ€å­˜å‚¨å˜é‡
+    [Header("çŠ¶æ€å­˜å‚¨")]
+    [Tooltip("è§’è‰²å½“å‰ä½ç½®")]
     [SerializeField] private Vector2 currentPosition;
-
-    [Tooltip("½ÇÉ«XÖáËÙ¶È·ÖÁ¿")]
+    [Tooltip("è§’è‰²å½“å‰æ—‹è½¬")]
+    [SerializeField] private Quaternion currentRotation;
+    
+    [Tooltip("è§’è‰²Xè½´é€Ÿåº¦åˆ†é‡")]
     [SerializeField] private float velocityX;
 
-    [Tooltip("½ÇÉ«YÖáËÙ¶È·ÖÁ¿")]
+    [Tooltip("è§’è‰²Yè½´é€Ÿåº¦åˆ†é‡")]
     [SerializeField] private float velocityY;
 
-    [Tooltip("J¼ü¼ÇÂ¼µÄÎ»ÖÃ")]
+    [Tooltip("Jé”®è®°å½•çš„ä½ç½®")]
     [SerializeField] private Vector2 recordedPosition;
 
-    [Tooltip("J¼ü¼ÇÂ¼µÄXÖáËÙ¶È")]
+     [Tooltip("Jé”®è®°å½•çš„æ—‹è½¬")]
+    [SerializeField] private Quaternion recordedRotation;
+
+    [Tooltip("Jé”®è®°å½•çš„Xè½´é€Ÿåº¦")]
     [SerializeField] private float recordedVelocityX;
 
-    [Tooltip("J¼ü¼ÇÂ¼µÄYÖáËÙ¶È")]
+    [Tooltip("Jé”®è®°å½•çš„Yè½´é€Ÿåº¦")]
     [SerializeField] private float recordedVelocityY;
 
-    [Tooltip("J¼ü¼ÇÂ¼µÄ²ÄÖÊÀàĞÍ")]
+    [Tooltip("Jé”®è®°å½•çš„æè´¨ç±»å‹")]
     [SerializeField] private CharacterMaterial recordedMaterial;
 
-    [Tooltip("ÊÇ·ñÒÑ¼ÇÂ¼×´Ì¬")]
+    [Tooltip("æ˜¯å¦å·²è®°å½•çŠ¶æ€")]
     [SerializeField] private bool isStateRecorded = false;
 
-    // ×é¼şÒıÓÃ
+    // ç»„ä»¶å¼•ç”¨
     private Rigidbody2D rb;
-    private SpriteRenderer spriteRenderer; // ½ÇÉ«SpriteäÖÈ¾Æ÷
-    private bool isGrounded; // ÊÇ·ñÔÚµØÃæÉÏ
-    private GameObject cloneObject; // ¸´ÖÆÌå¶ÔÏó
-    private Vector2 startPosition; // ÆğÊ¼Î»ÖÃ£¨Ê¹ÓÃVector2£©
+    private SpriteRenderer spriteRenderer; // è§’è‰²Spriteæ¸²æŸ“å™¨
+    private bool isGrounded; // æ˜¯å¦åœ¨åœ°é¢ä¸Š
+    private GameObject cloneObject; // å¤åˆ¶ä½“å¯¹è±¡
+    private Vector2 startPosition; // èµ·å§‹ä½ç½®ï¼ˆä½¿ç”¨Vector2ï¼‰
 
-    // ÀäÈ´Ïà¹Ø±äÁ¿
-    private float lastSpawnTime; // ÉÏÒ»´ÎÉú³ÉµÄÊ±¼ä
-    private bool isSpawnOnCooldown => Time.time - lastSpawnTime < spawnCooldown; // ÊÇ·ñÔÚÀäÈ´ÖĞ
+    // å†·å´ç›¸å…³å˜é‡
+    private float lastSpawnTime; // ä¸Šä¸€æ¬¡ç”Ÿæˆçš„æ—¶é—´
+    private bool isSpawnOnCooldown => Time.time - lastSpawnTime < spawnCooldown; // æ˜¯å¦åœ¨å†·å´ä¸­
 
-    // ²ÄÖÊÓ³Éä×Öµä
+    // æè´¨æ˜ å°„å­—å…¸
     private Dictionary<CharacterMaterial, GameObject> materialPrefabDict;
     private Dictionary<CharacterMaterial, Sprite> materialSpriteDict;
 
     void Start()
     {
-        // »ñÈ¡×é¼şÒıÓÃ
+        // è·å–ç»„ä»¶å¼•ç”¨
         rb = GetComponent<Rigidbody2D>();
+        rb.freezeRotation = true;
         spriteRenderer = GetComponent<SpriteRenderer>();
 
-        // ³õÊ¼»¯²ÄÖÊÓ³Éä
+        // åˆå§‹åŒ–æè´¨æ˜ å°„
         InitializeMaterialMappings();
 
-        // Ó¦ÓÃ³õÊ¼²ÄÖÊÍâ¹Û
+        // åº”ç”¨åˆå§‹æè´¨å¤–è§‚
         UpdateCharacterAppearance();
 
-        // ³õÊ¼»¯ÀäÈ´Ê±¼ä
-        lastSpawnTime = -spawnCooldown; // ³õÊ¼×´Ì¬ÔÊĞíÁ¢¼´Ê¹ÓÃ
+        // åˆå§‹åŒ–å†·å´æ—¶é—´
+        lastSpawnTime = -spawnCooldown; // åˆå§‹çŠ¶æ€å…è®¸ç«‹å³ä½¿ç”¨
 
-        // ¼ÇÂ¼ÆğÊ¼Î»ÖÃ
+        // è®°å½•èµ·å§‹ä½ç½®
         startPosition = transform.position;
 
-        // µ÷ÊÔĞÅÏ¢
-        Debug.Log($"µ±Ç°²ÄÖÊÉèÖÃÎª£º{currentMaterial}");
+        // è°ƒè¯•ä¿¡æ¯
+        Debug.Log($"å½“å‰æè´¨è®¾ç½®ä¸ºï¼š{currentMaterial}");
     }
 
-    // ³õÊ¼»¯²ÄÖÊÓëÔ¤ÖÆÌå¡¢SpriteµÄÓ³Éä¹ØÏµ
+    // åˆå§‹åŒ–æè´¨ä¸é¢„åˆ¶ä½“ã€Spriteçš„æ˜ å°„å…³ç³»
     private void InitializeMaterialMappings()
     {
-        // ²ÄÖÊ-Ô¤ÖÆÌåÓ³Éä
+        // æè´¨-é¢„åˆ¶ä½“æ˜ å°„
         materialPrefabDict = new Dictionary<CharacterMaterial, GameObject>()
         {
             { CharacterMaterial.Cloud, CloudPrefab },
@@ -135,7 +141,7 @@ public class RoleController : MonoBehaviour
             { CharacterMaterial.Honey, HoneyPrefab }
         };
 
-        // ²ÄÖÊ-SpriteÓ³Éä£¨ÓÃÓÚ½ÇÉ«±¾ÌåÏÔÊ¾£©
+        // æè´¨-Spriteæ˜ å°„ï¼ˆç”¨äºè§’è‰²æœ¬ä½“æ˜¾ç¤ºï¼‰
         materialSpriteDict = new Dictionary<CharacterMaterial, Sprite>()
         {
             { CharacterMaterial.Cloud, CloudSprite },
@@ -149,23 +155,24 @@ public class RoleController : MonoBehaviour
 
     void Update()
     {
-        // ¸üĞÂµ±Ç°×´Ì¬ÏÔÊ¾
+        // æ›´æ–°å½“å‰çŠ¶æ€æ˜¾ç¤º
         UpdateCurrentState();
 
-        // ¼ì²â¹¦ÄÜ¼üÊäÈë
+        // æ£€æµ‹åŠŸèƒ½é”®è¾“å…¥
         CheckFunctionKeys();
 
-        // ¼ì²âÊÇ·ñÔÚµØÃæÉÏ
+        // æ£€æµ‹æ˜¯å¦åœ¨åœ°é¢ä¸Š
         CheckGrounded();
 
-        // ´¦ÀíÌøÔ¾ÊäÈë
+        // å¤„ç†è·³è·ƒè¾“å…¥
         HandleJumpInput();
     }
 
-    // ¸üĞÂµ±Ç°Î»ÖÃºÍËÙ¶ÈĞÅÏ¢
+    // æ›´æ–°å½“å‰ä½ç½®å’Œé€Ÿåº¦ä¿¡æ¯
     private void UpdateCurrentState()
     {
         currentPosition = transform.position;
+        currentRotation = transform.rotation;
 
         if (rb != null)
         {
@@ -174,7 +181,7 @@ public class RoleController : MonoBehaviour
         }
     }
 
-    // ¸üĞÂ½ÇÉ«Íâ¹ÛÒÔÆ¥Åäµ±Ç°²ÄÖÊ
+    // æ›´æ–°è§’è‰²å¤–è§‚ä»¥åŒ¹é…å½“å‰æè´¨
     private void UpdateCharacterAppearance()
     {
         if (spriteRenderer == null || materialSpriteDict == null) return;
@@ -182,41 +189,41 @@ public class RoleController : MonoBehaviour
         if (materialSpriteDict.TryGetValue(currentMaterial, out Sprite targetSprite) && targetSprite != null)
         {
             spriteRenderer.sprite = targetSprite;
-            Debug.Log($"½ÇÉ«Íâ¹ÛÒÑ¸üĞÂÎª£º{currentMaterial}");
+            Debug.Log($"è§’è‰²å¤–è§‚å·²æ›´æ–°ä¸ºï¼š{currentMaterial}");
         }
         else
         {
-            Debug.LogWarning($"{currentMaterial}²ÄÖÊµÄSpriteÎ´ÅäÖÃ»òÎª¿Õ£¡");
+            Debug.LogWarning($"{currentMaterial}æè´¨çš„Spriteæœªé…ç½®æˆ–ä¸ºç©ºï¼");
         }
     }
 
     private void CheckFunctionKeys()
     {
-        // J¼ü£º¼ÇÂ¼µ±Ç°Î»ÖÃºÍËÙ¶ÈĞÅÏ¢
+        // Jé”®ï¼šè®°å½•å½“å‰ä½ç½®å’Œé€Ÿåº¦ä¿¡æ¯
         if (Input.GetKeyDown(KeyCode.J))
         {
             RecordCurrentState();
         }
 
-        // K¼ü£º¸ù¾İ¼ÇÂ¼µÄ×´Ì¬´´½¨¶ÔÏó£¨´øÀäÈ´£©
+        // Ké”®ï¼šæ ¹æ®è®°å½•çš„çŠ¶æ€åˆ›å»ºå¯¹è±¡ï¼ˆå¸¦å†·å´ï¼‰
         if (Input.GetKeyDown(KeyCode.K) && isStateRecorded && !isSpawnOnCooldown)
         {
             SpawnFromRecordedState();
-            lastSpawnTime = Time.time; // ¼ÇÂ¼Éú³ÉÊ±¼ä
+            lastSpawnTime = Time.time; // è®°å½•ç”Ÿæˆæ—¶é—´
         }
         else if (Input.GetKeyDown(KeyCode.K) && isSpawnOnCooldown)
         {
             float remainingTime = spawnCooldown - (Time.time - lastSpawnTime);
-            Debug.LogWarning($"K¼üÀäÈ´ÖĞ£¬Ê£Óà {remainingTime:F1} Ãë");
+            Debug.LogWarning($"Ké”®å†·å´ä¸­ï¼Œå‰©ä½™ {remainingTime:F1} ç§’");
         }
 
-        // R¼ü£º»Øµ½ÆğÊ¼µã£¬ÖØÖÃµØÍ¼
+        // Ré”®ï¼šå›åˆ°èµ·å§‹ç‚¹ï¼Œé‡ç½®åœ°å›¾
         if (Input.GetKeyDown(KeyCode.R))
         {
             ResetToStart();
         }
 
-        // ²âÊÔ£º°´Êı×Ö¼ü1-6ÇĞ»»²ÄÖÊ£¨ÓÃÓÚ²âÊÔÍâ¹ÛÍ¬²½£©
+        // æµ‹è¯•ï¼šæŒ‰æ•°å­—é”®1-6åˆ‡æ¢æè´¨ï¼ˆç”¨äºæµ‹è¯•å¤–è§‚åŒæ­¥ï¼‰
         if (Input.GetKeyDown(KeyCode.Alpha1)) { SetMaterial(CharacterMaterial.Cloud); }
         if (Input.GetKeyDown(KeyCode.Alpha2)) { SetMaterial(CharacterMaterial.Slime); }
         if (Input.GetKeyDown(KeyCode.Alpha3)) { SetMaterial(CharacterMaterial.Dirt); }
@@ -225,66 +232,73 @@ public class RoleController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha6)) { SetMaterial(CharacterMaterial.Honey); }
     }
 
-    // ÉèÖÃ²ÄÖÊ²¢¸üĞÂÍâ¹Û
+    // è®¾ç½®æè´¨å¹¶æ›´æ–°å¤–è§‚
     public void SetMaterial(CharacterMaterial newMaterial)
     {
         currentMaterial = newMaterial;
         UpdateCharacterAppearance();
     }
 
-    // ¼ÇÂ¼µ±Ç°×´Ì¬£¨Î»ÖÃ¡¢ËÙ¶ÈºÍ²ÄÖÊ£©
+    // è®°å½•å½“å‰çŠ¶æ€ï¼ˆä½ç½®ã€é€Ÿåº¦å’Œæè´¨ï¼‰
     private void RecordCurrentState()
     {
         recordedPosition = transform.position;
+        recordedRotation = transform.rotation;
         recordedVelocityX = rb.velocity.x;
         recordedVelocityY = rb.velocity.y;
-        recordedMaterial = currentMaterial; // ¼ÇÂ¼µ±Ç°²ÄÖÊ
+        recordedMaterial = currentMaterial; // è®°å½•å½“å‰æè´¨
         isStateRecorded = true;
 
-        Debug.Log($"ÒÑ¼ÇÂ¼×´Ì¬£ºÎ»ÖÃ {recordedPosition}, ËÙ¶È ({recordedVelocityX}, {recordedVelocityY}), ²ÄÖÊ {recordedMaterial}");
+        Debug.Log($"å·²è®°å½•çŠ¶æ€ï¼šä½ç½® {recordedPosition}, é€Ÿåº¦ ({recordedVelocityX}, {recordedVelocityY}), æè´¨ {recordedMaterial}");
     }
 
-    // ¸ù¾İ¼ÇÂ¼µÄ×´Ì¬´´½¨¶ÔÓ¦²ÄÖÊµÄÔ¤ÖÆÌå
+    // æ ¹æ®è®°å½•çš„çŠ¶æ€åˆ›å»ºå¯¹åº”æè´¨çš„é¢„åˆ¶ä½“
     private void SpawnFromRecordedState()
     {
-        // Èç¹ûÒÑÓĞ¸´ÖÆÌå£¬ÏÈÏú»Ù
+        // å¦‚æœå·²æœ‰å¤åˆ¶ä½“ï¼Œå…ˆé”€æ¯
         if (cloneObject != null)
         {
             Destroy(cloneObject);
         }
 
-        // »ñÈ¡¶ÔÓ¦²ÄÖÊµÄÔ¤ÖÆÌå
+        // è·å–å¯¹åº”æè´¨çš„é¢„åˆ¶ä½“
         GameObject selectedPrefab = GetPrefabByMaterial(recordedMaterial);
 
         if (selectedPrefab == null)
         {
-            Debug.LogError($"{recordedMaterial}²ÄÖÊµÄÔ¤ÖÆÌåÎ´ÅäÖÃ£¡ÇëÔÚInspectorÖĞÉèÖÃ¶ÔÓ¦µÄÔ¤ÖÆÌå¡£");
+            Debug.LogError($"{recordedMaterial}æè´¨çš„é¢„åˆ¶ä½“æœªé…ç½®ï¼è¯·åœ¨Inspectorä¸­è®¾ç½®å¯¹åº”çš„é¢„åˆ¶ä½“ã€‚");
             return;
         }
 
-        // ´´½¨¶ÔÓ¦²ÄÖÊµÄÔ¤ÖÆÌåÊµÀı
-        cloneObject = Instantiate(selectedPrefab, recordedPosition, transform.rotation);
+        // åˆ›å»ºå¯¹åº”æè´¨çš„é¢„åˆ¶ä½“å®ä¾‹
+        cloneObject = Instantiate(selectedPrefab, recordedPosition, recordedRotation);
+        //!!æµ‹è¯•å…‹éš†æœ¬ä½“
+        //cloneObject = Instantiate(gameObject, recordedPosition, recordedRotation);
 
-        // »ñÈ¡¸´ÖÆÌåµÄ¸ÕÌå×é¼ş²¢ÉèÖÃËÙ¶È
+        // è·å–å¤åˆ¶ä½“çš„åˆšä½“ç»„ä»¶å¹¶è®¾ç½®é€Ÿåº¦
         Rigidbody2D cloneRb = cloneObject.GetComponent<Rigidbody2D>();
         if (cloneRb != null)
         {
             cloneRb.velocity = new Vector2(recordedVelocityX, recordedVelocityY);
         }
+        
 
-        // ÒÆ³ıÔ¤ÖÆÌåÖĞµÄ¿ØÖÆÆ÷½Å±¾£¨Èç¹ûÓĞµÄ»°£©
+        // ç§»é™¤é¢„åˆ¶ä½“ä¸­çš„æ§åˆ¶å™¨è„šæœ¬ï¼ˆå¦‚æœæœ‰çš„è¯ï¼‰
         RoleController prefabController = cloneObject.GetComponent<RoleController>();
         if (prefabController != null)
         {
             Destroy(prefabController);
         }
 
+        // ä¸ºå¤åˆ¶ä½“æ·»åŠ CloneCubeè„šæœ¬
+        CloneCube cloneCubeScript = cloneObject.AddComponent<CloneCube>();
+
         cloneObject.name = $"Spawned_{recordedMaterial}_{Time.time}";
 
-        Debug.Log($"Éú³É{recordedMaterial}²ÄÖÊ¶ÔÏó£ºÎ»ÖÃ {recordedPosition}, ³õÊ¼ËÙ¶È ({recordedVelocityX}, {recordedVelocityY})");
+        Debug.Log($"ç”Ÿæˆ{recordedMaterial}æè´¨å¯¹è±¡ï¼šä½ç½® {recordedPosition}, åˆå§‹é€Ÿåº¦ ({recordedVelocityX}, {recordedVelocityY})ï¼Œæ—‹è½¬ {recordedRotation.eulerAngles.z}");
     }
 
-    // ¸ù¾İ²ÄÖÊÀàĞÍ»ñÈ¡¶ÔÓ¦µÄÔ¤ÖÆÌå
+    // æ ¹æ®æè´¨ç±»å‹è·å–å¯¹åº”çš„é¢„åˆ¶ä½“
     private GameObject GetPrefabByMaterial(CharacterMaterial material)
     {
         if (materialPrefabDict.TryGetValue(material, out GameObject prefab))
@@ -295,7 +309,7 @@ public class RoleController : MonoBehaviour
     }
 
     private void CheckGrounded()
-    {   //Åö×²Ìå¼ì²âÊÇ·ñ¿ÉÒÔÌøÔ¾
+    {   //ç¢°æ’ä½“æ£€æµ‹æ˜¯å¦å¯ä»¥è·³è·ƒ
         Collider2D collider = GetComponent<Collider2D>();
         if (collider == null)
         {
@@ -303,7 +317,7 @@ public class RoleController : MonoBehaviour
             return;
         }
 
-        // ²¹³äÍêÕûµÄµØÃæ¼ì²âÂß¼­
+        // è¡¥å……å®Œæ•´çš„åœ°é¢æ£€æµ‹é€»è¾‘
         Vector2 checkPosition = (Vector2)transform.position + Vector2.down * (collider.bounds.extents.y + 0.1f);
         float checkRadius = 0.1f;
 
@@ -322,52 +336,53 @@ public class RoleController : MonoBehaviour
 
     void FixedUpdate()
     {
-        // ´¦ÀíÒÆ¶¯£¨ÔÚFixedUpdateÖĞ´¦ÀíÎïÀíÏà¹ØµÄÒÆ¶¯¸üÆ½»¬£©
+        // å¤„ç†ç§»åŠ¨ï¼ˆåœ¨FixedUpdateä¸­å¤„ç†ç‰©ç†ç›¸å…³çš„ç§»åŠ¨æ›´å¹³æ»‘ï¼‰
         HandleMovement();
     }
 
     void HandleMovement()
     {
-        // »ñÈ¡¼üÅÌÊäÈë£¨·½Ïò¼ü»òAD¼ü£©
+        // è·å–é”®ç›˜è¾“å…¥ï¼ˆæ–¹å‘é”®æˆ–ADé”®ï¼‰
         float horizontalInput = Input.GetAxis("Horizontal");
 
-        // ¼ÆËãÄ¿±êËÙ¶È£¨½öË®Æ½·½Ïò£©
+        // è®¡ç®—ç›®æ ‡é€Ÿåº¦ï¼ˆä»…æ°´å¹³æ–¹å‘ï¼‰
         Vector2 targetVelocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
 
-        // Ó¦ÓÃËÙ¶Èµ½¸ÕÌå
+        // åº”ç”¨é€Ÿåº¦åˆ°åˆšä½“
         rb.velocity = targetVelocity;
     }
 
     void HandleJumpInput()
     {
-        // ¿Õ¸ñ¼üÌøÔ¾£¨ĞèÔÚµØÃæÉÏ£©
+        // ç©ºæ ¼é”®è·³è·ƒï¼ˆéœ€åœ¨åœ°é¢ä¸Šï¼‰
         if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
-            // ¸ø¸ÕÌåÒ»¸öÏòÉÏµÄÁ¦
+            // ç»™åˆšä½“ä¸€ä¸ªå‘ä¸Šçš„åŠ›
             rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         }
     }
 
     private void ResetToStart()
     {
-        // Ïú»Ù¸´ÖÆÌå
+        // é”€æ¯å¤åˆ¶ä½“
         if (cloneObject != null)
         {
             Destroy(cloneObject);
             cloneObject = null;
         }
 
-        // ÖØÖÃ¼ÇÂ¼×´Ì¬
+        // é‡ç½®è®°å½•çŠ¶æ€
         isStateRecorded = false;
 
-        // »Øµ½ÆğÊ¼Î»ÖÃ£¨2D£©
+        // å›åˆ°èµ·å§‹ä½ç½®ï¼ˆ2Dï¼‰
         transform.position = startPosition;
+        transform.rotation = Quaternion.identity;
         rb.velocity = Vector2.zero;
 
-        Debug.Log("ÒÑÖØÖÃµ½ÆğÊ¼Î»ÖÃ");
+        Debug.Log("å·²é‡ç½®åˆ°èµ·å§‹ä½ç½®");
     }
 
-    // µ±ÔÚInspectorÖĞĞŞ¸Ä²ÄÖÊÊ±×Ô¶¯¸üĞÂÍâ¹Û
+    // å½“åœ¨Inspectorä¸­ä¿®æ”¹æè´¨æ—¶è‡ªåŠ¨æ›´æ–°å¤–è§‚
     private void OnValidate()
     {
         if (Application.isPlaying && spriteRenderer != null)
