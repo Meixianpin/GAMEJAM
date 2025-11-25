@@ -37,6 +37,19 @@ public class RoleController : MonoBehaviour
     public Sprite SandSprite;
     public Sprite HoneySprite;
 
+    // 特殊能力设置
+    [Header("特殊能力设置")]
+    [Tooltip("二段跳是否可用")]
+    public bool doubleJumpEnabled = true;
+    [Tooltip("二段跳力度（相对于普通跳跃）")]
+    [Range(0.5f, 1f)] public float doubleJumpForceRatio = 0.8f;
+    [Tooltip("Honey材质的摩擦力系数")]
+    public float honeyFriction = 5f;
+    [Tooltip("Slime材质的反弹力度")]
+    public float slimeBounceForce = 12f;
+    [Tooltip("Slime反弹的最小下落速度（防止轻微触碰就反弹）")]
+    public float slimeMinFallSpeed = -2f;
+
     // 冷却设置
     [Header("冷却设置")]
     [Tooltip("K键生成功能的冷却时间（秒）")]
@@ -96,6 +109,11 @@ public class RoleController : MonoBehaviour
     private GameObject cloneObject; // 复制体对象
     private Vector2 startPosition; // 起始位置（使用Vector2）
 
+    // 特殊能力状态
+    private bool hasJumped = false; // 是否已经使用过二段跳
+    private float originalDrag; // 原始摩擦力
+    private bool isSlimeBouncing = false; // 是否正在反弹（防止连续反弹）
+
     // 冷却相关变量
     private float lastSpawnTime = -Mathf.Infinity; // 上一次生成的时间，初始为负无穷确保首次可用
 
@@ -110,11 +128,15 @@ public class RoleController : MonoBehaviour
         rb.freezeRotation = true;
         spriteRenderer = GetComponent<SpriteRenderer>();
 
+        // 保存原始摩擦力设置
+        originalDrag = rb.drag;
+
         // 初始化材质映射
         InitializeMaterialMappings();
 
-        // 应用初始材质外观
+        // 应用初始材质外观和特性
         UpdateCharacterAppearance();
+        ApplyMaterialProperties();
 
         // 记录起始位置
         startPosition = transform.position;
@@ -155,13 +177,16 @@ public class RoleController : MonoBehaviour
         // 更新当前状态显示
         UpdateCurrentState();
 
-        // 检测功能键输入
-        CheckFunctionKeys();
-
         // 检测是否在地面上
         CheckGrounded();
 
-        // 处理跳跃输入
+        // 应用材质特性（每帧更新以确保效果持续）
+        ApplyMaterialProperties();
+
+        // 检测功能键输入
+        CheckFunctionKeys();
+
+        // 处理跳跃输入（包含Cloud二段跳）
         HandleJumpInput();
     }
 
@@ -191,6 +216,38 @@ public class RoleController : MonoBehaviour
         else
         {
             Debug.LogWarning($"{currentMaterial}材质的Sprite未配置或为空！");
+        }
+    }
+
+    // 应用当前材质的物理特性
+    private void ApplyMaterialProperties()
+    {
+        switch (currentMaterial)
+        {
+            case CharacterMaterial.Honey:
+                // Honey材质增加摩擦力
+                rb.drag = honeyFriction;
+                break;
+
+            case CharacterMaterial.Slime:
+                // Slime材质恢复默认摩擦力
+                rb.drag = originalDrag;
+                break;
+
+            case CharacterMaterial.Cloud:
+                // Cloud材质恢复默认摩擦力
+                rb.drag = originalDrag;
+                // 在空中时重置二段跳状态
+                if (isGrounded)
+                {
+                    hasJumped = false;
+                }
+                break;
+
+            default:
+                // 其他材质使用原始摩擦力
+                rb.drag = originalDrag;
+                break;
         }
     }
 
@@ -242,11 +299,16 @@ public class RoleController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha6)) { SetMaterial(CharacterMaterial.Honey); }
     }
 
-    // 设置材质并更新外观
+    // 设置材质并更新外观和特性
     public void SetMaterial(CharacterMaterial newMaterial)
     {
         currentMaterial = newMaterial;
         UpdateCharacterAppearance();
+        ApplyMaterialProperties();
+
+        // 切换材质时重置特殊能力状态
+        hasJumped = false;
+        isSlimeBouncing = false;
     }
 
     // 记录当前状态（位置、速度和材质）
@@ -291,7 +353,6 @@ public class RoleController : MonoBehaviour
         {
             cloneRb.velocity = new Vector2(recordedVelocityX, recordedVelocityY);
         }
-
 
         // 移除预制体中的控制器脚本（如果有的话）
         RoleController prefabController = cloneObject.GetComponent<RoleController>();
@@ -364,12 +425,49 @@ public class RoleController : MonoBehaviour
 
     void HandleJumpInput()
     {
-        // 空格键跳跃（需在地面上）
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        // 空格键跳跃（普通跳跃 + Cloud二段跳）
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            // 给刚体一个向上的力
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+            // 普通跳跃（在地面上）
+            if (isGrounded)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce);
+                hasJumped = false;
+            }
+            // Cloud材质的二段跳
+            else if (currentMaterial == CharacterMaterial.Cloud && doubleJumpEnabled && !hasJumped)
+            {
+                rb.velocity = new Vector2(rb.velocity.x, jumpForce * doubleJumpForceRatio);
+                hasJumped = true;
+                Debug.Log("使用二段跳！");
+            }
         }
+    }
+
+    // 碰撞检测：Slime材质自动反弹（接触地面触发）
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // 只对Slime材质生效，且碰撞对象是地面
+        if (currentMaterial == CharacterMaterial.Slime && collision.collider.CompareTag(groundTag))
+        {
+            // 只在下落速度满足条件时触发反弹（防止轻微触碰就反弹）
+            if (rb.velocity.y >= slimeMinFallSpeed && !isSlimeBouncing)
+            {
+                // 自动应用反弹力（垂直方向）
+                rb.velocity = new Vector2(rb.velocity.x, slimeBounceForce);
+                isSlimeBouncing = true; // 标记为正在反弹，防止连续触发
+                Debug.Log($"Slime自动反弹！反弹力度：{slimeBounceForce}");
+
+                // 0.1秒后重置反弹状态（避免空中再次碰撞时不触发）
+                Invoke(nameof(ResetSlimeBounceState), 0.1f);
+            }
+        }
+    }
+
+    // 重置Slime反弹状态
+    private void ResetSlimeBounceState()
+    {
+        isSlimeBouncing = false;
     }
 
     private void ResetToStart()
@@ -383,6 +481,11 @@ public class RoleController : MonoBehaviour
 
         // 重置记录状态
         isStateRecorded = false;
+
+        // 重置特殊能力状态
+        hasJumped = false;
+        isSlimeBouncing = false;
+        CancelInvoke(nameof(ResetSlimeBounceState)); // 取消未执行的延迟调用
 
         // 回到起始位置（2D）
         transform.position = startPosition;
@@ -398,6 +501,9 @@ public class RoleController : MonoBehaviour
         if (Application.isPlaying && spriteRenderer != null)
         {
             UpdateCharacterAppearance();
+            ApplyMaterialProperties();
         }
+        // 确保最小下落速度为负数（下落方向）
+        slimeMinFallSpeed = Mathf.Min(slimeMinFallSpeed, -0.1f);
     }
 }

@@ -306,6 +306,11 @@ MonoBehaviour:
   StoneSprite: {fileID: -77573424256960086, guid: 58cf337890ac21a4da3800df1a15ca4c, type: 3}
   SandSprite: {fileID: -8738671261588637886, guid: ab52a429d4877f54d82ed8e2b6135806, type: 3}
   HoneySprite: {fileID: -1939676526033249983, guid: 0cb1a4d9f2667354db7305114acbd69a, type: 3}
+  doubleJumpEnabled: 1
+  doubleJumpForceRatio: 0.8
+  honeyFriction: 5
+  slimeBounceForce: 12
+  slimeMinFallSpeed: -0.1
   spawnCooldown: 2
   groundTag: Jumpable
   currentPosition: {x: 0, y: 0}
