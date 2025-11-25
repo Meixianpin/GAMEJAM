@@ -8,66 +8,94 @@ public class RoleController : MonoBehaviour
     [Header("移动设置")]
     [Tooltip("移动速度系数")]
     private float moveSpeed = 5f;
-    public float Get_moveSpeed() {  return moveSpeed; }
+    public float Get_moveSpeed() { return moveSpeed; }
     public void Set_moveSpeed(float speed) { moveSpeed = speed; }
-
-    [Tooltip("鼠标灵敏度，控制移动响应速度")]
-    public float mouseSensitivity = 2f;
 
     // 跳跃参数
     [Header("跳跃设置")]
     [Tooltip("跳跃力度")]
     private float jumpForce = 7f;
-    public float Get_jumpForce() {  return jumpForce; }
+    public float Get_jumpForce() { return jumpForce; }
     public void Set_jumpForce(float force) { jumpForce = force; }
 
     public string groundTag = "Jumpable";//接触后可跳跃的碰撞体
 
+    // 状态存储变量
+    [Header("状态存储")]
+    [Tooltip("角色当前位置")]
+    [SerializeField] private Vector2 currentPosition;
+
+    [Tooltip("角色X轴速度分量")]
+    [SerializeField] private float velocityX;
+
+    [Tooltip("角色Y轴速度分量")]
+    [SerializeField] private float velocityY;
+
+    [Tooltip("J键记录的位置")]
+    [SerializeField] private Vector2 recordedPosition;
+
+    [Tooltip("J键记录的X轴速度")]
+    [SerializeField] private float recordedVelocityX;
+
+    [Tooltip("J键记录的Y轴速度")]
+    [SerializeField] private float recordedVelocityY;
+
+    [Tooltip("是否已记录状态")]
+    [SerializeField] private bool isStateRecorded = false;
     // 组件引用
     private Rigidbody2D rb;
     private bool isGrounded; // 是否在地面上
-
-    private bool isPaused = false; // 是否暂停
-    private bool canUseK = false; // K键是否可用
-    private Vector2 pausePosition; // 按下J时的位置（使用Vector2）
-    private Vector2 startPosition; // 起始位置（使用Vector2）
     private GameObject cloneObject; // 复制体对象
+    private Vector2 startPosition; // 起始位置（使用Vector2）
+
     void Start()
     {
         // 获取Rigidbody2D组件
         rb = GetComponent<Rigidbody2D>();
 
-        //锁定鼠标到游戏窗口
-         Cursor.lockState = CursorLockMode.Confined;
+        // 记录起始位置
+        startPosition = transform.position;
     }
 
     void Update()
     {
+        // 更新当前状态显示
+        UpdateCurrentState();
+
         // 检测功能键输入
         CheckFunctionKeys();
 
-        // 如果暂停状态，不执行原有逻辑
-        if (!isPaused)
-        {
-            // 检测是否在地面上
-            CheckGrounded();
+        // 检测是否在地面上
+        CheckGrounded();
 
-            // 处理跳跃输入
-            HandleJumpInput();
+        // 处理跳跃输入
+        HandleJumpInput();
+    }
+
+    // 更新当前位置和速度信息
+    private void UpdateCurrentState()
+    {
+        currentPosition = transform.position;
+
+        if (rb != null)
+        {
+            velocityX = rb.velocity.x;
+            velocityY = rb.velocity.y;
         }
     }
+
     private void CheckFunctionKeys()
     {
-        // J键：暂停场景，解锁K键
-        if (Input.GetKeyDown(KeyCode.J) && !isPaused)
+        // J键：记录当前位置和速度信息
+        if (Input.GetKeyDown(KeyCode.J))
         {
-            PauseScene();
+            RecordCurrentState();
         }
 
-        // K键：记录位置创建复制体，回到暂停位置并退出暂停
-        if (Input.GetKeyDown(KeyCode.K) && canUseK)
+        // K键：根据记录的状态创建对象
+        if (Input.GetKeyDown(KeyCode.K) && isStateRecorded)
         {
-            CreateCloneAndResume();
+            SpawnFromRecordedState();
         }
 
         // R键：回到起始点，重置地图
@@ -76,48 +104,20 @@ public class RoleController : MonoBehaviour
             ResetToStart();
         }
     }
-    private void PauseScene()
+
+    // 记录当前状态（位置和速度）
+    private void RecordCurrentState()
     {
-        isPaused = true;
-        canUseK = true;
-        pausePosition = transform.position; // 2D位置
+        recordedPosition = transform.position;
+        recordedVelocityX = rb.velocity.x;
+        recordedVelocityY = rb.velocity.y;
+        isStateRecorded = true;
 
-        // 暂停其他游戏对象（除了玩家）
-        PauseOtherGameObjects();
-
-        Debug.Log("能力已经发动，按K键回溯继续你的旅程...");
+        Debug.Log($"已记录状态：位置 {recordedPosition}, 速度 ({recordedVelocityX}, {recordedVelocityY})");
     }
 
-    private void PauseOtherGameObjects()
-    {
-        GameObject[] allObjects = GameObject.FindObjectsOfType<GameObject>();
-        foreach (GameObject obj in allObjects)
-        {
-            // 跳过玩家自身和不需要暂停的对象
-            if (obj == gameObject || obj.isStatic || obj.CompareTag("Untagged"))
-                continue;
-
-            // 暂停刚体
-            Rigidbody2D objRb = obj.GetComponent<Rigidbody2D>();
-            if (objRb != null)
-            {
-                objRb.simulated = false;
-            }
-
-            // 禁用脚本（可选）
-            MonoBehaviour[] scripts = obj.GetComponents<MonoBehaviour>();
-            foreach (MonoBehaviour script in scripts)
-            {
-                // 排除必要的核心脚本
-                if (script.GetType().Name != "RoleController")
-                {
-                    script.enabled = false;
-                }
-            }
-        }
-    }
-
-    private void CreateCloneAndResume()
+    // 根据记录的状态创建对象
+    private void SpawnFromRecordedState()
     {
         // 如果已有复制体，先销毁
         if (cloneObject != null)
@@ -125,48 +125,74 @@ public class RoleController : MonoBehaviour
             Destroy(cloneObject);
         }
 
-        // 创建当前对象的复制体（2D位置）
-        cloneObject = Instantiate(gameObject, (Vector2)transform.position, transform.rotation);
+        // 创建当前对象的复制体
+        cloneObject = Instantiate(gameObject, recordedPosition, transform.rotation);
+
+        // 获取复制体的刚体组件并设置速度
+        Rigidbody2D cloneRb = cloneObject.GetComponent<Rigidbody2D>();
+        if (cloneRb != null)
+        {
+            cloneRb.velocity = new Vector2(recordedVelocityX, recordedVelocityY);
+        }
+
         // 移除复制体的控制器脚本，避免重复控制
         Destroy(cloneObject.GetComponent<RoleController>());
-        // 可以给复制体添加特殊标识或材质
-        cloneObject.name = "Clone_" + gameObject.name;
+        cloneObject.name = "Clone_" + gameObject.name + "_" + Time.time;
 
-        // 回到暂停位置（2D）
-        transform.position = pausePosition;
-
-        // 退出暂停状态，恢复其他对象
-        isPaused = false;
-        canUseK = false;
-        ResumeOtherGameObjects();
-
-        Debug.Log("创建复制体并恢复游戏");
+        Debug.Log($"根据记录状态生成对象：位置 {recordedPosition}, 初始速度 ({recordedVelocityX}, {recordedVelocityY})");
     }
 
-    private void ResumeOtherGameObjects()
-    {
-        GameObject[] allObjects = GameObject.FindObjectsOfType<GameObject>();
-        foreach (GameObject obj in allObjects)
+    private void CheckGrounded()
+    {   //碰撞体检测是否可以跳跃
+        Collider2D collider = GetComponent<Collider2D>();
+        if (collider == null)
         {
-            if (obj == gameObject || obj.isStatic || obj.CompareTag("Untagged"))
-                continue;
+            isGrounded = false;
+            return;
+        }
 
-            // 恢复刚体
-            Rigidbody2D objRb = obj.GetComponent<Rigidbody2D>();
-            if (objRb != null)
-            {
-                objRb.simulated = true;
-            }
+        // 补充完整的地面检测逻辑
+        Vector2 checkPosition = (Vector2)transform.position + Vector2.down * (collider.bounds.extents.y + 0.1f);
+        float checkRadius = 0.1f;
 
-            // 启用脚本
-            MonoBehaviour[] scripts = obj.GetComponents<MonoBehaviour>();
-            foreach (MonoBehaviour script in scripts)
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(checkPosition, checkRadius);
+        isGrounded = false;
+
+        foreach (var hitCollider in hitColliders)
+        {
+            if (hitCollider.CompareTag(groundTag) && hitCollider.gameObject != gameObject)
             {
-                if (script.GetType().Name != "RoleController")
-                {
-                    script.enabled = true;
-                }
+                isGrounded = true;
+                break;
             }
+        }
+    }
+
+    void FixedUpdate()
+    {
+        // 处理移动（在FixedUpdate中处理物理相关的移动更平滑）
+        HandleMovement();
+    }
+
+    void HandleMovement()
+    {
+        // 获取键盘输入（方向键或AD键）
+        float horizontalInput = Input.GetAxis("Horizontal");
+
+        // 计算目标速度（仅水平方向）
+        Vector2 targetVelocity = new Vector2(horizontalInput * moveSpeed, rb.velocity.y);
+
+        // 应用速度到刚体
+        rb.velocity = targetVelocity;
+    }
+
+    void HandleJumpInput()
+    {
+        // 空格键跳跃（需在地面上）
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
+        {
+            // 给刚体一个向上的力
+            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
         }
     }
 
@@ -179,13 +205,8 @@ public class RoleController : MonoBehaviour
             cloneObject = null;
         }
 
-        // 如果处于暂停状态，先恢复
-        if (isPaused)
-        {
-            isPaused = false;
-            canUseK = false;
-            ResumeOtherGameObjects();
-        }
+        // 重置记录状态
+        isStateRecorded = false;
 
         // 回到起始位置（2D）
         transform.position = startPosition;
@@ -193,42 +214,4 @@ public class RoleController : MonoBehaviour
 
         Debug.Log("已重置到起始位置");
     }
-
-    private void CheckGrounded()
-    {   //碰撞体检测是否可以跳跃
-        Collider2D collider = GetComponent<Collider2D>();
-        if (collider == null)
-        {
-            isGrounded = false;
-            return;
-        }
-    }
-
-    void FixedUpdate()
-    {
-        // 处理移动（在FixedUpdate中处理物理相关的移动更平滑）
-        HandleMovement();
-    }
-    void HandleMovement()
-    {
-        // 获取鼠标水平移动增量
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-
-        // 计算目标速度（仅水平方向）
-        Vector2 targetVelocity = new Vector2(mouseX * moveSpeed, rb.velocity.y);
-
-        // 应用速度到刚体
-        rb.velocity = targetVelocity;
-    }
-
-    
-    void HandleJumpInput()
-    {
-        // 当鼠标左键按下且角色在地面上时触发跳跃
-        if (Input.GetMouseButtonDown(0) && isGrounded)
-        {
-            // 给刚体一个向上的力
-            rb.velocity = new Vector2(rb.velocity.x, jumpForce);
-        }
-}
 }
