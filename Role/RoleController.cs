@@ -1,9 +1,42 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))] // 确保挂载了Rigidbody2D组件
+[RequireComponent(typeof(Rigidbody2D), typeof(SpriteRenderer))] // 确保挂载必要组件
 public class RoleController : MonoBehaviour
 {
+    //材质枚举
+    public enum CharacterMaterial
+    {
+        Cloud,
+        Slime,
+        Dirt,
+        Stone,
+        Sand,
+        Honey
+    }
+
+    // 当前材质 - 默认设置为Dirt
+    [Header("材质系统")]
+    [Tooltip("角色当前使用的材质类型")]
+    public CharacterMaterial currentMaterial = CharacterMaterial.Dirt;
+
+    [Tooltip("不同材质对应的预制体")]
+    public GameObject CloudPrefab;
+    public GameObject SlimePrefab;
+    public GameObject DirtPrefab;
+    public GameObject StonePrefab;
+    public GameObject SandPrefab;
+    public GameObject HoneyPrefab;
+
+    [Tooltip("不同材质对应的Sprite（用于角色本体显示）")]
+    public Sprite CloudSprite;
+    public Sprite SlimeSprite;
+    public Sprite DirtSprite;
+    public Sprite StoneSprite;
+    public Sprite SandSprite;
+    public Sprite HoneySprite;
+
     // 移动参数
     [Header("移动设置")]
     [Tooltip("移动速度系数")]
@@ -40,21 +73,66 @@ public class RoleController : MonoBehaviour
     [Tooltip("J键记录的Y轴速度")]
     [SerializeField] private float recordedVelocityY;
 
+    [Tooltip("J键记录的材质类型")]
+    [SerializeField] private CharacterMaterial recordedMaterial;
+
     [Tooltip("是否已记录状态")]
     [SerializeField] private bool isStateRecorded = false;
+
     // 组件引用
     private Rigidbody2D rb;
+    private SpriteRenderer spriteRenderer; // 角色Sprite渲染器
     private bool isGrounded; // 是否在地面上
     private GameObject cloneObject; // 复制体对象
     private Vector2 startPosition; // 起始位置（使用Vector2）
 
+    // 材质映射字典
+    private Dictionary<CharacterMaterial, GameObject> materialPrefabDict;
+    private Dictionary<CharacterMaterial, Sprite> materialSpriteDict;
+
     void Start()
     {
-        // 获取Rigidbody2D组件
+        // 获取组件引用
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+
+        // 初始化材质映射
+        InitializeMaterialMappings();
+
+        // 应用初始材质外观
+        UpdateCharacterAppearance();
 
         // 记录起始位置
         startPosition = transform.position;
+
+        // 调试信息
+        Debug.Log($"当前材质设置为：{currentMaterial}");
+    }
+
+    // 初始化材质与预制体、Sprite的映射关系
+    private void InitializeMaterialMappings()
+    {
+        // 材质-预制体映射
+        materialPrefabDict = new Dictionary<CharacterMaterial, GameObject>()
+        {
+            { CharacterMaterial.Cloud, CloudPrefab },
+            { CharacterMaterial.Slime, SlimePrefab },
+            { CharacterMaterial.Dirt, DirtPrefab },
+            { CharacterMaterial.Stone, StonePrefab },
+            { CharacterMaterial.Sand, SandPrefab },
+            { CharacterMaterial.Honey, HoneyPrefab }
+        };
+
+        // 材质-Sprite映射（用于角色本体显示）
+        materialSpriteDict = new Dictionary<CharacterMaterial, Sprite>()
+        {
+            { CharacterMaterial.Cloud, CloudSprite },
+            { CharacterMaterial.Slime, SlimeSprite },
+            { CharacterMaterial.Dirt, DirtSprite },
+            { CharacterMaterial.Stone, StoneSprite },
+            { CharacterMaterial.Sand, SandSprite },
+            { CharacterMaterial.Honey, HoneySprite }
+        };
     }
 
     void Update()
@@ -84,6 +162,22 @@ public class RoleController : MonoBehaviour
         }
     }
 
+    // 更新角色外观以匹配当前材质
+    private void UpdateCharacterAppearance()
+    {
+        if (spriteRenderer == null || materialSpriteDict == null) return;
+
+        if (materialSpriteDict.TryGetValue(currentMaterial, out Sprite targetSprite) && targetSprite != null)
+        {
+            spriteRenderer.sprite = targetSprite;
+            Debug.Log($"角色外观已更新为：{currentMaterial}");
+        }
+        else
+        {
+            Debug.LogWarning($"{currentMaterial}材质的Sprite未配置或为空！");
+        }
+    }
+
     private void CheckFunctionKeys()
     {
         // J键：记录当前位置和速度信息
@@ -103,20 +197,36 @@ public class RoleController : MonoBehaviour
         {
             ResetToStart();
         }
+
+        // 测试：按数字键1-6切换材质（用于测试外观同步）
+        if (Input.GetKeyDown(KeyCode.Alpha1)) { SetMaterial(CharacterMaterial.Cloud); }
+        if (Input.GetKeyDown(KeyCode.Alpha2)) { SetMaterial(CharacterMaterial.Slime); }
+        if (Input.GetKeyDown(KeyCode.Alpha3)) { SetMaterial(CharacterMaterial.Dirt); }
+        if (Input.GetKeyDown(KeyCode.Alpha4)) { SetMaterial(CharacterMaterial.Stone); }
+        if (Input.GetKeyDown(KeyCode.Alpha5)) { SetMaterial(CharacterMaterial.Sand); }
+        if (Input.GetKeyDown(KeyCode.Alpha6)) { SetMaterial(CharacterMaterial.Honey); }
     }
 
-    // 记录当前状态（位置和速度）
+    // 设置材质并更新外观
+    public void SetMaterial(CharacterMaterial newMaterial)
+    {
+        currentMaterial = newMaterial;
+        UpdateCharacterAppearance();
+    }
+
+    // 记录当前状态（位置、速度和材质）
     private void RecordCurrentState()
     {
         recordedPosition = transform.position;
         recordedVelocityX = rb.velocity.x;
         recordedVelocityY = rb.velocity.y;
+        recordedMaterial = currentMaterial; // 记录当前材质
         isStateRecorded = true;
 
-        Debug.Log($"已记录状态：位置 {recordedPosition}, 速度 ({recordedVelocityX}, {recordedVelocityY})");
+        Debug.Log($"已记录状态：位置 {recordedPosition}, 速度 ({recordedVelocityX}, {recordedVelocityY}), 材质 {recordedMaterial}");
     }
 
-    // 根据记录的状态创建对象
+    // 根据记录的状态创建对应材质的预制体
     private void SpawnFromRecordedState()
     {
         // 如果已有复制体，先销毁
@@ -125,8 +235,17 @@ public class RoleController : MonoBehaviour
             Destroy(cloneObject);
         }
 
-        // 创建当前对象的复制体
-        cloneObject = Instantiate(gameObject, recordedPosition, transform.rotation);
+        // 获取对应材质的预制体
+        GameObject selectedPrefab = GetPrefabByMaterial(recordedMaterial);
+
+        if (selectedPrefab == null)
+        {
+            Debug.LogError($"{recordedMaterial}材质的预制体未配置！请在Inspector中设置对应的预制体。");
+            return;
+        }
+
+        // 创建对应材质的预制体实例
+        cloneObject = Instantiate(selectedPrefab, recordedPosition, transform.rotation);
 
         // 获取复制体的刚体组件并设置速度
         Rigidbody2D cloneRb = cloneObject.GetComponent<Rigidbody2D>();
@@ -135,11 +254,26 @@ public class RoleController : MonoBehaviour
             cloneRb.velocity = new Vector2(recordedVelocityX, recordedVelocityY);
         }
 
-        // 移除复制体的控制器脚本，避免重复控制
-        Destroy(cloneObject.GetComponent<RoleController>());
-        cloneObject.name = "Clone_" + gameObject.name + "_" + Time.time;
+        // 移除预制体中的控制器脚本（如果有的话）
+        RoleController prefabController = cloneObject.GetComponent<RoleController>();
+        if (prefabController != null)
+        {
+            Destroy(prefabController);
+        }
 
-        Debug.Log($"根据记录状态生成对象：位置 {recordedPosition}, 初始速度 ({recordedVelocityX}, {recordedVelocityY})");
+        cloneObject.name = $"Spawned_{recordedMaterial}_{Time.time}";
+
+        Debug.Log($"生成{recordedMaterial}材质对象：位置 {recordedPosition}, 初始速度 ({recordedVelocityX}, {recordedVelocityY})");
+    }
+
+    // 根据材质类型获取对应的预制体
+    private GameObject GetPrefabByMaterial(CharacterMaterial material)
+    {
+        if (materialPrefabDict.TryGetValue(material, out GameObject prefab))
+        {
+            return prefab;
+        }
+        return null;
     }
 
     private void CheckGrounded()
@@ -213,5 +347,14 @@ public class RoleController : MonoBehaviour
         rb.velocity = Vector2.zero;
 
         Debug.Log("已重置到起始位置");
+    }
+
+    // 当在Inspector中修改材质时自动更新外观
+    private void OnValidate()
+    {
+        if (Application.isPlaying && spriteRenderer != null)
+        {
+            UpdateCharacterAppearance();
+        }
     }
 }
