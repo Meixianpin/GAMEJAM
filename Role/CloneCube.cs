@@ -139,10 +139,7 @@ public class CloneCube : MonoBehaviour
             spriteRenderer.sprite = targetSprite;
             Debug.Log($"角色外观已更新为：{clonecurrentMaterial}");
         }
-        else
-        {
-            Debug.LogWarning($"{clonecurrentMaterial}材质的Sprite未配置或为空！");
-        }
+        
     }
 
 

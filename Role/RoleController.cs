@@ -40,7 +40,7 @@ public class RoleController : MonoBehaviour
     // 冷却设置
     [Header("冷却设置")]
     [Tooltip("K键生成功能的冷却时间（秒）")]
-    public float spawnCooldown = 0.1f; // 2秒冷却
+    public float spawnCooldown = 2f; // 2秒冷却
 
     // 移动参数
     [Header("移动设置")]
@@ -64,7 +64,7 @@ public class RoleController : MonoBehaviour
     [SerializeField] private Vector2 currentPosition;
     [Tooltip("角色当前旋转")]
     [SerializeField] private Quaternion currentRotation;
-    
+
     [Tooltip("角色X轴速度分量")]
     [SerializeField] private float velocityX;
 
@@ -74,7 +74,7 @@ public class RoleController : MonoBehaviour
     [Tooltip("J键记录的位置")]
     [SerializeField] private Vector2 recordedPosition;
 
-     [Tooltip("J键记录的旋转")]
+    [Tooltip("J键记录的旋转")]
     [SerializeField] private Quaternion recordedRotation;
 
     [Tooltip("J键记录的X轴速度")]
@@ -97,8 +97,7 @@ public class RoleController : MonoBehaviour
     private Vector2 startPosition; // 起始位置（使用Vector2）
 
     // 冷却相关变量
-    private float lastSpawnTime; // 上一次生成的时间
-    private bool isSpawnOnCooldown => Time.time - lastSpawnTime < spawnCooldown; // 是否在冷却中
+    private float lastSpawnTime = -Mathf.Infinity; // 上一次生成的时间，初始为负无穷确保首次可用
 
     // 材质映射字典
     private Dictionary<CharacterMaterial, GameObject> materialPrefabDict;
@@ -117,14 +116,12 @@ public class RoleController : MonoBehaviour
         // 应用初始材质外观
         UpdateCharacterAppearance();
 
-        // 初始化冷却时间
-        lastSpawnTime = -spawnCooldown; // 初始状态允许立即使用
-
         // 记录起始位置
         startPosition = transform.position;
 
         // 调试信息
         Debug.Log($"当前材质设置为：{currentMaterial}");
+        Debug.Log($"冷却时间设置为：{spawnCooldown}秒");
     }
 
     // 初始化材质与预制体、Sprite的映射关系
@@ -206,15 +203,28 @@ public class RoleController : MonoBehaviour
         }
 
         // K键：根据记录的状态创建对象（带冷却）
-        if (Input.GetKeyDown(KeyCode.K) && isStateRecorded && !isSpawnOnCooldown)
+        if (Input.GetKeyDown(KeyCode.K))
         {
+            // 检查是否满足所有条件
+            if (!isStateRecorded)
+            {
+                Debug.LogWarning("请先按J键记录状态！");
+                return;
+            }
+
+            // 检查冷却
+            float timeSinceLastSpawn = Time.time - lastSpawnTime;
+            if (timeSinceLastSpawn < spawnCooldown)
+            {
+                float remainingTime = spawnCooldown - timeSinceLastSpawn;
+                Debug.LogWarning($"K键冷却中，剩余 {remainingTime:F1} 秒");
+                return;
+            }
+
+            // 执行生成
             SpawnFromRecordedState();
-            lastSpawnTime = Time.time; // 记录生成时间
-        }
-        else if (Input.GetKeyDown(KeyCode.K) && isSpawnOnCooldown)
-        {
-            float remainingTime = spawnCooldown - (Time.time - lastSpawnTime);
-            Debug.LogWarning($"K键冷却中，剩余 {remainingTime:F1} 秒");
+            lastSpawnTime = Time.time; // 更新冷却时间
+            Debug.Log($"K键冷却已更新，下次可用时间：{Time.time + spawnCooldown}");
         }
 
         // R键：回到起始点，重置地图
@@ -281,7 +291,7 @@ public class RoleController : MonoBehaviour
         {
             cloneRb.velocity = new Vector2(recordedVelocityX, recordedVelocityY);
         }
-        
+
 
         // 移除预制体中的控制器脚本（如果有的话）
         RoleController prefabController = cloneObject.GetComponent<RoleController>();
