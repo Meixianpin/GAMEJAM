@@ -3,7 +3,19 @@ guid: 30e3d689af9f7b44bbedffd24ec507d9
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - CloudPrefab: {fileID: -2253911629886400664, guid: 351050516f12db94db131957cc5692a0, type: 3}
+  - SlimePrefab: {fileID: -2253911629886400664, guid: df4d76207e55ff742a8e38ce7c629716, type: 3}
+  - DirtPrefab: {fileID: -2253911629886400664, guid: 1aaea09d3827c114ea8c0b9c728187ac, type: 3}
+  - StonePrefab: {fileID: -2253911629886400664, guid: 58cf337890ac21a4da3800df1a15ca4c, type: 3}
+  - SandPrefab: {fileID: -2253911629886400664, guid: ab52a429d4877f54d82ed8e2b6135806, type: 3}
+  - HoneyPrefab: {fileID: -2253911629886400664, guid: 0cb1a4d9f2667354db7305114acbd69a, type: 3}
+  - CloudSprite: {fileID: -7107973756314043165, guid: 351050516f12db94db131957cc5692a0, type: 3}
+  - SlimeSprite: {fileID: -6720623259273952594, guid: df4d76207e55ff742a8e38ce7c629716, type: 3}
+  - DirtSprite: {fileID: -5470269554340035905, guid: 1aaea09d3827c114ea8c0b9c728187ac, type: 3}
+  - StoneSprite: {fileID: -77573424256960086, guid: 58cf337890ac21a4da3800df1a15ca4c, type: 3}
+  - SandSprite: {fileID: -8738671261588637886, guid: ab52a429d4877f54d82ed8e2b6135806, type: 3}
+  - HoneySprite: {fileID: -1939676526033249983, guid: 0cb1a4d9f2667354db7305114acbd69a, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

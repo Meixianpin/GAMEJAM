@@ -37,6 +37,11 @@ public class RoleController : MonoBehaviour
     public Sprite SandSprite;
     public Sprite HoneySprite;
 
+    // 冷却设置
+    [Header("冷却设置")]
+    [Tooltip("K键生成功能的冷却时间（秒）")]
+    public float spawnCooldown = 2f; // 2秒冷却
+
     // 移动参数
     [Header("移动设置")]
     [Tooltip("移动速度系数")]
@@ -86,6 +91,10 @@ public class RoleController : MonoBehaviour
     private GameObject cloneObject; // 复制体对象
     private Vector2 startPosition; // 起始位置（使用Vector2）
 
+    // 冷却相关变量
+    private float lastSpawnTime; // 上一次生成的时间
+    private bool isSpawnOnCooldown => Time.time - lastSpawnTime < spawnCooldown; // 是否在冷却中
+
     // 材质映射字典
     private Dictionary<CharacterMaterial, GameObject> materialPrefabDict;
     private Dictionary<CharacterMaterial, Sprite> materialSpriteDict;
@@ -101,6 +110,9 @@ public class RoleController : MonoBehaviour
 
         // 应用初始材质外观
         UpdateCharacterAppearance();
+
+        // 初始化冷却时间
+        lastSpawnTime = -spawnCooldown; // 初始状态允许立即使用
 
         // 记录起始位置
         startPosition = transform.position;
@@ -186,10 +198,16 @@ public class RoleController : MonoBehaviour
             RecordCurrentState();
         }
 
-        // K键：根据记录的状态创建对象
-        if (Input.GetKeyDown(KeyCode.K) && isStateRecorded)
+        // K键：根据记录的状态创建对象（带冷却）
+        if (Input.GetKeyDown(KeyCode.K) && isStateRecorded && !isSpawnOnCooldown)
         {
             SpawnFromRecordedState();
+            lastSpawnTime = Time.time; // 记录生成时间
+        }
+        else if (Input.GetKeyDown(KeyCode.K) && isSpawnOnCooldown)
+        {
+            float remainingTime = spawnCooldown - (Time.time - lastSpawnTime);
+            Debug.LogWarning($"K键冷却中，剩余 {remainingTime:F1} 秒");
         }
 
         // R键：回到起始点，重置地图
