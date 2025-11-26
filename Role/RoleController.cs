@@ -122,6 +122,8 @@ public class RoleController : MonoBehaviour
     private SpriteRenderer spriteRenderer; // 角色Sprite渲染器
     private bool isGrounded; // 是否在地面上
     private GameObject cloneObject; // 复制体对象
+    private GameObject shadowObject; // 阴影体对象
+    
     private Vector2 startPosition; // 起始位置（使用Vector2）
 
     // 特殊能力状态
@@ -511,6 +513,34 @@ public class RoleController : MonoBehaviour
         recordedMaterial = currentMaterial; // 记录当前材质
         isStateRecorded = true;
 
+        if (shadowObject != null)
+        {
+            Destroy(shadowObject);
+        }
+        shadowObject = Instantiate(gameObject, recordedPosition, recordedRotation);
+
+        Rigidbody2D shadowRb = shadowObject.GetComponent<Rigidbody2D>();
+        RoleController shadowController = shadowObject.GetComponent<RoleController>();
+        BoxCollider2D shadowCollider = shadowObject.GetComponent<BoxCollider2D>();
+        SpriteRenderer shadowSpriteRenderer = shadowObject.GetComponent<SpriteRenderer>();
+        if (shadowRb != null)
+        {
+            shadowRb.bodyType = RigidbodyType2D.Static;
+        }
+        // 移除预制体中的控制器脚本（如果有的话）
+        if (shadowController != null)
+        {
+            Destroy(shadowController);
+        }
+        if (shadowCollider != null)
+        {
+            Destroy(shadowCollider);
+        }
+        shadowObject.name = $"Shadow_{recordedMaterial}_{Time.time}";
+        shadowObject.tag = "Shadow";
+        shadowSpriteRenderer.color = new Color(0.5f, 0.5f, 0.5f, 0.8f); // 半透明灰色
+
+
         Debug.Log($"已记录状态：位置 {recordedPosition}, 速度 ({recordedVelocityX}, {recordedVelocityY}), 材质 {recordedMaterial}");
     }
 
@@ -580,11 +610,14 @@ public class RoleController : MonoBehaviour
 
         // 补充完整的地面检测逻辑
         Vector2 checkPosition = (Vector2)transform.position + Vector2.down * (collider.bounds.extents.y + 0.1f);
-        float checkRadius = 0.1f;
-
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(checkPosition, checkRadius);
+        //Vector2 checkPosition = (Vector2)transform.position;
+        
+        Vector2 boxSize = collider.bounds.size;
+        Collider2D[] hitColliders = Physics2D.OverlapBoxAll(checkPosition, boxSize, 0f);
+        //Collider2D[] hitColliders = Physics2D.OverlapBoxAll(checkPosition, collider.bounds.size, 0f);
         isGrounded = false;
 
+       
         foreach (var hitCollider in hitColliders)
         {
             if (hitCollider.CompareTag(groundTag) && hitCollider.gameObject != gameObject)
@@ -594,6 +627,7 @@ public class RoleController : MonoBehaviour
             }
         }
     }
+
 
     void FixedUpdate()
     {
@@ -651,6 +685,11 @@ public class RoleController : MonoBehaviour
         {
             Destroy(cloneObject);
             cloneObject = null;
+        }
+        if (shadowObject != null)
+        {
+            Destroy(shadowObject);
+            shadowObject = null;
         }
 
         // 重置记录状态
