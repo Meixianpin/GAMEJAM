@@ -1,15 +1,23 @@
-# Role文件介绍
-### 属性结构（主要在RoleController内）
-1. **一般属性** : 
-- 移动速度系数moveSpeed
-- 鼠标灵敏度mouseSensitivity
-- 跳跃力度jumpForce
-- 是否进入特殊空间isPaused（false为未进入）
--是否可以按下K功能键 canUseK（false时按下无反应）
-
-2. **特殊属性**：
-- 
-### 文件介绍：
-**RoleController.cs**：角色直接的控制器
-通过鼠标移动控制左右，左键按下跳跃，目前支持单段跳，更新可跳跃次数需要通过Tag=‘Jumpable’的地块碰撞体检测后才能重新获得跳跃次数。J键进入只有自己可以移动的特殊空间，场景除自己以外的对象全部暂停，此时K键可以使用。K键在特殊空间内按下后记录当前的位置并创造一份复制体，随后回溯至按下J的位置，时间再次流动。R键重置，回到最初的位置。
--Get_XX获取XX的值 Set_XX设置XX的值
+# 属性结构（主要在 RoleController 内）
+1. ## 一般属性 ## :
+- 材质系统相关：当前材质类型（currentMaterial）、各材质对应的预制体（CloudPrefab等）、各材质对应的 Sprite（CloudSprite等）
+- 移动设置：移动速度系数（moveSpeed）
+- 跳跃设置：跳跃力度（jumpForce）、可跳跃碰撞体标签（groundTag）
+- 状态存储：角色当前位置 / 旋转 / 速度、J 键记录的位置 / 旋转 / 速度 / 材质、状态记录标记（isStateRecorded）
+- 组件引用：刚体组件（rb）、Sprite 渲染器（spriteRenderer）、地面检测标记（isGrounded）等
+- 冷却设置：K 键生成功能冷却时间（spawnCooldown）
+2. ## 特殊属性 ##：
+- 特殊能力设置：二段跳开关（doubleJumpEnabled）、二段跳力度比例（doubleJumpForceRatio）、Honey 材质摩擦力（honeyFriction）、Slime 材质反弹力度（slimeBounceForce）、Slime 最小下落速度（slimeMinFallSpeed）
+- 材质映射字典：材质 - 预制体映射（materialPrefabDict）、材质 - Sprite 映射（materialSpriteDict）
+- 特殊能力状态：二段跳使用标记（hasJumped）、原始摩擦力（originalDrag）、Slime 反弹标记（isSlimeBouncing）
+- 冷却相关变量：上一次生成时间（lastSpawnTime）
+3. ## 文件介绍 ##：
+- ## RoleController.cs ## ：角色直接的控制器，负责角色的核心逻辑控制
+- Get_XX/Set_XX 方法：Get_moveSpeed()/Set_moveSpeed()获取 / 设置移动速度；Get_jumpForce()/Set_jumpForce()获取 / 设置跳跃力度
+- 材质系统：支持 Cloud、Slime、Dirt、Stone、Sand、Honey 六种材质，每种材质有对应的预制体和 Sprite，具备不同的物理特性
+- 核心功能：
+- 角色移动与跳跃（支持 Cloud 材质二段跳）
+- J 键记录状态、K 键生成对应材质预制体（带冷却机制）
+- R 键重置角色到起始位置
+- 材质特性实现（Honey 高摩擦力、Slime 自动反弹等）
+- 地面检测与碰撞响应
