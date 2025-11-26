@@ -62,8 +62,6 @@ public class RoleController : MonoBehaviour
     public float dashForce = 15f;
     [Tooltip("冲刺持续时间（秒）")]
     public float dashDuration = 0.2f;
-    [Tooltip("双击检测时间窗口（秒）")]
-    public float doubleTapTimeWindow = 0.2f;
     [Tooltip("冲刺冷却时间（秒）")]
     public float dashCooldown = 1f;
 
@@ -131,8 +129,6 @@ public class RoleController : MonoBehaviour
     private float originalDrag; // 原始摩擦力
 
     // Lightning材质冲刺相关变量
-    private float leftTapTime = 0f;
-    private float rightTapTime = 0f;
     private bool isDashing = false;
     private float dashTimer = 0f;
     private float dashDirection = 0f;
@@ -243,11 +239,70 @@ public class RoleController : MonoBehaviour
         // 处理跳跃输入（包含Cloud二段跳）
         HandleJumpInput();
 
-        // 处理Lightning材质的双击冲刺
+        // 处理Lightning材质的L键冲刺
         HandleLightningDash();
 
         // 更新冲刺状态
         UpdateDashState();
+    }
+
+    // 修改：处理Lightning材质的L键冲刺
+    private void HandleLightningDash()
+    {
+        if (currentMaterial != CharacterMaterial.Lightning || isDashing)
+            return;
+
+        // 检查冷却
+        if (Time.time - lastDashTime < dashCooldown)
+            return;
+
+        // 检测L键按下
+        if (Input.GetKeyDown(KeyCode.L))
+        {
+            // 获取当前移动方向（A/D或左右方向键）
+            float horizontalInput = Input.GetAxisRaw("Horizontal");
+
+            // 如果没有输入方向，默认向右冲刺
+            if (horizontalInput == 0)
+            {
+                horizontalInput = 1; // 默认向右
+            }
+
+            StartDash(horizontalInput);
+        }
+    }
+
+    // 开始冲刺
+    private void StartDash(float direction)
+    {
+        isDashing = true;
+        dashTimer = dashDuration;
+        dashDirection = direction;
+        lastDashTime = Time.time;
+
+        Debug.Log($"Lightning材质冲刺：方向 {direction}");
+    }
+
+    // 更新冲刺状态
+    private void UpdateDashState()
+    {
+        if (!isDashing)
+            return;
+
+        dashTimer -= Time.deltaTime;
+
+        if (dashTimer > 0)
+        {
+            // 应用冲刺力（保持冲刺过程）
+            Vector2 dashVelocity = new Vector2(dashDirection * dashForce, rb.velocity.y);
+            rb.velocity = dashVelocity;
+        }
+        else
+        {
+            // 结束冲刺
+            isDashing = false;
+            dashDirection = 0f;
+        }
     }
 
     // 检测材质切换输入
@@ -312,89 +367,6 @@ public class RoleController : MonoBehaviour
         }
 
         return null;
-    }
-
-    // 处理Lightning材质的双击冲刺检测
-    private void HandleLightningDash()
-    {
-        if (currentMaterial != CharacterMaterial.Lightning || isDashing)
-            return;
-
-        // 检查冷却
-        if (Time.time - lastDashTime < dashCooldown)
-            return;
-
-        // 检测左方向键双击
-        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
-        {
-            float timeSinceLastTap = Time.time - leftTapTime;
-
-            // 如果在时间窗口内双击
-            if (timeSinceLastTap < doubleTapTimeWindow && timeSinceLastTap > 0)
-            {
-                StartDash(-1); // 向左冲刺
-                leftTapTime = 0f; // 重置点击时间
-            }
-            else
-            {
-                leftTapTime = Time.time; // 记录第一次点击时间
-            }
-
-            rightTapTime = 0f; // 重置另一侧的点击时间
-        }
-
-        // 检测右方向键双击
-        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
-        {
-            float timeSinceLastTap = Time.time - rightTapTime;
-
-            // 如果在时间窗口内双击
-            if (timeSinceLastTap < doubleTapTimeWindow && timeSinceLastTap > 0)
-            {
-                StartDash(1); // 向右冲刺
-                rightTapTime = 0f; // 重置点击时间
-            }
-            else
-            {
-                rightTapTime = Time.time; // 记录第一次点击时间
-            }
-
-            leftTapTime = 0f; // 重置另一侧的点击时间
-        }
-    }
-
-    // 开始冲刺
-    private void StartDash(float direction)
-    {
-        isDashing = true;
-        dashTimer = dashDuration;
-        dashDirection = direction;
-        lastDashTime = Time.time;
-
-        // 冲刺时暂时增加移动速度或直接应用冲刺力
-        Debug.Log($"Lightning材质冲刺：方向 {direction}");
-    }
-
-    // 更新冲刺状态
-    private void UpdateDashState()
-    {
-        if (!isDashing)
-            return;
-
-        dashTimer -= Time.deltaTime;
-
-        if (dashTimer > 0)
-        {
-            // 应用冲刺力（保持冲刺过程）
-            Vector2 dashVelocity = new Vector2(dashDirection * dashForce, rb.velocity.y);
-            rb.velocity = dashVelocity;
-        }
-        else
-        {
-            // 结束冲刺
-            isDashing = false;
-            dashDirection = 0f;
-        }
     }
 
     // 更新当前位置和速度信息
@@ -691,8 +663,7 @@ public class RoleController : MonoBehaviour
         isDashing = false;
         dashTimer = 0f;
         dashDirection = 0f;
-        leftTapTime = 0f;
-        rightTapTime = 0f;
+        lastDashTime = -Mathf.Infinity;
 
         // 新增：重置材质切换冷却
         lastMaterialSwitchTime = -Mathf.Infinity;
@@ -717,7 +688,6 @@ public class RoleController : MonoBehaviour
         // 确保冲刺参数为正数
         dashForce = Mathf.Max(0f, dashForce);
         dashDuration = Mathf.Max(0.01f, dashDuration);
-        doubleTapTimeWindow = Mathf.Max(0.05f, doubleTapTimeWindow);
         dashCooldown = Mathf.Max(0f, dashCooldown);
     }
 }
