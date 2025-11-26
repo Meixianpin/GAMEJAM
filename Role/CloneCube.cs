@@ -58,8 +58,11 @@ public class CloneCube : MonoBehaviour
     [Tooltip("默认材质的bodyType")]
     private RigidbodyType2D originalBodyType; // 原始bodyType
     
+    // 蜂蜜材质相关字段
+    private FixedJoint2D honeyJoint; // 用于黏附的关节组件
+    private Rigidbody2D attachedRigidbody; // 被黏附的物体的刚体
+    private bool isAttached = false; // 是否已黏附到物体
     
-
     // 状态存储变量
     [Header("状态存储")]
     [Tooltip("复制体当前位置")]
@@ -132,6 +135,7 @@ public class CloneCube : MonoBehaviour
         // 应用初始材质外观
         UpdateCharacterAppearance();
         ApplyMaterialProperties();
+        ApplyMaterialSpecialEffects();
 
         //rb.bodyType = RigidbodyType2D.Kinematic;
         rb.mass = 100f;//声音的重量
@@ -196,19 +200,20 @@ public class CloneCube : MonoBehaviour
         // 检测功能键输入切换材质
         CheckFunctionKeys();
 
-        // 检测是否与玩家碰撞
-        //CheckIsColliderWithPlayer();
+        //应用材质特殊效果
+        ApplyMaterialSpecialEffects();
     }
 
     // 应用当前材质的物理特性
+    
     /*
-    蜂蜜摩擦力大，蜂蜜复制体摩擦力大，碰撞后保持与被碰撞的物体静止。？
-    史莱姆无跳跃，可以借助史莱姆复制体来反弹。？
-    云朵二段跳，云朵复制体无重力。
-    雷电冲刺，雷电复制体充电。？
-    泥土无效果，泥土复制体无效果。
-    岩石无效果，岩石复制体挂空中。
-    沙子能穿过幽灵方块，沙子复制体无效果。
+    蜂蜜复制体摩擦力大，碰撞后保持与被碰撞的物体静止。？
+    可以借助史莱姆复制体来反弹。？
+    云朵复制体无重力。
+    雷电复制体充电。？
+    泥土复制体无效果。
+    岩石复制体挂空中。
+    沙子复制体无效果。
     */
     private void ApplyMaterialProperties()
     {
@@ -218,51 +223,42 @@ public class CloneCube : MonoBehaviour
                 // Honey材质增加摩擦力
                 rb.drag = honeyFriction;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = RigidbodyType2D.Dynamic;
+                //rb.bodyType = RigidbodyType2D.Dynamic;
                 break;
-
             case CharacterMaterial.Slime:
                 // Slime材质恢复默认摩擦力
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
                 rb.bodyType = RigidbodyType2D.Dynamic;
                 break;
-
             case CharacterMaterial.Cloud:
                 // Cloud材质恢复默认摩擦力
                 rb.drag = originalDrag;
                 rb.gravityScale = cloudGravityScale;
                 rb.bodyType = RigidbodyType2D.Dynamic;
                 break;
-
             case CharacterMaterial.Lightning:
                 // Lightning材质恢复默认摩擦力
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
                 rb.bodyType = RigidbodyType2D.Dynamic;
                 break;
-            
             case CharacterMaterial.Dirt:
                 // Dirt材质无效果，Dirt复制体无效果。
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
                 rb.bodyType = RigidbodyType2D.Dynamic;
                 break;
-
             case CharacterMaterial.Stone:
                 // Stone材质无效果，Stone复制体挂空中。
                 rb.bodyType = RigidbodyType2D.Static;
                 break;
-
             case CharacterMaterial.Sand:
                 // Sand材质速度快重力小，Sand复制体无效果。
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
                 rb.bodyType = RigidbodyType2D.Dynamic;
                 break;
-
-            
-
             default:
                 // 其他材质（包括新增的Au）使用原始摩擦力
                 rb.drag = originalDrag;
@@ -270,6 +266,121 @@ public class CloneCube : MonoBehaviour
                 rb.bodyType = RigidbodyType2D.Dynamic;
                 break;
         }
+    }
+
+    /*
+    蜂蜜复制体摩擦力大，碰撞后保持与被碰撞的物体静止。？
+    可以借助史莱姆复制体来反弹。？
+    云朵复制体无重力。
+    雷电复制体充电。？
+    泥土复制体无效果。
+    岩石复制体挂空中。
+    沙子复制体无效果。
+    */
+    private void ApplyMaterialSpecialEffects()
+    {
+        switch (clonecurrentMaterial)
+        {
+            case CharacterMaterial.Honey:
+                // 蜂蜜材质特殊效果：保持碰撞状态检测
+                // 注意：实际的碰撞检测和连接逻辑在OnCollisionEnter2D中处理
+                break;
+
+            case CharacterMaterial.Slime:
+                
+                break;
+
+            case CharacterMaterial.Cloud:
+                
+                break;
+
+            case CharacterMaterial.Lightning:
+                
+                break;
+            
+            case CharacterMaterial.Dirt:
+                // 非蜂蜜材质时，移除所有连接
+                RemoveHoneyAttachment();
+                break;
+
+            case CharacterMaterial.Stone:
+                // 非蜂蜜材质时，移除所有连接
+                RemoveHoneyAttachment();
+                break;
+
+            case CharacterMaterial.Sand:
+                // 非蜂蜜材质时，移除所有连接
+                RemoveHoneyAttachment();
+                break;
+
+            default:
+                // 非蜂蜜材质时，移除所有连接
+                RemoveHoneyAttachment();
+                break;
+        }
+    }
+    
+    // 当蜂蜜材质物体与其他物体碰撞时
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        // 仅在材质为Honey且未连接时处理
+        if (clonecurrentMaterial == CharacterMaterial.Honey && !isAttached)
+        {
+            Rigidbody2D otherRb = collision.rigidbody;
+            
+            // 确保碰撞对象有Rigidbody2D组件且不是玩家
+            if (otherRb != null && !collision.gameObject.CompareTag(playerTag))
+            {
+                AttachToObject(otherRb);
+            }
+        }
+    }
+    
+    // 黏附到目标物体
+    private void AttachToObject(Rigidbody2D targetRb)
+    {
+        // 移除已有的关节（如果存在）
+        RemoveHoneyAttachment();
+        
+        // 添加新的固定关节
+        honeyJoint = gameObject.AddComponent<FixedJoint2D>();
+        honeyJoint.connectedBody = targetRb;
+        honeyJoint.enableCollision = true; // 允许碰撞继续发生
+        honeyJoint.breakForce = float.PositiveInfinity; // 设置为无限大以防止意外断开
+        honeyJoint.breakTorque = float.PositiveInfinity;
+        
+        // 设置状态
+        attachedRigidbody = targetRb;
+        isAttached = true;
+        
+        Debug.Log($"蜂蜜材质复制体已黏附到物体: {targetRb.gameObject.name}");
+    }
+    
+    // 移除蜂蜜黏附效果
+    private void RemoveHoneyAttachment()
+    {
+        if (honeyJoint != null)
+        {
+            Destroy(honeyJoint);
+            honeyJoint = null;
+            attachedRigidbody = null;
+            isAttached = false;
+            Debug.Log("蜂蜜材质复制体已移除黏附效果");
+        }
+    }
+    
+    // 当材质改变时调用此方法，清除任何连接
+    public void SetCloneMaterial(CharacterMaterial newMaterial)
+    {
+        // 如果从蜂蜜材质切换到其他材质，移除连接
+        if (clonecurrentMaterial == CharacterMaterial.Honey && newMaterial != CharacterMaterial.Honey)
+        {
+            RemoveHoneyAttachment();
+        }
+        
+        clonecurrentMaterial = newMaterial;
+        UpdateCharacterAppearance();
+        ApplyMaterialProperties();
     }
     private void UpdateCurrentState()
     {
@@ -311,36 +422,5 @@ public class CloneCube : MonoBehaviour
 
     }
 
-    public void SetCloneMaterial(CharacterMaterial newMaterial)
-    {
-        clonecurrentMaterial = newMaterial;
-        UpdateCharacterAppearance();
-        ApplyMaterialProperties();
-    }
 
-    private void CheckIsColliderWithPlayer()
-    {   //玩家检测是否与复制体碰撞
-        Collider2D collider = GetComponent<Collider2D>();
-        if (collider == null)
-        {
-            isColliderWithPlayer = false;
-            return;
-        }
-
-        // 补充完整的玩家检测逻辑
-        Vector2 checkPosition = (Vector2)transform.position + Vector2.down * (collider.bounds.extents.y + 0.1f);
-        float checkRadius = 0.1f;
-
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(checkPosition, checkRadius);
-        isColliderWithPlayer = false;
-
-        foreach (var hitCollider in hitColliders)
-        {
-            if (hitCollider.CompareTag(playerTag) && hitCollider.gameObject != gameObject)
-            {
-                isColliderWithPlayer = true;
-                break;
-            }
-        }
-    }
 }
