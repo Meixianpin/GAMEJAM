@@ -583,6 +583,8 @@ public class RoleController : MonoBehaviour
 
         // 为复制体添加CloneCube脚本
         CloneCube cloneCubeScript = cloneObject.AddComponent<CloneCube>();
+        
+        cloneCubeScript.clonecurrentMaterial = (CloneCube.CharacterMaterial)recordedMaterial;
 
         cloneObject.name = $"Spawned_{recordedMaterial}_{Time.time}";
 

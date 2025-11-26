@@ -300,16 +300,16 @@ MonoBehaviour:
   StonePrefab: {fileID: 8145932064639481336, guid: 734b6e73b2afaba4f9d14e643ed2ca38, type: 3}
   SandPrefab: {fileID: 6556326755884440111, guid: b7660db09be0ab54b9d97c278e10d0df, type: 3}
   HoneyPrefab: {fileID: 2611591122475738583, guid: fe5b5a96c7cfc0c479a72006a69c9cc0, type: 3}
-  AuPrefab: {fileID: -2253911629886400664, guid: 50068cb9d3da4534e84a7081f10c8729, type: 3}
-  LightningPrefab: {fileID: -2253911629886400664, guid: 9cc492bfb3ae8d2488c16d84a6a0628d, type: 3}
-  CloudSprite: {fileID: -7107973756314043165, guid: 351050516f12db94db131957cc5692a0, type: 3}
-  SlimeSprite: {fileID: -6720623259273952594, guid: df4d76207e55ff742a8e38ce7c629716, type: 3}
-  DirtSprite: {fileID: 2764249179684089160, guid: 1aaea09d3827c114ea8c0b9c728187ac, type: 3}
-  StoneSprite: {fileID: -77573424256960086, guid: 58cf337890ac21a4da3800df1a15ca4c, type: 3}
-  SandSprite: {fileID: -8738671261588637886, guid: ab52a429d4877f54d82ed8e2b6135806, type: 3}
-  HoneySprite: {fileID: -1939676526033249983, guid: 0cb1a4d9f2667354db7305114acbd69a, type: 3}
-  AuSprite: {fileID: -5468364621373620089, guid: 50068cb9d3da4534e84a7081f10c8729, type: 3}
-  LightningSprite: {fileID: -3950554078958224788, guid: 9cc492bfb3ae8d2488c16d84a6a0628d, type: 3}
+  AuPrefab: {fileID: 0}
+  LightningPrefab: {fileID: 4070726217645119589, guid: c4720aff519557d4c9088e8d0704a111, type: 3}
+  CloudSprite: {fileID: 21300000, guid: 8841f6b57fcb1204eaa717d2a3dcd3c5, type: 2}
+  SlimeSprite: {fileID: 21300000, guid: 3e58276d2a3473042b77a52c12e047b7, type: 2}
+  DirtSprite: {fileID: 21300000, guid: 36235123162b53f42802dfb8ef10c292, type: 2}
+  StoneSprite: {fileID: 21300000, guid: d80b82fc9e6e1a6449aeb32d0dd4a081, type: 2}
+  SandSprite: {fileID: 21300000, guid: 430c2d767f24c874fa3f0bc8d34e43d7, type: 2}
+  HoneySprite: {fileID: 21300000, guid: d6389a4af16930c41a9d8195e63a1490, type: 2}
+  AuSprite: {fileID: 0}
+  LightningSprite: {fileID: 21300000, guid: a09b8671537db4a4c806c533602ad9b2, type: 2}
   materialSwitchCooldown: 0.5
   doubleJumpEnabled: 1
   doubleJumpForceRatio: 0.8
@@ -657,18 +657,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
+  m_Offset: {x: 0, y: 0.32}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1, y: 1}
+    pivot: {x: 0.5, y: 0}
+    oldSize: {x: 0.64, y: 0.64}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 0.64, y: 0.64}
   m_EdgeRadius: 0
 --- !u!212 &1353541397
 SpriteRenderer:
@@ -711,7 +711,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
+  m_Sprite: {fileID: -5468364621373620089, guid: 50068cb9d3da4534e84a7081f10c8729, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -731,7 +731,7 @@ Transform:
   m_GameObject: {fileID: 1353541394}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -4, z: 0}
+  m_LocalPosition: {x: -0.05, y: -4.24, z: 0}
   m_LocalScale: {x: 50, y: 2, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
