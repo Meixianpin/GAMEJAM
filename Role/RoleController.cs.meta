@@ -10,12 +10,16 @@ MonoImporter:
   - StonePrefab: {fileID: 8145932064639481336, guid: 734b6e73b2afaba4f9d14e643ed2ca38, type: 3}
   - SandPrefab: {fileID: 6556326755884440111, guid: b7660db09be0ab54b9d97c278e10d0df, type: 3}
   - HoneyPrefab: {fileID: 2611591122475738583, guid: fe5b5a96c7cfc0c479a72006a69c9cc0, type: 3}
+  - AuPrefab: {fileID: -2253911629886400664, guid: 50068cb9d3da4534e84a7081f10c8729, type: 3}
+  - LightningPrefab: {fileID: -2253911629886400664, guid: 9cc492bfb3ae8d2488c16d84a6a0628d, type: 3}
   - CloudSprite: {fileID: -7107973756314043165, guid: 351050516f12db94db131957cc5692a0, type: 3}
   - SlimeSprite: {fileID: -6720623259273952594, guid: df4d76207e55ff742a8e38ce7c629716, type: 3}
   - DirtSprite: {fileID: 2764249179684089160, guid: 1aaea09d3827c114ea8c0b9c728187ac, type: 3}
   - StoneSprite: {fileID: -77573424256960086, guid: 58cf337890ac21a4da3800df1a15ca4c, type: 3}
   - SandSprite: {fileID: -8738671261588637886, guid: ab52a429d4877f54d82ed8e2b6135806, type: 3}
   - HoneySprite: {fileID: -1939676526033249983, guid: 0cb1a4d9f2667354db7305114acbd69a, type: 3}
+  - AuSprite: {fileID: -5468364621373620089, guid: 50068cb9d3da4534e84a7081f10c8729, type: 3}
+  - LightningSprite: {fileID: -3950554078958224788, guid: 9cc492bfb3ae8d2488c16d84a6a0628d, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

@@ -13,7 +13,9 @@ public class RoleController : MonoBehaviour
         Dirt,
         Stone,
         Sand,
-        Honey
+        Honey,
+        Au,
+        Lightning
     }
 
     // 当前材质 - 默认设置为Dirt
@@ -28,6 +30,8 @@ public class RoleController : MonoBehaviour
     public GameObject StonePrefab;
     public GameObject SandPrefab;
     public GameObject HoneyPrefab;
+    public GameObject AuPrefab;       // 新增Au材质预制体
+    public GameObject LightningPrefab;// 新增Lightning材质预制体
 
     [Tooltip("不同材质对应的Sprite（用于角色本体显示）")]
     public Sprite CloudSprite;
@@ -36,6 +40,13 @@ public class RoleController : MonoBehaviour
     public Sprite StoneSprite;
     public Sprite SandSprite;
     public Sprite HoneySprite;
+    public Sprite AuSprite;           // 新增Au材质Sprite
+    public Sprite LightningSprite;    // 新增Lightning材质Sprite
+
+    // 新增：材质切换设置
+    [Header("材质切换设置")]
+    [Tooltip("材质切换冷却时间（秒）")]
+    public float materialSwitchCooldown = 0.5f;
 
     // 特殊能力设置
     [Header("特殊能力设置")]
@@ -45,10 +56,16 @@ public class RoleController : MonoBehaviour
     [Range(0.5f, 1f)] public float doubleJumpForceRatio = 0.8f;
     [Tooltip("Honey材质的摩擦力系数")]
     public float honeyFriction = 5f;
-    [Tooltip("Slime材质的反弹力度")]
-    public float slimeBounceForce = 12f;
-    [Tooltip("Slime反弹的最小下落速度（防止轻微触碰就反弹）")]
-    public float slimeMinFallSpeed = -2f;
+
+    [Header("Lightning材质设置")]
+    [Tooltip("冲刺力度")]
+    public float dashForce = 15f;
+    [Tooltip("冲刺持续时间（秒）")]
+    public float dashDuration = 0.2f;
+    [Tooltip("双击检测时间窗口（秒）")]
+    public float doubleTapTimeWindow = 0.2f;
+    [Tooltip("冲刺冷却时间（秒）")]
+    public float dashCooldown = 1f;
 
     // 冷却设置
     [Header("冷却设置")]
@@ -112,10 +129,21 @@ public class RoleController : MonoBehaviour
     // 特殊能力状态
     private bool hasJumped = false; // 是否已经使用过二段跳
     private float originalDrag; // 原始摩擦力
-    private bool isSlimeBouncing = false; // 是否正在反弹（防止连续反弹）
+
+    // Lightning材质冲刺相关变量
+    private float leftTapTime = 0f;
+    private float rightTapTime = 0f;
+    private bool isDashing = false;
+    private float dashTimer = 0f;
+    private float dashDirection = 0f;
+    private float lastDashTime = -Mathf.Infinity;
 
     // 冷却相关变量
     private float lastSpawnTime = -Mathf.Infinity; // 上一次生成的时间，初始为负无穷确保首次可用
+
+    // 新增：材质切换相关变量
+    private float lastMaterialSwitchTime = -Mathf.Infinity;
+    private Dictionary<string, CharacterMaterial> materialTagMap;
 
     // 材质映射字典
     private Dictionary<CharacterMaterial, GameObject> materialPrefabDict;
@@ -134,6 +162,9 @@ public class RoleController : MonoBehaviour
         // 初始化材质映射
         InitializeMaterialMappings();
 
+        // 新增：初始化材质标签映射
+        InitializeMaterialTagMapping();
+
         // 应用初始材质外观和特性
         UpdateCharacterAppearance();
         ApplyMaterialProperties();
@@ -144,6 +175,22 @@ public class RoleController : MonoBehaviour
         // 调试信息
         Debug.Log($"当前材质设置为：{currentMaterial}");
         Debug.Log($"冷却时间设置为：{spawnCooldown}秒");
+    }
+
+    // 新增：初始化材质标签映射
+    private void InitializeMaterialTagMapping()
+    {
+        materialTagMap = new Dictionary<string, CharacterMaterial>()
+        {
+            { "Cloud", CharacterMaterial.Cloud },
+            { "Slime", CharacterMaterial.Slime },
+            { "Dirt", CharacterMaterial.Dirt },
+            { "Stone", CharacterMaterial.Stone },
+            { "Sand", CharacterMaterial.Sand },
+            { "Honey", CharacterMaterial.Honey },
+            { "Au", CharacterMaterial.Au },
+            { "Lightning", CharacterMaterial.Lightning }
+        };
     }
 
     // 初始化材质与预制体、Sprite的映射关系
@@ -157,7 +204,9 @@ public class RoleController : MonoBehaviour
             { CharacterMaterial.Dirt, DirtPrefab },
             { CharacterMaterial.Stone, StonePrefab },
             { CharacterMaterial.Sand, SandPrefab },
-            { CharacterMaterial.Honey, HoneyPrefab }
+            { CharacterMaterial.Honey, HoneyPrefab },
+            { CharacterMaterial.Au, AuPrefab },                 // 新增Au材质映射
+            { CharacterMaterial.Lightning, LightningPrefab }    // 新增Lightning材质映射
         };
 
         // 材质-Sprite映射（用于角色本体显示）
@@ -168,7 +217,9 @@ public class RoleController : MonoBehaviour
             { CharacterMaterial.Dirt, DirtSprite },
             { CharacterMaterial.Stone, StoneSprite },
             { CharacterMaterial.Sand, SandSprite },
-            { CharacterMaterial.Honey, HoneySprite }
+            { CharacterMaterial.Honey, HoneySprite },
+            { CharacterMaterial.Au, AuSprite },                 // 新增Au材质映射
+            { CharacterMaterial.Lightning, LightningSprite }    // 新增Lightning材质映射
         };
     }
 
@@ -186,8 +237,164 @@ public class RoleController : MonoBehaviour
         // 检测功能键输入
         CheckFunctionKeys();
 
+        // 新增：检测材质切换输入
+        CheckMaterialSwitchInput();
+
         // 处理跳跃输入（包含Cloud二段跳）
         HandleJumpInput();
+
+        // 处理Lightning材质的双击冲刺
+        HandleLightningDash();
+
+        // 更新冲刺状态
+        UpdateDashState();
+    }
+
+    // 检测材质切换输入
+    private void CheckMaterialSwitchInput()
+    {
+        if (Input.GetKeyDown(KeyCode.M) && isGrounded)
+        {
+            // 检查冷却
+            if (Time.time - lastMaterialSwitchTime < materialSwitchCooldown)
+            {
+                return;
+            }
+
+            // 使用现有的地面检测逻辑来获取脚底方块
+            CharacterMaterial? groundMaterial = GetGroundBlockMaterial();
+            if (groundMaterial.HasValue && groundMaterial.Value != currentMaterial)
+            {
+                SetMaterial(groundMaterial.Value);
+                lastMaterialSwitchTime = Time.time;
+            }
+        }
+    }
+
+    // 获取脚底方块的材质
+    private CharacterMaterial? GetGroundBlockMaterial()
+    {
+        // 复用现有的地面检测逻辑
+        Collider2D collider = GetComponent<Collider2D>();
+        if (collider == null)
+        {
+            return null;
+        }
+
+        Vector2 checkPosition = (Vector2)transform.position + Vector2.down * (collider.bounds.extents.y + 0.1f);
+        float checkRadius = 0.1f;
+
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(checkPosition, checkRadius);
+
+        foreach (var hitCollider in hitColliders)
+        {
+            if (hitCollider.CompareTag(groundTag) && hitCollider.gameObject != gameObject)
+            {
+                // 检查方块的具体材质标签
+                foreach (var kvp in materialTagMap)
+                {
+                    if (hitCollider.CompareTag(kvp.Key))
+                    {
+                        return kvp.Value;
+                    }
+                }
+
+                // 如果没有特定材质标签，尝试从名称解析
+                string objectName = hitCollider.gameObject.name;
+                foreach (var kvp in materialTagMap)
+                {
+                    if (objectName.Contains(kvp.Key))
+                    {
+                        return kvp.Value;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    // 处理Lightning材质的双击冲刺检测
+    private void HandleLightningDash()
+    {
+        if (currentMaterial != CharacterMaterial.Lightning || isDashing)
+            return;
+
+        // 检查冷却
+        if (Time.time - lastDashTime < dashCooldown)
+            return;
+
+        // 检测左方向键双击
+        if (Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            float timeSinceLastTap = Time.time - leftTapTime;
+
+            // 如果在时间窗口内双击
+            if (timeSinceLastTap < doubleTapTimeWindow && timeSinceLastTap > 0)
+            {
+                StartDash(-1); // 向左冲刺
+                leftTapTime = 0f; // 重置点击时间
+            }
+            else
+            {
+                leftTapTime = Time.time; // 记录第一次点击时间
+            }
+
+            rightTapTime = 0f; // 重置另一侧的点击时间
+        }
+
+        // 检测右方向键双击
+        if (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            float timeSinceLastTap = Time.time - rightTapTime;
+
+            // 如果在时间窗口内双击
+            if (timeSinceLastTap < doubleTapTimeWindow && timeSinceLastTap > 0)
+            {
+                StartDash(1); // 向右冲刺
+                rightTapTime = 0f; // 重置点击时间
+            }
+            else
+            {
+                rightTapTime = Time.time; // 记录第一次点击时间
+            }
+
+            leftTapTime = 0f; // 重置另一侧的点击时间
+        }
+    }
+
+    // 开始冲刺
+    private void StartDash(float direction)
+    {
+        isDashing = true;
+        dashTimer = dashDuration;
+        dashDirection = direction;
+        lastDashTime = Time.time;
+
+        // 冲刺时暂时增加移动速度或直接应用冲刺力
+        Debug.Log($"Lightning材质冲刺：方向 {direction}");
+    }
+
+    // 更新冲刺状态
+    private void UpdateDashState()
+    {
+        if (!isDashing)
+            return;
+
+        dashTimer -= Time.deltaTime;
+
+        if (dashTimer > 0)
+        {
+            // 应用冲刺力（保持冲刺过程）
+            Vector2 dashVelocity = new Vector2(dashDirection * dashForce, rb.velocity.y);
+            rb.velocity = dashVelocity;
+        }
+        else
+        {
+            // 结束冲刺
+            isDashing = false;
+            dashDirection = 0f;
+        }
     }
 
     // 更新当前位置和速度信息
@@ -244,8 +451,13 @@ public class RoleController : MonoBehaviour
                 }
                 break;
 
+            case CharacterMaterial.Lightning:
+                // Lightning材质减少摩擦力，让移动更顺滑
+                rb.drag = 0f;
+                break;
+
             default:
-                // 其他材质使用原始摩擦力
+                // 其他材质（包括新增的Au）使用原始摩擦力
                 rb.drag = originalDrag;
                 break;
         }
@@ -290,13 +502,15 @@ public class RoleController : MonoBehaviour
             ResetToStart();
         }
 
-        // 测试：按数字键1-6切换材质（用于测试外观同步）
+        // 保留数字键切换材质（用于测试）
         if (Input.GetKeyDown(KeyCode.Alpha1)) { SetMaterial(CharacterMaterial.Cloud); }
         if (Input.GetKeyDown(KeyCode.Alpha2)) { SetMaterial(CharacterMaterial.Slime); }
         if (Input.GetKeyDown(KeyCode.Alpha3)) { SetMaterial(CharacterMaterial.Dirt); }
         if (Input.GetKeyDown(KeyCode.Alpha4)) { SetMaterial(CharacterMaterial.Stone); }
         if (Input.GetKeyDown(KeyCode.Alpha5)) { SetMaterial(CharacterMaterial.Sand); }
         if (Input.GetKeyDown(KeyCode.Alpha6)) { SetMaterial(CharacterMaterial.Honey); }
+        if (Input.GetKeyDown(KeyCode.Alpha7)) { SetMaterial(CharacterMaterial.Au); }       // 新增Au材质切换(实际游玩时无法切换）
+        if (Input.GetKeyDown(KeyCode.Alpha8)) { SetMaterial(CharacterMaterial.Lightning); } // 新增Lightning材质切换
     }
 
     // 设置材质并更新外观和特性
@@ -308,7 +522,11 @@ public class RoleController : MonoBehaviour
 
         // 切换材质时重置特殊能力状态
         hasJumped = false;
-        isSlimeBouncing = false;
+
+        // 重置冲刺状态
+        isDashing = false;
+        dashTimer = 0f;
+        dashDirection = 0f;
     }
 
     // 记录当前状态（位置、速度和材质）
@@ -407,6 +625,10 @@ public class RoleController : MonoBehaviour
 
     void FixedUpdate()
     {
+        // 冲刺时不处理普通移动
+        if (isDashing)
+            return;
+
         // 处理移动（在FixedUpdate中处理物理相关的移动更平滑）
         HandleMovement();
     }
@@ -425,49 +647,29 @@ public class RoleController : MonoBehaviour
 
     void HandleJumpInput()
     {
-        // 空格键跳跃（普通跳跃 + Cloud二段跳）
+        // Slime材质专属：禁用所有跳跃（包括普通跳跃和二段跳）
+        if (currentMaterial == CharacterMaterial.Slime)
+        {
+            return;
+        }
+
+        // 冲刺时也可以跳跃
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            // 普通跳跃（在地面上）
+            // 普通跳跃（所有非Slime材质通用，包括Au和Lightning）
             if (isGrounded)
             {
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce);
                 hasJumped = false;
             }
-            // Cloud材质的二段跳
+            // Cloud材质专属：二段跳（仅Cloud可用）
             else if (currentMaterial == CharacterMaterial.Cloud && doubleJumpEnabled && !hasJumped)
             {
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce * doubleJumpForceRatio);
                 hasJumped = true;
-                Debug.Log("使用二段跳！");
+                Debug.Log("使用Cloud二段跳！");
             }
         }
-    }
-
-    // 碰撞检测：Slime材质自动反弹（接触地面触发）
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        // 只对Slime材质生效，且碰撞对象是地面
-        if (currentMaterial == CharacterMaterial.Slime && collision.collider.CompareTag(groundTag))
-        {
-            // 只在下落速度满足条件时触发反弹（防止轻微触碰就反弹）
-            if (rb.velocity.y >= slimeMinFallSpeed && !isSlimeBouncing)
-            {
-                // 自动应用反弹力（垂直方向）
-                rb.velocity = new Vector2(rb.velocity.x, slimeBounceForce);
-                isSlimeBouncing = true; // 标记为正在反弹，防止连续触发
-                Debug.Log($"Slime自动反弹！反弹力度：{slimeBounceForce}");
-
-                // 0.1秒后重置反弹状态（避免空中再次碰撞时不触发）
-                Invoke(nameof(ResetSlimeBounceState), 0.1f);
-            }
-        }
-    }
-
-    // 重置Slime反弹状态
-    private void ResetSlimeBounceState()
-    {
-        isSlimeBouncing = false;
     }
 
     private void ResetToStart()
@@ -484,8 +686,16 @@ public class RoleController : MonoBehaviour
 
         // 重置特殊能力状态
         hasJumped = false;
-        isSlimeBouncing = false;
-        CancelInvoke(nameof(ResetSlimeBounceState)); // 取消未执行的延迟调用
+
+        // 重置冲刺状态
+        isDashing = false;
+        dashTimer = 0f;
+        dashDirection = 0f;
+        leftTapTime = 0f;
+        rightTapTime = 0f;
+
+        // 新增：重置材质切换冷却
+        lastMaterialSwitchTime = -Mathf.Infinity;
 
         // 回到起始位置（2D）
         transform.position = startPosition;
@@ -503,7 +713,11 @@ public class RoleController : MonoBehaviour
             UpdateCharacterAppearance();
             ApplyMaterialProperties();
         }
-        // 确保最小下落速度为负数（下落方向）
-        slimeMinFallSpeed = Mathf.Min(slimeMinFallSpeed, -0.1f);
+
+        // 确保冲刺参数为正数
+        dashForce = Mathf.Max(0f, dashForce);
+        dashDuration = Mathf.Max(0.01f, dashDuration);
+        doubleTapTimeWindow = Mathf.Max(0.05f, doubleTapTimeWindow);
+        dashCooldown = Mathf.Max(0f, dashCooldown);
     }
 }
