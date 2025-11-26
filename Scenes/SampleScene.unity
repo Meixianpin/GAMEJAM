@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 99618907}
   - component: {fileID: 99618906}
   - component: {fileID: 99618910}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Player
   m_TagString: Jumpable
   m_Icon: {fileID: 0}

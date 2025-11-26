@@ -57,7 +57,7 @@ public class ButtonTrigger : MonoBehaviour
             // 确保计数不为负
             playerCount = Mathf.Max(0, playerCount);
 
-            // 如果没有玩家在触发器内，恢复默认状态
+            // 如果没有玩家在触发器内，恢复默d认状态
             if (playerCount == 0)
             {
                 SetButtonPressed(false);
