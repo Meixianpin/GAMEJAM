@@ -614,7 +614,7 @@ public class RoleController : MonoBehaviour
         Vector2 checkPosition = (Vector2)transform.position + Vector2.down * (collider.bounds.extents.y + 0.1f);
         //Vector2 checkPosition = (Vector2)transform.position;
         
-        Vector2 boxSize = collider.bounds.size;
+        Vector2 boxSize = new Vector2(0.3f, 0.1f);
         Collider2D[] hitColliders = Physics2D.OverlapBoxAll(checkPosition, boxSize, 0f);
         //Collider2D[] hitColliders = Physics2D.OverlapBoxAll(checkPosition, collider.bounds.size, 0f);
         isGrounded = false;
