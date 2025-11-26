@@ -96,7 +96,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 6443310020768467276}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 488b0d60f06150141a248617a91e1c1a, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -178,13 +178,20 @@ MonoBehaviour:
   CloneStonePrefab: {fileID: 8806285930005217425, guid: b35c1c58ab27e9d4cbf140ea11c5493e, type: 3}
   CloneSandPrefab: {fileID: 7994087356006597965, guid: b6eed24e1806a8742a9d78c02da6a4b9, type: 3}
   CloneHoneyPrefab: {fileID: 1453364989654088248, guid: f15a8ceb7ca816042acbf93a2b25f9e1, type: 3}
+  CloneAuPrefab: {fileID: 0}
+  CloneLightningPrefab: {fileID: 0}
   CloneCloudSprite: {fileID: -7107973756314043165, guid: 351050516f12db94db131957cc5692a0, type: 3}
   CloneSlimeSprite: {fileID: -6720623259273952594, guid: df4d76207e55ff742a8e38ce7c629716, type: 3}
   CloneDirtSprite: {fileID: 2764249179684089160, guid: 1aaea09d3827c114ea8c0b9c728187ac, type: 3}
   CloneStoneSprite: {fileID: -77573424256960086, guid: 58cf337890ac21a4da3800df1a15ca4c, type: 3}
   CloneSandSprite: {fileID: -8738671261588637886, guid: ab52a429d4877f54d82ed8e2b6135806, type: 3}
   CloneHoneySprite: {fileID: -1939676526033249983, guid: 0cb1a4d9f2667354db7305114acbd69a, type: 3}
+  CloneAuSprite: {fileID: 0}
+  CloneLightningSprite: {fileID: 0}
   playerTag: Clone
+  materialSwitchCooldown: 0.5
+  honeyFriction: 5
+  cloudGravityScale: 0
   cloneCurrentPosition: {x: 0, y: 0}
   cloneCurrentRotation: {x: 0, y: 0, z: 0, w: 0}
   cloneVelocityX: 0
