@@ -57,6 +57,20 @@ public class RoleController : MonoBehaviour
     [Tooltip("Honey材质的摩擦力系数")]
     public float honeyFriction = 5f;
 
+    // 蜂蜜攀爬设置（独立于角色材质）
+    [Header("蜂蜜攀爬设置")]
+    [Tooltip("攀爬速度")]
+    public float climbSpeed = 4f;
+    [Tooltip("攀爬检测距离")]
+    public float climbCheckDistance = 0.6f;
+    [Tooltip("蜂蜜块名称关键词")]
+    public string honeyKeyword = "Honey";
+    [Tooltip("阴影对象名称关键词（需要排除的）")]
+    public string shadowKeyword = "Shadow";
+    [SerializeField] private bool isClimbing = false;
+    [SerializeField] private GameObject currentClimbTarget;
+    private Collider2D characterCollider; // 角色碰撞体引用
+
     [Header("Lightning材质设置")]
     [Tooltip("冲刺力度")]
     public float dashForce = 25f;
@@ -158,6 +172,8 @@ public class RoleController : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         rb.freezeRotation = true;
         spriteRenderer = GetComponent<SpriteRenderer>();
+        boxCollider = GetComponent<BoxCollider2D>();
+        characterCollider = GetComponent<Collider2D>(); // 获取碰撞体引用
 
         // 保存原始摩擦力设置
         originalDrag = rb.drag;
@@ -237,6 +253,9 @@ public class RoleController : MonoBehaviour
         // 检测是否处于阴影区域（名称含"Shadow"的对象）
         CheckShadowAreaByName();
 
+        // 蜂蜜攀爬检测（任何材质都可攀爬）
+        CheckHoneyClimb();
+
         // 应用材质特性（每帧更新以确保效果持续）
         ApplyMaterialProperties();
 
@@ -246,7 +265,7 @@ public class RoleController : MonoBehaviour
         // 新增：检测材质切换输入
         CheckMaterialSwitchInput();
 
-        // 处理跳跃输入（包含Cloud二段跳）
+        // 处理跳跃输入（包含Cloud二段跳和攀爬跳离）
         HandleJumpInput();
 
         // 处理Lightning材质的L键冲刺
@@ -254,6 +273,96 @@ public class RoleController : MonoBehaviour
 
         // 更新冲刺状态
         UpdateDashState();
+    }
+
+    // 蜂蜜攀爬检测（任何材质都可攀爬）
+    private void CheckHoneyClimb()
+    {
+        // 冲刺时不能攀爬
+        if (isDashing)
+        {
+            if (isClimbing)
+            {
+                Debug.Log("退出攀爬状态：正在冲刺");
+                isClimbing = false;
+                currentClimbTarget = null;
+            }
+            return;
+        }
+
+        if (characterCollider == null)
+        {
+            isClimbing = false;
+            currentClimbTarget = null;
+            return;
+        }
+
+        // 获取角色朝向（左右两侧都检测）
+        Vector2[] directions = { Vector2.left, Vector2.right };
+        bool foundClimbable = false;
+        GameObject newClimbTarget = null;
+
+        foreach (var direction in directions)
+        {
+            // 检测点在角色侧面
+            Vector2 checkPosition = (Vector2)transform.position + direction * (characterCollider.bounds.extents.x + 0.1f);
+
+            // 检测周围的碰撞体
+            Collider2D[] hitColliders = Physics2D.OverlapCircleAll(checkPosition, 0.2f);
+
+            foreach (var hitCollider in hitColliders)
+            {
+                if (IsValidClimbableHoneyBlock(hitCollider))
+                {
+                    foundClimbable = true;
+                    newClimbTarget = hitCollider.gameObject;
+                    break;
+                }
+            }
+
+            if (foundClimbable) break;
+
+            // 如果没找到，尝试射线检测
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, climbCheckDistance);
+            if (IsValidClimbableHoneyBlock(hit.collider))
+            {
+                foundClimbable = true;
+                newClimbTarget = hit.collider.gameObject;
+                break;
+            }
+        }
+
+        // 更新攀爬状态
+        if (foundClimbable && !isClimbing)
+        {
+            isClimbing = true;
+            currentClimbTarget = newClimbTarget;
+            Debug.Log($"开始攀爬：{currentClimbTarget.name}（当前材质：{currentMaterial}）");
+        }
+        else if (!foundClimbable && isClimbing)
+        {
+            isClimbing = false;
+            Debug.Log("结束攀爬：未检测到可攀爬的蜂蜜块");
+            currentClimbTarget = null;
+        }
+    }
+
+    // 验证是否是有效的可攀爬蜂蜜块
+    private bool IsValidClimbableHoneyBlock(Collider2D collider)
+    {
+        if (collider == null || collider.gameObject == gameObject)
+            return false;
+
+        // 跳过触发器
+        if (collider.isTrigger)
+            return false;
+
+        string objectName = collider.gameObject.name.ToLower();
+        string honeyLower = honeyKeyword.ToLower();
+        string shadowLower = shadowKeyword.ToLower();
+
+        // 必须包含蜂蜜关键词且不包含阴影关键词
+        return objectName.Contains(honeyLower) && !objectName.Contains(shadowLower);
     }
 
     // 新增：检测是否处于名称含"Shadow"的对象内
@@ -299,7 +408,7 @@ public class RoleController : MonoBehaviour
     // 修改：处理Lightning材质的L键冲刺
     private void HandleLightningDash()
     {
-        if (currentMaterial != CharacterMaterial.Lightning || isDashing)
+        if (currentMaterial != CharacterMaterial.Lightning || isDashing || isClimbing)
             return;
 
         // 检查冷却
@@ -358,7 +467,7 @@ public class RoleController : MonoBehaviour
     // 检测材质切换输入
     private void CheckMaterialSwitchInput()
     {
-        if (Input.GetKeyDown(KeyCode.M) && isGrounded)
+        if (Input.GetKeyDown(KeyCode.M) && (isGrounded || isClimbing))
         {
             // 检查冷却
             if (Time.time - lastMaterialSwitchTime < materialSwitchCooldown)
@@ -386,31 +495,40 @@ public class RoleController : MonoBehaviour
             return null;
         }
 
-        Vector2 checkPosition = (Vector2)transform.position + Vector2.down * (collider.bounds.extents.y + 0.1f);
-        float checkRadius = 0.1f;
-
-        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(checkPosition, checkRadius);
-
-        foreach (var hitCollider in hitColliders)
+        List<Vector2> checkPositions = new List<Vector2>()
         {
-            if (hitCollider.CompareTag(groundTag) && hitCollider.gameObject != gameObject)
-            {
-                // 检查方块的具体材质标签
-                foreach (var kvp in materialTagMap)
-                {
-                    if (hitCollider.CompareTag(kvp.Key))
-                    {
-                        return kvp.Value;
-                    }
-                }
+            (Vector2)transform.position + Vector2.down * (collider.bounds.extents.y + 0.1f),
+            (Vector2)transform.position + (spriteRenderer.flipX ? Vector2.left : Vector2.right) * (collider.bounds.extents.x + 0.1f)
+        };
 
-                // 如果没有特定材质标签，尝试从名称解析
-                string objectName = hitCollider.gameObject.name;
-                foreach (var kvp in materialTagMap)
+        foreach (Vector2 checkPosition in checkPositions)
+        {
+            Collider2D[] hitColliders = Physics2D.OverlapCircleAll(checkPosition, 0.2f);
+
+            foreach (var hitCollider in hitColliders)
+            {
+                if (hitCollider != null && hitCollider.gameObject != gameObject)
                 {
-                    if (objectName.Contains(kvp.Key))
+                    // 检查方块的具体材质标签
+                    foreach (var kvp in materialTagMap)
                     {
-                        return kvp.Value;
+                        if (hitCollider.CompareTag(kvp.Key))
+                        {
+                            return kvp.Value;
+                        }
+                    }
+
+                    // 如果没有特定材质标签，尝试从名称解析（排除阴影对象）
+                    string objectName = hitCollider.gameObject.name.ToLower();
+                    if (!objectName.Contains(shadowKeyword.ToLower()))
+                    {
+                        foreach (var kvp in materialTagMap)
+                        {
+                            if (objectName.Contains(kvp.Key.ToLower()))
+                            {
+                                return kvp.Value;
+                            }
+                        }
                     }
                 }
             }
@@ -482,6 +600,16 @@ public class RoleController : MonoBehaviour
                 // 其他材质（包括新增的Au）使用原始摩擦力
                 rb.drag = originalDrag;
                 break;
+        }
+
+        // 攀爬时重力归零
+        if (isClimbing)
+        {
+            rb.gravityScale = 0;
+        }
+        else if (rb.gravityScale == 0)
+        {
+            rb.gravityScale = 1;
         }
     }
 
@@ -574,7 +702,7 @@ public class RoleController : MonoBehaviour
             Destroy(shadowObject);
         }
         shadowObject = Instantiate(gameObject, recordedPosition, recordedRotation);
-        
+
         Rigidbody2D shadowRb = shadowObject.GetComponent<Rigidbody2D>();
         RoleController shadowController = shadowObject.GetComponent<RoleController>();
         BoxCollider2D shadowCollider = shadowObject.GetComponent<BoxCollider2D>();
@@ -614,12 +742,12 @@ public class RoleController : MonoBehaviour
             // 在阴影方块中心生成箭头
             //Vector3 spawnPosition = shadowObject.transform.position;
             Vector3 spawnPosition = shadowObject.transform.position;
-            
+
             GameObject arrow = Instantiate(arrowPrefab, spawnPosition, Quaternion.identity);
-            
+
             // 设置箭头为阴影方块的子物体
             arrow.transform.parent = shadowObject.transform;
-            
+
             // 实现箭头朝向与速度相同的逻辑
             if (velocity.magnitude > 0.01f) // 避免除零错误
             {
@@ -627,7 +755,7 @@ public class RoleController : MonoBehaviour
                 float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
                 // 应用旋转
                 arrow.transform.rotation = Quaternion.Euler(0, 0, angle);
-                
+
                 // 实现箭头大小与速度呈正比例缩放的逻辑
                 float scaleFactor = velocity.magnitude * 0.05f; // 调整0.1f以获得合适的缩放比例
                 // 确保最小缩放
@@ -673,6 +801,17 @@ public class RoleController : MonoBehaviour
         //!!测试克隆本体
         //cloneObject = Instantiate(gameObject, recordedPosition, recordedRotation);
 
+        // 确保生成的蜂蜜块有正确的碰撞体
+        if (recordedMaterial == CharacterMaterial.Honey)
+        {
+            BoxCollider2D honeyCollider = cloneObject.GetComponent<BoxCollider2D>();
+            if (honeyCollider == null)
+            {
+                honeyCollider = cloneObject.AddComponent<BoxCollider2D>();
+            }
+            honeyCollider.isTrigger = false; // 确保不是触发器
+        }
+
         // 获取复制体的刚体组件并设置速度
         Rigidbody2D cloneRb = cloneObject.GetComponent<Rigidbody2D>();
         if (cloneRb != null)
@@ -709,22 +848,20 @@ public class RoleController : MonoBehaviour
 
     private void CheckGrounded()
     {   //碰撞体检测是否可以跳跃
-        Collider2D collider = GetComponent<Collider2D>();
-        if (collider == null)
+        if (characterCollider == null)
         {
             isGrounded = false;
             return;
         }
 
         // 补充完整的地面检测逻辑
-        Vector2 checkPosition = (Vector2)transform.position + Vector2.down * (collider.bounds.extents.y + 0.1f);
+        Vector2 checkPosition = (Vector2)transform.position + Vector2.down * (characterCollider.bounds.extents.y + 0.1f);
         //Vector2 checkPosition = (Vector2)transform.position;
 
         Vector2 boxSize = new Vector2(0.3f, 0.1f);
         Collider2D[] hitColliders = Physics2D.OverlapBoxAll(checkPosition, boxSize, 0f);
-        //Collider2D[] hitColliders = Physics2D.OverlapBoxAll(checkPosition, collider.bounds.size, 0f);
+        //Collider2D[] hitColliders = Physics2D.OverlapBoxAll(checkPosition, characterCollider.bounds.size, 0f);
         isGrounded = false;
-
 
         foreach (var hitCollider in hitColliders)
         {
@@ -736,15 +873,44 @@ public class RoleController : MonoBehaviour
         }
     }
 
-
     void FixedUpdate()
     {
         // 冲刺时不处理普通移动
         if (isDashing)
             return;
 
-        // 处理移动（在FixedUpdate中处理物理相关的移动更平滑）
-        HandleMovement();
+        // 处理移动（攀爬或普通移动）
+        if (isClimbing)
+        {
+            HandleClimbMovement();
+        }
+        else
+        {
+            HandleMovement();
+        }
+    }
+
+    // 处理攀爬移动
+    private void HandleClimbMovement()
+    {
+        float verticalInput = Input.GetAxisRaw("Vertical");
+
+        if (Mathf.Abs(verticalInput) > 0.1f)
+        {
+            // 纯垂直攀爬移动
+            rb.velocity = new Vector2(0, verticalInput * climbSpeed);
+
+            // 输出攀爬调试信息
+            if (Time.frameCount % 10 == 0) // 每10帧输出一次，避免刷屏
+            {
+                Debug.Log($"[{currentMaterial}]正在攀爬 {currentClimbTarget?.name}，方向：{(verticalInput > 0 ? "向上" : "向下")}");
+            }
+        }
+        else
+        {
+            // 没有输入时保持位置
+            rb.velocity = new Vector2(0, 0);
+        }
     }
 
     void HandleMovement()
@@ -761,13 +927,27 @@ public class RoleController : MonoBehaviour
 
     void HandleJumpInput()
     {
+        // 攀爬时的跳跃（跳离蜂蜜块）
+        if (isClimbing && Input.GetKeyDown(KeyCode.Space))
+        {
+            Debug.Log($"从 {currentClimbTarget.name} 跳离（当前材质：{currentMaterial}）");
+            isClimbing = false;
+            currentClimbTarget = null;
+            rb.gravityScale = 1;
+
+            // 向远离攀爬目标的方向跳跃
+            Vector2 jumpDirection = spriteRenderer.flipX ? Vector2.right : Vector2.left;
+            rb.velocity = new Vector2(jumpDirection.x * moveSpeed * 0.8f, jumpForce);
+            return;
+        }
+
         // Slime材质专属：禁用所有跳跃（包括普通跳跃和二段跳）
         if (currentMaterial == CharacterMaterial.Slime)
         {
             return;
         }
 
-        // 冲刺时也可以跳跃
+        // 普通跳跃和二段跳
         if (Input.GetKeyDown(KeyCode.Space))
         {
             // 普通跳跃（所有非Slime材质通用，包括Au和Lightning）
@@ -805,6 +985,8 @@ public class RoleController : MonoBehaviour
 
         // 重置特殊能力状态
         hasJumped = false;
+        isClimbing = false;
+        currentClimbTarget = null;
 
         // 重置冲刺状态
         isDashing = false;
@@ -819,8 +1001,9 @@ public class RoleController : MonoBehaviour
         transform.position = startPosition;
         transform.rotation = Quaternion.identity;
         rb.velocity = Vector2.zero;
+        rb.gravityScale = 1;
 
-        Debug.Log("已重置到起始位置");
+        Debug.Log("已重置到起始位置，攀爬状态已重置");
     }
 
     // 当在Inspector中修改材质时自动更新外观
@@ -836,5 +1019,43 @@ public class RoleController : MonoBehaviour
         dashForce = Mathf.Max(0f, dashForce);
         dashDuration = Mathf.Max(0.01f, dashDuration);
         dashCooldown = Mathf.Max(0f, dashCooldown);
+
+        // 确保攀爬参数有效
+        climbSpeed = Mathf.Max(2f, climbSpeed);
+        climbCheckDistance = Mathf.Max(0.3f, climbCheckDistance);
+
+        if (string.IsNullOrEmpty(honeyKeyword))
+        {
+            honeyKeyword = "Honey";
+        }
+        if (string.IsNullOrEmpty(shadowKeyword))
+        {
+            shadowKeyword = "Shadow";
+        }
+    }
+
+    // Gizmos绘制调试
+    void OnDrawGizmos()
+    {
+        if (characterCollider != null)
+        {
+            // 绘制攀爬检测区域
+            Gizmos.color = isClimbing ? Color.green : Color.yellow;
+
+            Vector2[] directions = { Vector2.left, Vector2.right };
+            foreach (var direction in directions)
+            {
+                Vector2 checkPosition = (Vector2)transform.position + direction * (characterCollider.bounds.extents.x + 0.1f);
+                Gizmos.DrawWireSphere(checkPosition, 0.2f);
+                Gizmos.DrawLine(transform.position, transform.position + (Vector3)direction * climbCheckDistance);
+            }
+
+            // 如果正在攀爬，绘制到攀爬目标的连线
+            if (currentClimbTarget != null)
+            {
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawLine(transform.position, currentClimbTarget.transform.position);
+            }
+        }
     }
 }
