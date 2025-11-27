@@ -708,6 +708,14 @@ public class RoleController : MonoBehaviour
             Destroy(shadowObject);
         }
         shadowObject = Instantiate(gameObject, recordedPosition, recordedRotation);
+        
+        // 删除shadowObject中的Main Camera子物体，避免摄像机复制问题
+        Transform mainCameraTransform = shadowObject.transform.Find("Main Camera");
+        if (mainCameraTransform != null)
+        {
+            Destroy(mainCameraTransform.gameObject);
+            Debug.Log("已从shadowObject中移除Main Camera子物体");
+        }
 
         Rigidbody2D shadowRb = shadowObject.GetComponent<Rigidbody2D>();
         RoleController shadowController = shadowObject.GetComponent<RoleController>();
