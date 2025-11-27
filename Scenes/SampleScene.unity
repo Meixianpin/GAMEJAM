@@ -423,7 +423,7 @@ MonoBehaviour:
   doubleJumpEnabled: 1
   doubleJumpForceRatio: 0.8
   honeyFriction: 5
-  dashForce: 15
+  dashForce: 25
   dashDuration: 0.2
   dashCooldown: 1
   spawnCooldown: 2

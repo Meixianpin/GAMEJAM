@@ -59,7 +59,7 @@ public class RoleController : MonoBehaviour
 
     [Header("Lightning材质设置")]
     [Tooltip("冲刺力度")]
-    public float dashForce = 15f;
+    public float dashForce = 25f;
     [Tooltip("冲刺持续时间（秒）")]
     public float dashDuration = 0.2f;
     [Tooltip("冲刺冷却时间（秒）")]
@@ -123,7 +123,7 @@ public class RoleController : MonoBehaviour
     private bool isGrounded; // 是否在地面上
     private GameObject cloneObject; // 复制体对象
     private GameObject shadowObject; // 阴影体对象
-    
+
     private Vector2 startPosition; // 起始位置（使用Vector2）
 
     // 特殊能力状态
@@ -146,6 +146,9 @@ public class RoleController : MonoBehaviour
     // 材质映射字典
     private Dictionary<CharacterMaterial, GameObject> materialPrefabDict;
     private Dictionary<CharacterMaterial, Sprite> materialSpriteDict;
+
+    // 新增：阴影检测相关（检测名称含"Shadow"的对象）
+    private bool isInShadow = false; // 是否处于阴影区域（名称含"Shadow"的对象内）
 
     void Start()
     {
@@ -229,6 +232,9 @@ public class RoleController : MonoBehaviour
         // 检测是否在地面上
         CheckGrounded();
 
+        // 检测是否处于阴影区域（名称含"Shadow"的对象）
+        CheckShadowAreaByName();
+
         // 应用材质特性（每帧更新以确保效果持续）
         ApplyMaterialProperties();
 
@@ -246,6 +252,46 @@ public class RoleController : MonoBehaviour
 
         // 更新冲刺状态
         UpdateDashState();
+    }
+
+    // 新增：检测是否处于名称含"Shadow"的对象内
+    private void CheckShadowAreaByName()
+    {
+        Collider2D collider = GetComponent<Collider2D>();
+        if (collider == null)
+        {
+            isInShadow = false;
+            return;
+        }
+
+        // 检测与角色碰撞体重叠的所有对象
+        Collider2D[] hitColliders = Physics2D.OverlapBoxAll(
+            collider.bounds.center,
+            collider.bounds.size,
+            0f
+        );
+
+        isInShadow = false;
+
+        // 遍历所有重叠对象，判断名称是否包含"Shadow"（不区分大小写）
+        foreach (var hitCollider in hitColliders)
+        {
+            if (hitCollider != null && hitCollider.gameObject != gameObject)
+            {
+                string objectName = hitCollider.gameObject.name.ToLower();
+                if (objectName.Contains("shadow"))
+                {
+                    isInShadow = true;
+                    break; // 找到一个阴影对象即可
+                }
+            }
+        }
+
+        // 调试信息（可选，可删除）
+        if (isInShadow && Time.frameCount % 60 == 0) // 每1秒输出一次，避免日志刷屏
+        {
+            Debug.Log("角色处于阴影区域（名称含Shadow），K键功能暂时禁用！");
+        }
     }
 
     // 修改：处理Lightning材质的L键冲刺
@@ -445,9 +491,16 @@ public class RoleController : MonoBehaviour
             RecordCurrentState();
         }
 
-        // K键：根据记录的状态创建对象（带冷却）
+        // K键：根据记录的状态创建对象（带冷却和阴影检测）
         if (Input.GetKeyDown(KeyCode.K))
         {
+            // 新增：检查是否处于阴影区域（名称含Shadow的对象）
+            if (isInShadow)
+            {
+                Debug.LogWarning("角色处于阴影区域，无法使用K键功能！");
+                return;
+            }
+
             // 检查是否满足所有条件
             if (!isStateRecorded)
             {
@@ -532,9 +585,10 @@ public class RoleController : MonoBehaviour
         {
             Destroy(shadowController);
         }
+        // 修改：保留碰撞体但设置为触发器
         if (shadowCollider != null)
         {
-            Destroy(shadowCollider);
+            shadowCollider.isTrigger = true; // 勾选isTrigger属性
         }
         shadowObject.name = $"Shadow_{recordedMaterial}_{Time.time}";
         shadowObject.tag = "Shadow";
@@ -583,7 +637,7 @@ public class RoleController : MonoBehaviour
 
         // 为复制体添加CloneCube脚本
         CloneCube cloneCubeScript = cloneObject.AddComponent<CloneCube>();
-        
+
         cloneCubeScript.clonecurrentMaterial = (CloneCube.CharacterMaterial)recordedMaterial;
 
         cloneObject.name = $"Spawned_{recordedMaterial}_{Time.time}";
@@ -613,13 +667,13 @@ public class RoleController : MonoBehaviour
         // 补充完整的地面检测逻辑
         Vector2 checkPosition = (Vector2)transform.position + Vector2.down * (collider.bounds.extents.y + 0.1f);
         //Vector2 checkPosition = (Vector2)transform.position;
-        
+
         Vector2 boxSize = new Vector2(0.3f, 0.1f);
         Collider2D[] hitColliders = Physics2D.OverlapBoxAll(checkPosition, boxSize, 0f);
         //Collider2D[] hitColliders = Physics2D.OverlapBoxAll(checkPosition, collider.bounds.size, 0f);
         isGrounded = false;
 
-       
+
         foreach (var hitCollider in hitColliders)
         {
             if (hitCollider.CompareTag(groundTag) && hitCollider.gameObject != gameObject)
