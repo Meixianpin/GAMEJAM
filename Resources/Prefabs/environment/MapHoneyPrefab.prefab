@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 2282060319565605874}
   - component: {fileID: 6162031726284993094}
   - component: {fileID: 5224597050081868495}
-  - component: {fileID: 5340784997040880111}
+  - component: {fileID: 6632120609347670792}
   m_Layer: 0
   m_Name: MapHoneyPrefab
   m_TagString: Jumpable
@@ -159,7 +159,7 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &5340784997040880111
+--- !u!114 &6632120609347670792
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -168,23 +168,30 @@ MonoBehaviour:
   m_GameObject: {fileID: 1453364989654088248}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0640949fccd619b478715d2464c56303, type: 3}
+  m_Script: {fileID: 11500000, guid: 5c2a4e55ff588614ab25d04b72242dcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clonecurrentMaterial: 5
+  clonecurrentMaterial: 0
   CloneCloudPrefab: {fileID: 5266058347319513072, guid: e9cbf98c5d8eb1b49837a81257bd99b5, type: 3}
   CloneSlimePrefab: {fileID: 6443310020768467276, guid: b45a3f0aeb99dc5488023d3663dc188a, type: 3}
   CloneDirtPrefab: {fileID: 7909193773582851731, guid: cb7c339450a38ae4dae489424b675584, type: 3}
   CloneStonePrefab: {fileID: 8806285930005217425, guid: b35c1c58ab27e9d4cbf140ea11c5493e, type: 3}
   CloneSandPrefab: {fileID: 7994087356006597965, guid: b6eed24e1806a8742a9d78c02da6a4b9, type: 3}
-  CloneHoneyPrefab: {fileID: 1453364989654088248}
+  CloneHoneyPrefab: {fileID: 1453364989654088248, guid: f15a8ceb7ca816042acbf93a2b25f9e1, type: 3}
+  CloneAuPrefab: {fileID: 0}
+  CloneLightningPrefab: {fileID: 0}
   CloneCloudSprite: {fileID: -7107973756314043165, guid: 351050516f12db94db131957cc5692a0, type: 3}
-  CloneSlimeSprite: {fileID: -6720623259273952594, guid: df4d76207e55ff742a8e38ce7c629716, type: 3}
-  CloneDirtSprite: {fileID: 2764249179684089160, guid: 1aaea09d3827c114ea8c0b9c728187ac, type: 3}
+  CloneSlimeSprite: {fileID: 6756564049228997836, guid: df4d76207e55ff742a8e38ce7c629716, type: 3}
+  CloneDirtSprite: {fileID: -4028215072339609950, guid: 1aaea09d3827c114ea8c0b9c728187ac, type: 3}
   CloneStoneSprite: {fileID: -77573424256960086, guid: 58cf337890ac21a4da3800df1a15ca4c, type: 3}
   CloneSandSprite: {fileID: -8738671261588637886, guid: ab52a429d4877f54d82ed8e2b6135806, type: 3}
   CloneHoneySprite: {fileID: -1939676526033249983, guid: 0cb1a4d9f2667354db7305114acbd69a, type: 3}
-  playerTag: Clone
+  CloneAuSprite: {fileID: 0}
+  CloneLightningSprite: {fileID: 0}
+  playerTag: Player
+  materialSwitchCooldown: 0.5
+  honeyFriction: 5
+  cloudGravityScale: 0
   cloneCurrentPosition: {x: 0, y: 0}
   cloneCurrentRotation: {x: 0, y: 0, z: 0, w: 0}
   cloneVelocityX: 0

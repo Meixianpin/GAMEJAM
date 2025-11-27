@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &8806285930005217425
+--- !u!1 &6443310020768467276
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,25 +8,25 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7535842896349566192}
-  - component: {fileID: 4854755643760976315}
-  - component: {fileID: 2081234278306555508}
-  - component: {fileID: 2576297174530755227}
-  - component: {fileID: 8029143011356529432}
+  - component: {fileID: 2533999514006259794}
+  - component: {fileID: 6760534221771970577}
+  - component: {fileID: 4274823389326065561}
+  - component: {fileID: 8224087561996475861}
+  - component: {fileID: -1629755591572220837}
   m_Layer: 0
-  m_Name: MapStonePrefab
+  m_Name: MapSlimePrefab
   m_TagString: Jumpable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7535842896349566192
+--- !u!4 &2533999514006259794
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8806285930005217425}
+  m_GameObject: {fileID: 6443310020768467276}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
@@ -35,13 +35,13 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!212 &4854755643760976315
+--- !u!212 &6760534221771970577
 SpriteRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8806285930005217425}
+  m_GameObject: {fileID: 6443310020768467276}
   m_Enabled: 1
   m_CastShadows: 0
   m_ReceiveShadows: 0
@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -77573424256960086, guid: 58cf337890ac21a4da3800df1a15ca4c, type: 3}
+  m_Sprite: {fileID: -6720623259273952594, guid: df4d76207e55ff742a8e38ce7c629716, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -87,16 +87,16 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &2081234278306555508
+--- !u!61 &4274823389326065561
 BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8806285930005217425}
+  m_GameObject: {fileID: 6443310020768467276}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 488b0d60f06150141a248617a91e1c1a, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -132,14 +132,14 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.3, y: 0.3}
   m_EdgeRadius: 0
---- !u!50 &2576297174530755227
+--- !u!50 &8224087561996475861
 Rigidbody2D:
   serializedVersion: 4
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8806285930005217425}
+  m_GameObject: {fileID: 6443310020768467276}
   m_BodyType: 0
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
@@ -159,32 +159,39 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &8029143011356529432
+--- !u!114 &-1629755591572220837
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8806285930005217425}
+  m_GameObject: {fileID: 6443310020768467276}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0640949fccd619b478715d2464c56303, type: 3}
+  m_Script: {fileID: 11500000, guid: 5c2a4e55ff588614ab25d04b72242dcc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clonecurrentMaterial: 3
+  clonecurrentMaterial: 0
   CloneCloudPrefab: {fileID: 5266058347319513072, guid: e9cbf98c5d8eb1b49837a81257bd99b5, type: 3}
   CloneSlimePrefab: {fileID: 6443310020768467276, guid: b45a3f0aeb99dc5488023d3663dc188a, type: 3}
   CloneDirtPrefab: {fileID: 7909193773582851731, guid: cb7c339450a38ae4dae489424b675584, type: 3}
-  CloneStonePrefab: {fileID: 8806285930005217425}
+  CloneStonePrefab: {fileID: 8806285930005217425, guid: b35c1c58ab27e9d4cbf140ea11c5493e, type: 3}
   CloneSandPrefab: {fileID: 7994087356006597965, guid: b6eed24e1806a8742a9d78c02da6a4b9, type: 3}
   CloneHoneyPrefab: {fileID: 1453364989654088248, guid: f15a8ceb7ca816042acbf93a2b25f9e1, type: 3}
+  CloneAuPrefab: {fileID: 0}
+  CloneLightningPrefab: {fileID: 0}
   CloneCloudSprite: {fileID: -7107973756314043165, guid: 351050516f12db94db131957cc5692a0, type: 3}
-  CloneSlimeSprite: {fileID: -6720623259273952594, guid: df4d76207e55ff742a8e38ce7c629716, type: 3}
-  CloneDirtSprite: {fileID: 2764249179684089160, guid: 1aaea09d3827c114ea8c0b9c728187ac, type: 3}
+  CloneSlimeSprite: {fileID: 6756564049228997836, guid: df4d76207e55ff742a8e38ce7c629716, type: 3}
+  CloneDirtSprite: {fileID: -4028215072339609950, guid: 1aaea09d3827c114ea8c0b9c728187ac, type: 3}
   CloneStoneSprite: {fileID: -77573424256960086, guid: 58cf337890ac21a4da3800df1a15ca4c, type: 3}
   CloneSandSprite: {fileID: -8738671261588637886, guid: ab52a429d4877f54d82ed8e2b6135806, type: 3}
   CloneHoneySprite: {fileID: -1939676526033249983, guid: 0cb1a4d9f2667354db7305114acbd69a, type: 3}
-  playerTag: Clone
+  CloneAuSprite: {fileID: 0}
+  CloneLightningSprite: {fileID: 0}
+  playerTag: Player
+  materialSwitchCooldown: 0.5
+  honeyFriction: 5
+  cloudGravityScale: 0
   cloneCurrentPosition: {x: 0, y: 0}
   cloneCurrentRotation: {x: 0, y: 0, z: 0, w: 0}
   cloneVelocityX: 0

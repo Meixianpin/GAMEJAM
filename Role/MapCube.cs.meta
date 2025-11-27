@@ -1,0 +1,23 @@
+fileFormatVersion: 2
+guid: 5c2a4e55ff588614ab25d04b72242dcc
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - CloneCloudPrefab: {fileID: 5266058347319513072, guid: e9cbf98c5d8eb1b49837a81257bd99b5, type: 3}
+  - CloneSlimePrefab: {fileID: 6443310020768467276, guid: b45a3f0aeb99dc5488023d3663dc188a, type: 3}
+  - CloneDirtPrefab: {fileID: 7909193773582851731, guid: cb7c339450a38ae4dae489424b675584, type: 3}
+  - CloneStonePrefab: {fileID: 8806285930005217425, guid: b35c1c58ab27e9d4cbf140ea11c5493e, type: 3}
+  - CloneSandPrefab: {fileID: 7994087356006597965, guid: b6eed24e1806a8742a9d78c02da6a4b9, type: 3}
+  - CloneHoneyPrefab: {fileID: 1453364989654088248, guid: f15a8ceb7ca816042acbf93a2b25f9e1, type: 3}
+  - CloneCloudSprite: {fileID: -7107973756314043165, guid: 351050516f12db94db131957cc5692a0, type: 3}
+  - CloneSlimeSprite: {fileID: 6756564049228997836, guid: df4d76207e55ff742a8e38ce7c629716, type: 3}
+  - CloneDirtSprite: {fileID: -4028215072339609950, guid: 1aaea09d3827c114ea8c0b9c728187ac, type: 3}
+  - CloneStoneSprite: {fileID: -77573424256960086, guid: 58cf337890ac21a4da3800df1a15ca4c, type: 3}
+  - CloneSandSprite: {fileID: -8738671261588637886, guid: ab52a429d4877f54d82ed8e2b6135806, type: 3}
+  - CloneHoneySprite: {fileID: -1939676526033249983, guid: 0cb1a4d9f2667354db7305114acbd69a, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
