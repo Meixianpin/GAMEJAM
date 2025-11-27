@@ -4,8 +4,8 @@ using UnityEngine;
 public class ButtonTrigger : MonoBehaviour
 {
     [Header("按钮设置")]
-    [Tooltip("玩家标签名称")]
-    public string playerTag = "Jumpable";
+    [Tooltip("检测名称中包含的关键词（Player/Clone）")]
+    public string[] detectKeywords = new string[] { "Player", "Spawned" };
 
     [Header("Sprite设置")]
     [Tooltip("按钮默认状态Sprite")]
@@ -17,7 +17,7 @@ public class ButtonTrigger : MonoBehaviour
     // 组件引用
     private SpriteRenderer spriteRenderer;
     private Collider2D buttonCollider;
-    private int playerCount = 0; // 跟踪触发器内的玩家数量
+    private int triggerCount = 0; // 跟踪触发器内符合条件的对象数量
 
     void Start()
     {
@@ -36,33 +36,62 @@ public class ButtonTrigger : MonoBehaviour
         {
             spriteRenderer.sprite = defaultSprite;
         }
+
+        // 初始化关键词数组（防止为空）
+        if (detectKeywords == null || detectKeywords.Length == 0)
+        {
+            detectKeywords = new string[] { "Player", "Spawned" };
+        }
     }
 
-    // 玩家进入触发器时按下按钮
+    // 对象进入触发器时检测名称
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag(playerTag))
+        if (IsTargetObject(other.gameObject))
         {
-            playerCount++;
+            triggerCount++;
             SetButtonPressed(true);
         }
     }
 
-    // 玩家离开触发器时松开按钮
+    // 对象离开触发器时检测名称
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.CompareTag(playerTag))
+        if (IsTargetObject(other.gameObject))
         {
-            playerCount--;
+            triggerCount--;
             // 确保计数不为负
-            playerCount = Mathf.Max(0, playerCount);
+            triggerCount = Mathf.Max(0, triggerCount);
 
-            // 如果没有玩家在触发器内，恢复默d认状态
-            if (playerCount == 0)
+            // 如果没有目标对象在触发器内，恢复默认状态
+            if (triggerCount == 0)
             {
                 SetButtonPressed(false);
             }
         }
+    }
+
+    /// <summary>
+    /// 检查对象是否是目标对象（名称包含指定关键词）
+    /// </summary>
+    /// <param name="obj">要检查的对象</param>
+    /// <returns>是否为目标对象</returns>
+    private bool IsTargetObject(GameObject obj)
+    {
+        if (obj == null || string.IsNullOrEmpty(obj.name))
+            return false;
+
+        string objectName = obj.name.ToLower();
+
+        foreach (string keyword in detectKeywords)
+        {
+            if (!string.IsNullOrEmpty(keyword) && objectName.Contains(keyword.ToLower()))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>
@@ -88,7 +117,7 @@ public class ButtonTrigger : MonoBehaviour
     // 绘制调试Gizmos
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = playerCount > 0 ? Color.green : Color.yellow;
+        Gizmos.color = triggerCount > 0 ? Color.green : Color.yellow;
         if (buttonCollider != null)
         {
             Gizmos.DrawWireCube(transform.position, buttonCollider.bounds.size);
