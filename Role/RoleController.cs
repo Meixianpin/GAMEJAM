@@ -253,7 +253,7 @@ public class RoleController : MonoBehaviour
         // 检测是否处于阴影区域（名称含"Shadow"的对象）
         CheckShadowAreaByName();
 
-        // 蜂蜜攀爬检测（任何材质都可攀爬）
+        // 蜂蜜攀爬检测（仅检测侧面蜂蜜块）
         CheckHoneyClimb();
 
         // 应用材质特性（每帧更新以确保效果持续）
@@ -275,7 +275,7 @@ public class RoleController : MonoBehaviour
         UpdateDashState();
     }
 
-    // 蜂蜜攀爬检测（任何材质都可攀爬）
+    // 蜂蜜攀爬检测（仅检测侧面蜂蜜块，修复脚底触发问题）
     private void CheckHoneyClimb()
     {
         // 冲刺时不能攀爬
@@ -297,22 +297,24 @@ public class RoleController : MonoBehaviour
             return;
         }
 
-        // 获取角色朝向（左右两侧都检测）
+        // 获取角色朝向（仅检测左右两侧，排除脚底）
         Vector2[] directions = { Vector2.left, Vector2.right };
         bool foundClimbable = false;
         GameObject newClimbTarget = null;
 
         foreach (var direction in directions)
         {
-            // 检测点在角色侧面
-            Vector2 checkPosition = (Vector2)transform.position + direction * (characterCollider.bounds.extents.x + 0.1f);
+            // 检测点严格限定在角色侧面中部，避免偏下
+            Vector2 checkPosition = (Vector2)transform.position + direction * (characterCollider.bounds.extents.x + 0.05f);
+            // 将检测点上移，避开脚底区域
+            checkPosition.y = transform.position.y;
 
-            // 检测周围的碰撞体
-            Collider2D[] hitColliders = Physics2D.OverlapCircleAll(checkPosition, 0.2f);
+            // 缩小检测半径，精确检测侧面
+            Collider2D[] hitColliders = Physics2D.OverlapCircleAll(checkPosition, 0.1f);
 
             foreach (var hitCollider in hitColliders)
             {
-                if (IsValidClimbableHoneyBlock(hitCollider))
+                if (IsValidSideClimbableHoneyBlock(hitCollider, checkPosition))
                 {
                     foundClimbable = true;
                     newClimbTarget = hitCollider.gameObject;
@@ -322,9 +324,9 @@ public class RoleController : MonoBehaviour
 
             if (foundClimbable) break;
 
-            // 如果没找到，尝试射线检测
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, climbCheckDistance);
-            if (IsValidClimbableHoneyBlock(hit.collider))
+            // 使用射线检测，确保只检测侧面
+            RaycastHit2D hit = Physics2D.Raycast(checkPosition, direction, 0.2f);
+            if (IsValidSideClimbableHoneyBlock(hit.collider, checkPosition))
             {
                 foundClimbable = true;
                 newClimbTarget = hit.collider.gameObject;
@@ -337,18 +339,18 @@ public class RoleController : MonoBehaviour
         {
             isClimbing = true;
             currentClimbTarget = newClimbTarget;
-            Debug.Log($"开始攀爬：{currentClimbTarget.name}（当前材质：{currentMaterial}）");
+            Debug.Log($"开始攀爬：{currentClimbTarget.name}（侧面检测）");
         }
         else if (!foundClimbable && isClimbing)
         {
             isClimbing = false;
-            Debug.Log("结束攀爬：未检测到可攀爬的蜂蜜块");
+            Debug.Log("结束攀爬：未检测到侧面蜂蜜块");
             currentClimbTarget = null;
         }
     }
 
-    // 验证是否是有效的可攀爬蜂蜜块
-    private bool IsValidClimbableHoneyBlock(Collider2D collider)
+    // 验证是否是有效的侧面可攀爬蜂蜜块（排除脚底）
+    private bool IsValidSideClimbableHoneyBlock(Collider2D collider, Vector2 checkPosition)
     {
         if (collider == null || collider.gameObject == gameObject)
             return false;
@@ -362,7 +364,19 @@ public class RoleController : MonoBehaviour
         string shadowLower = shadowKeyword.ToLower();
 
         // 必须包含蜂蜜关键词且不包含阴影关键词
-        return objectName.Contains(honeyLower) && !objectName.Contains(shadowLower);
+        if (!objectName.Contains(honeyLower) || objectName.Contains(shadowLower))
+            return false;
+
+        // 检查碰撞体的位置，确保是侧面而不是脚底
+        Bounds colliderBounds = collider.bounds;
+
+        // 计算垂直方向重叠度（确保检测点在碰撞体的垂直范围内）
+        bool isInVerticalRange = checkPosition.y > colliderBounds.min.y && checkPosition.y < colliderBounds.max.y;
+
+        // 确保是水平方向的碰撞（侧面）
+        bool isHorizontalCollision = Mathf.Abs(colliderBounds.center.x - transform.position.x) > 0.1f;
+
+        return isInVerticalRange && isHorizontalCollision;
     }
 
     // 新增：检测是否处于名称含"Shadow"的对象内
@@ -467,7 +481,7 @@ public class RoleController : MonoBehaviour
     // 检测材质切换输入
     private void CheckMaterialSwitchInput()
     {
-        if (Input.GetKeyDown(KeyCode.M) && (isGrounded || isClimbing))
+        if (Input.GetKeyDown(KeyCode.M) && isGrounded)
         {
             // 检查冷却
             if (Time.time - lastMaterialSwitchTime < materialSwitchCooldown)
@@ -475,7 +489,7 @@ public class RoleController : MonoBehaviour
                 return;
             }
 
-            // 使用现有的地面检测逻辑来获取脚底方块
+            // 使用脚底检测逻辑获取材质（不再检测侧面）
             CharacterMaterial? groundMaterial = GetGroundBlockMaterial();
             if (groundMaterial.HasValue && groundMaterial.Value != currentMaterial)
             {
@@ -485,7 +499,7 @@ public class RoleController : MonoBehaviour
         }
     }
 
-    // 获取脚底方块的材质
+    // 获取脚底方块的材质（仅检测脚底，修复攀爬冲突）
     private CharacterMaterial? GetGroundBlockMaterial()
     {
         // 复用现有的地面检测逻辑
@@ -495,40 +509,32 @@ public class RoleController : MonoBehaviour
             return null;
         }
 
-        List<Vector2> checkPositions = new List<Vector2>()
-        {
-            (Vector2)transform.position + Vector2.down * (collider.bounds.extents.y + 0.1f),
-            (Vector2)transform.position + (spriteRenderer.flipX ? Vector2.left : Vector2.right) * (collider.bounds.extents.x + 0.1f)
-        };
+        // 仅检测脚底位置，删除侧面检测
+        Vector2 checkPosition = (Vector2)transform.position + Vector2.down * (collider.bounds.extents.y + 0.1f);
+        float checkRadius = 0.1f;
 
-        foreach (Vector2 checkPosition in checkPositions)
-        {
-            Collider2D[] hitColliders = Physics2D.OverlapCircleAll(checkPosition, 0.2f);
+        Collider2D[] hitColliders = Physics2D.OverlapCircleAll(checkPosition, checkRadius);
 
-            foreach (var hitCollider in hitColliders)
+        foreach (var hitCollider in hitColliders)
+        {
+            if (hitCollider.CompareTag(groundTag) && hitCollider.gameObject != gameObject)
             {
-                if (hitCollider != null && hitCollider.gameObject != gameObject)
+                // 检查方块的具体材质标签
+                foreach (var kvp in materialTagMap)
                 {
-                    // 检查方块的具体材质标签
-                    foreach (var kvp in materialTagMap)
+                    if (hitCollider.CompareTag(kvp.Key))
                     {
-                        if (hitCollider.CompareTag(kvp.Key))
-                        {
-                            return kvp.Value;
-                        }
+                        return kvp.Value;
                     }
+                }
 
-                    // 如果没有特定材质标签，尝试从名称解析（排除阴影对象）
-                    string objectName = hitCollider.gameObject.name.ToLower();
-                    if (!objectName.Contains(shadowKeyword.ToLower()))
+                // 如果没有特定材质标签，尝试从名称解析
+                string objectName = hitCollider.gameObject.name;
+                foreach (var kvp in materialTagMap)
+                {
+                    if (objectName.Contains(kvp.Key))
                     {
-                        foreach (var kvp in materialTagMap)
-                        {
-                            if (objectName.Contains(kvp.Key.ToLower()))
-                            {
-                                return kvp.Value;
-                            }
-                        }
+                        return kvp.Value;
                     }
                 }
             }
@@ -740,7 +746,6 @@ public class RoleController : MonoBehaviour
         if (arrowPrefab != null)
         {
             // 在阴影方块中心生成箭头
-            //Vector3 spawnPosition = shadowObject.transform.position;
             Vector3 spawnPosition = shadowObject.transform.position;
 
             GameObject arrow = Instantiate(arrowPrefab, spawnPosition, Quaternion.identity);
@@ -757,16 +762,11 @@ public class RoleController : MonoBehaviour
                 arrow.transform.rotation = Quaternion.Euler(0, 0, angle);
 
                 // 实现箭头大小与速度呈正比例缩放的逻辑
-                float scaleFactor = velocity.magnitude * 0.05f; // 调整0.1f以获得合适的缩放比例
-                // 确保最小缩放
-                //scaleFactor = Mathf.Max(0.2f, scaleFactor);
-                // 应用缩放
+                float scaleFactor = velocity.magnitude * 0.05f;
                 arrow.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
             }
-            //应用校准
 
             Vector3 pos = arrow.transform.position;
-            //pos.y += boxCollider.size.y * 0.5f;
             pos.y += 0.6f;
             arrow.transform.position = pos;
 
@@ -798,8 +798,6 @@ public class RoleController : MonoBehaviour
 
         // 创建对应材质的预制体实例
         cloneObject = Instantiate(selectedPrefab, recordedPosition, recordedRotation);
-        //!!测试克隆本体
-        //cloneObject = Instantiate(gameObject, recordedPosition, recordedRotation);
 
         // 确保生成的蜂蜜块有正确的碰撞体
         if (recordedMaterial == CharacterMaterial.Honey)
@@ -847,7 +845,7 @@ public class RoleController : MonoBehaviour
     }
 
     private void CheckGrounded()
-    {   //碰撞体检测是否可以跳跃
+    {
         if (characterCollider == null)
         {
             isGrounded = false;
@@ -856,11 +854,9 @@ public class RoleController : MonoBehaviour
 
         // 补充完整的地面检测逻辑
         Vector2 checkPosition = (Vector2)transform.position + Vector2.down * (characterCollider.bounds.extents.y + 0.1f);
-        //Vector2 checkPosition = (Vector2)transform.position;
 
         Vector2 boxSize = new Vector2(0.3f, 0.1f);
         Collider2D[] hitColliders = Physics2D.OverlapBoxAll(checkPosition, boxSize, 0f);
-        //Collider2D[] hitColliders = Physics2D.OverlapBoxAll(checkPosition, characterCollider.bounds.size, 0f);
         isGrounded = false;
 
         foreach (var hitCollider in hitColliders)
@@ -899,12 +895,6 @@ public class RoleController : MonoBehaviour
         {
             // 纯垂直攀爬移动
             rb.velocity = new Vector2(0, verticalInput * climbSpeed);
-
-            // 输出攀爬调试信息
-            if (Time.frameCount % 10 == 0) // 每10帧输出一次，避免刷屏
-            {
-                Debug.Log($"[{currentMaterial}]正在攀爬 {currentClimbTarget?.name}，方向：{(verticalInput > 0 ? "向上" : "向下")}");
-            }
         }
         else
         {
@@ -930,7 +920,7 @@ public class RoleController : MonoBehaviour
         // 攀爬时的跳跃（跳离蜂蜜块）
         if (isClimbing && Input.GetKeyDown(KeyCode.Space))
         {
-            Debug.Log($"从 {currentClimbTarget.name} 跳离（当前材质：{currentMaterial}）");
+            Debug.Log($"从 {currentClimbTarget.name} 跳离");
             isClimbing = false;
             currentClimbTarget = null;
             rb.gravityScale = 1;
@@ -950,13 +940,13 @@ public class RoleController : MonoBehaviour
         // 普通跳跃和二段跳
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            // 普通跳跃（所有非Slime材质通用，包括Au和Lightning）
+            // 普通跳跃（所有非Slime材质通用）
             if (isGrounded)
             {
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce);
                 hasJumped = false;
             }
-            // Cloud材质专属：二段跳（仅Cloud可用）
+            // Cloud材质专属：二段跳
             else if (currentMaterial == CharacterMaterial.Cloud && doubleJumpEnabled && !hasJumped)
             {
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce * doubleJumpForceRatio);
@@ -1015,12 +1005,11 @@ public class RoleController : MonoBehaviour
             ApplyMaterialProperties();
         }
 
-        // 确保冲刺参数为正数
+        // 确保参数有效
         dashForce = Mathf.Max(0f, dashForce);
         dashDuration = Mathf.Max(0.01f, dashDuration);
         dashCooldown = Mathf.Max(0f, dashCooldown);
 
-        // 确保攀爬参数有效
         climbSpeed = Mathf.Max(2f, climbSpeed);
         climbCheckDistance = Mathf.Max(0.3f, climbCheckDistance);
 
@@ -1039,15 +1028,16 @@ public class RoleController : MonoBehaviour
     {
         if (characterCollider != null)
         {
-            // 绘制攀爬检测区域
+            // 绘制攀爬检测区域（仅侧面）
             Gizmos.color = isClimbing ? Color.green : Color.yellow;
 
             Vector2[] directions = { Vector2.left, Vector2.right };
             foreach (var direction in directions)
             {
-                Vector2 checkPosition = (Vector2)transform.position + direction * (characterCollider.bounds.extents.x + 0.1f);
-                Gizmos.DrawWireSphere(checkPosition, 0.2f);
-                Gizmos.DrawLine(transform.position, transform.position + (Vector3)direction * climbCheckDistance);
+                Vector2 checkPosition = (Vector2)transform.position + direction * (characterCollider.bounds.extents.x + 0.05f);
+                checkPosition.y = transform.position.y; // 保持在角色中心高度
+                Gizmos.DrawWireSphere(checkPosition, 0.1f);
+                Gizmos.DrawLine(checkPosition, checkPosition + (Vector2)direction * 0.2f);
             }
 
             // 如果正在攀爬，绘制到攀爬目标的连线
@@ -1056,6 +1046,11 @@ public class RoleController : MonoBehaviour
                 Gizmos.color = Color.cyan;
                 Gizmos.DrawLine(transform.position, currentClimbTarget.transform.position);
             }
+
+            // 绘制脚底检测区域（红色）
+            Gizmos.color = Color.red;
+            Vector2 groundCheckPos = (Vector2)transform.position + Vector2.down * (characterCollider.bounds.extents.y + 0.1f);
+            Gizmos.DrawWireSphere(groundCheckPos, 0.1f);
         }
     }
 }
