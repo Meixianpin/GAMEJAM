@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<< HEAD
 guid: 5158cf33d52a4e541a63956c17448813
+=======
+guid: 1764bd6ff1217c5499545490e4e70595
+>>>>>>> origin/Arrow，Clone质量设为1，生命周期
 PrefabImporter:
   externalObjects: {}
   userData: 
