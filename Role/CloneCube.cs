@@ -58,6 +58,13 @@ public class CloneCube : MonoBehaviour
     [Tooltip("默认材质的bodyType")]
     private RigidbodyType2D originalBodyType; // 原始bodyType
     
+    // 生命周期相关字段
+    [Header("生命周期设置")]
+    [Tooltip("复制体存在的总时长（秒）")]
+    public float totalLifetime = 15f;
+    private float currentLifetime = 0f; // 当前已存在的时间
+    private Color originalColor; // 原始颜色
+    
     // 蜂蜜材质相关字段
     private FixedJoint2D honeyJoint; // 用于黏附的关节组件
     private Rigidbody2D attachedRigidbody; // 被黏附的物体的刚体
@@ -79,11 +86,11 @@ public class CloneCube : MonoBehaviour
     // 组件引用
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
-    private bool isColliderWithPlayer; // 是否与玩家碰撞
+    //private bool isColliderWithPlayer; // 是否与玩家碰撞
     private Vector2 cloneStartPosition; // 起始位置（使用Vector2）
 
         // 新增：材质切换相关变量
-    private float lastMaterialSwitchTime = -Mathf.Infinity;
+    //private float lastMaterialSwitchTime = -Mathf.Infinity;
     private Dictionary<string, CharacterMaterial> materialTagMap;
     
     // 材质映射字典
@@ -118,12 +125,19 @@ public class CloneCube : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         rb.freezeRotation = true;
         spriteRenderer = GetComponent<SpriteRenderer>();
-
+        
+        // 记录原始颜色
+        if (spriteRenderer != null)
+        {
+            originalColor = spriteRenderer.color;
+        }
 
         // 记录原始摩擦力
         originalDrag = rb.drag;
         // 记录原始重力
         originalGravityScale = rb.gravityScale;
+        // 记录原始bodyType
+        originalBodyType = rb.bodyType;
         
         // 初始化材质映射
         InitializeMaterialMappings();
@@ -138,7 +152,7 @@ public class CloneCube : MonoBehaviour
         ApplyMaterialSpecialEffects();
 
         //rb.bodyType = RigidbodyType2D.Kinematic;
-        rb.mass = 100f;//声音的重量
+        //rb.mass = 100f;//声音的重量
 
         // 记录起始位置
         cloneStartPosition = transform.position;
@@ -191,6 +205,9 @@ public class CloneCube : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // 更新生命周期计时器
+        UpdateLifetime();
+        
         // 更新当前状态显示
         UpdateCurrentState();
 
@@ -202,6 +219,38 @@ public class CloneCube : MonoBehaviour
 
         //应用材质特殊效果
         ApplyMaterialSpecialEffects();
+    }
+    
+    // 更新生命周期和透明度渐变
+    private void UpdateLifetime()
+    {
+        // 增加当前生命周期
+        currentLifetime += Time.deltaTime;
+        
+        // 计算生命周期比例（0-1）
+        float lifetimeRatio = Mathf.Clamp01(currentLifetime / totalLifetime);
+        
+        // 更新透明度：从完全不透明到几乎透明（0.05作为最小透明度，避免完全透明不可见）
+        if (spriteRenderer != null)
+        {
+            Color newColor = originalColor;
+            // 线性减少透明度，保留5%的最小透明度
+            newColor.a = Mathf.Lerp(1f, 0.05f, lifetimeRatio);
+            spriteRenderer.color = newColor;
+        }
+        
+        // 当生命周期结束时，销毁对象
+        if (currentLifetime >= totalLifetime)
+        {
+            // 如果当前是蜂蜜材质且有连接，先移除连接
+            if (clonecurrentMaterial == CharacterMaterial.Honey)
+            {
+                RemoveHoneyAttachment();
+            }
+            
+            Debug.Log($"复制体生命周期结束，即将销毁: {gameObject.name}");
+            Destroy(gameObject);
+        }
     }
 
     // 应用当前材质的物理特性
@@ -229,25 +278,25 @@ public class CloneCube : MonoBehaviour
                 // Slime材质恢复默认摩擦力
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.bodyType = originalBodyType;
                 break;
             case CharacterMaterial.Cloud:
                 // Cloud材质恢复默认摩擦力
                 rb.drag = originalDrag;
                 rb.gravityScale = cloudGravityScale;
-                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.bodyType = originalBodyType;
                 break;
             case CharacterMaterial.Lightning:
                 // Lightning材质恢复默认摩擦力
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.bodyType = originalBodyType;
                 break;
             case CharacterMaterial.Dirt:
                 // Dirt材质无效果，Dirt复制体无效果。
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.bodyType = originalBodyType;
                 break;
             case CharacterMaterial.Stone:
                 // Stone材质无效果，Stone复制体挂空中。
@@ -257,13 +306,13 @@ public class CloneCube : MonoBehaviour
                 // Sand材质速度快重力小，Sand复制体无效果。
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.bodyType = originalBodyType;
                 break;
             default:
                 // 其他材质（包括新增的Au）使用原始摩擦力
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.bodyType = originalBodyType;
                 break;
         }
     }
@@ -404,6 +453,7 @@ public class CloneCube : MonoBehaviour
         {
             spriteRenderer.sprite = targetSprite;
             Debug.Log($"角色外观已更新为：{clonecurrentMaterial}");
+            
         }
         
     }

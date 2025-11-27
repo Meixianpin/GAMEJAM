@@ -556,13 +556,14 @@ public class RoleController : MonoBehaviour
         dashDirection = 0f;
     }
 
-    // 记录当前状态（位置、速度和材质）
+    // 记录当前状态（位置、速度和材质）并生成阴影方块和箭头
     private void RecordCurrentState()
     {
         recordedPosition = transform.position;
         recordedRotation = transform.rotation;
         recordedVelocityX = rb.velocity.x;
         recordedVelocityY = rb.velocity.y;
+        Vector2 recordedVelocity = new Vector2(recordedVelocityX, recordedVelocityY);
         recordedMaterial = currentMaterial; // 记录当前材质
         isStateRecorded = true;
 
@@ -594,8 +595,48 @@ public class RoleController : MonoBehaviour
         shadowObject.tag = "Shadow";
         shadowSpriteRenderer.color = new Color(0.5f, 0.5f, 0.5f, 0.8f); // 半透明灰色
 
+        // 生成箭头预制体
+        SpawnArrowForShadow(shadowObject, recordedVelocity);
 
         Debug.Log($"已记录状态：位置 {recordedPosition}, 速度 ({recordedVelocityX}, {recordedVelocityY}), 材质 {recordedMaterial}");
+    }
+
+    // 为阴影方块生成箭头预制体
+    private void SpawnArrowForShadow(GameObject shadowObject, Vector2 velocity)
+    {
+        // 加载箭头预制体
+        GameObject arrowPrefab = Resources.Load<GameObject>("Prefabs/else/Arrow");
+        if (arrowPrefab != null)
+        {
+            // 在阴影方块中心生成箭头
+            Vector3 spawnPosition = shadowObject.transform.position;
+            GameObject arrow = Instantiate(arrowPrefab, spawnPosition, Quaternion.identity);
+            
+            // 设置箭头为阴影方块的子物体
+            arrow.transform.parent = shadowObject.transform;
+            
+            // 实现箭头朝向与速度相同的逻辑
+            if (velocity.magnitude > 0.1f) // 避免除零错误
+            {
+                // 计算角度
+                float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
+                // 应用旋转
+                arrow.transform.rotation = Quaternion.Euler(0, 0, angle);
+                
+                // 实现箭头大小与速度呈正比例缩放的逻辑
+                float scaleFactor = velocity.magnitude * 0.1f; // 调整0.1f以获得合适的缩放比例
+                // 确保最小缩放
+                scaleFactor = Mathf.Max(0.5f, scaleFactor);
+                // 应用缩放
+                arrow.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
+            }
+            
+            Debug.Log($"已生成箭头预制体，速度方向：{velocity}, 缩放因子：{velocity.magnitude * 0.1f}");
+        }
+        else
+        {
+            Debug.LogWarning("找不到箭头预制体：Prefabs/else/Arrow");
+        }
     }
 
     // 根据记录的状态创建对应材质的预制体
