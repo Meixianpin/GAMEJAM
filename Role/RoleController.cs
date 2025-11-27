@@ -609,7 +609,9 @@ public class RoleController : MonoBehaviour
         if (arrowPrefab != null)
         {
             // 在阴影方块中心生成箭头
+            //Vector3 spawnPosition = shadowObject.transform.position;
             Vector3 spawnPosition = shadowObject.transform.position;
+            
             GameObject arrow = Instantiate(arrowPrefab, spawnPosition, Quaternion.identity);
             
             // 设置箭头为阴影方块的子物体
@@ -626,12 +628,16 @@ public class RoleController : MonoBehaviour
                 // 实现箭头大小与速度呈正比例缩放的逻辑
                 float scaleFactor = velocity.magnitude * 0.1f; // 调整0.1f以获得合适的缩放比例
                 // 确保最小缩放
-                scaleFactor = Mathf.Max(0.5f, scaleFactor);
+                //scaleFactor = Mathf.Max(0.2f, scaleFactor);
                 // 应用缩放
                 arrow.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
             }
+            //应用校准
+            spawnPosition.x+=0.02f;
+            spawnPosition.y+=0.12f;
+            arrow.transform.position = spawnPosition;
             
-            Debug.Log($"已生成箭头预制体，速度方向：{velocity}, 缩放因子：{velocity.magnitude * 0.1f}");
+            Debug.Log($"已生成箭头预制体，速度方向：{velocity}, 缩放因子：{velocity.magnitude * 0.0001f}");
         }
         else
         {
