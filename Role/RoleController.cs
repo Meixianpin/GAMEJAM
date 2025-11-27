@@ -170,13 +170,13 @@ public class RoleController : MonoBehaviour
     private void Awake()
     {
         // 加载预制体资源
-        CloudPrefab = Resources.Load<GameObject>("Prefabs/Player/CloudPrefab");
-        SlimePrefab = Resources.Load<GameObject>("Prefabs/Player/SlimePrefab");
-        DirtPrefab = Resources.Load<GameObject>("Prefabs/Player/DirtPrefab");
-        StonePrefab = Resources.Load<GameObject>("Prefabs/Player/StonePrefab");
-        SandPrefab = Resources.Load<GameObject>("Prefabs/Player/SandPrefab");
-        HoneyPrefab = Resources.Load<GameObject>("Prefabs/Player/HoneyPrefab");
-        LightningPrefab = Resources.Load<GameObject>("Prefabs/Player/LightningPrefab");
+        CloudPrefab = Resources.Load<GameObject>("Prefabs/Clone/CloneCloudPrefab");
+        SlimePrefab = Resources.Load<GameObject>("Prefabs/Clone/CloneSlimePrefab");
+        DirtPrefab = Resources.Load<GameObject>("Prefabs/Clone/CloneDirtPrefab");
+        StonePrefab = Resources.Load<GameObject>("Prefabs/Clone/CloneStonePrefab");
+        SandPrefab = Resources.Load<GameObject>("Prefabs/Clone/CloneSandPrefab");
+        HoneyPrefab = Resources.Load<GameObject>("Prefabs/Clone/CloneHoneyPrefab");
+        LightningPrefab = Resources.Load<GameObject>("Prefabs/Clone/CloneLightningPrefab");
             
         // 加载精灵资源
         CloudSprite = Resources.Load<Sprite>("Sprites/CloudSprite");

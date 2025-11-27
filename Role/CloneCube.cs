@@ -336,7 +336,8 @@ public class CloneCube : MonoBehaviour
                 break;
 
             case CharacterMaterial.Slime:
-                
+                // Slime材质特殊效果：当与玩家碰撞时实现完全反弹
+                // 实际碰撞处理在BoxCollider2D中实现
                 break;
 
             case CharacterMaterial.Cloud:
