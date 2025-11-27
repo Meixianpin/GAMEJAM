@@ -76,7 +76,7 @@ ScriptedImporter:
     importHiddenLayers: 0
     layerImportMode: 1
     defaultPivotSpace: 0
-    defaultPivotAlignment: 7
+    defaultPivotAlignment: 0
     customPivotPosition: {x: 0.5, y: 0.5}
     mosaicPadding: 4
     spritePadding: 0
@@ -89,7 +89,7 @@ ScriptedImporter:
     importHiddenLayers: 0
     layerImportMode: 1
     defaultPivotSpace: 0
-    defaultPivotAlignment: 7
+    defaultPivotAlignment: 0
     customPivotPosition: {x: 0.5, y: 0.5}
     mosaicPadding: 4
     spritePadding: 0
@@ -98,7 +98,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 638997937239060868
+  platformSettingsDirtyTick: 638998582810349774
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -124,7 +124,7 @@ ScriptedImporter:
   animatedSpriteImportData:
   - name: Frame_0
     originalName: 
-    pivot: {x: 0.24999999, y: -0.4375}
+    pivot: {x: 0.24999999, y: 0.49999997}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
@@ -144,7 +144,7 @@ ScriptedImporter:
     uvTransform: {x: 4, y: 4}
   - name: Frame_1
     originalName: 
-    pivot: {x: 0.49999997, y: -3}
+    pivot: {x: 0.49999997, y: 0.74999994}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
