@@ -85,6 +85,7 @@ public class RoleController : MonoBehaviour
     public void Set_jumpForce(float force) { jumpForce = force; }
 
     public string groundTag = "Jumpable";//接触后可跳跃的碰撞体
+    public string shadowTag = "Shadow";//阴影体碰撞体
 
     // 状态存储变量
     [Header("状态存储")]
@@ -120,6 +121,7 @@ public class RoleController : MonoBehaviour
     // 组件引用
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer; // 角色Sprite渲染器
+    private BoxCollider2D boxCollider; // 角色碰撞器
     private bool isGrounded; // 是否在地面上
     private GameObject cloneObject; // 复制体对象
     private GameObject shadowObject; // 阴影体对象
@@ -572,7 +574,7 @@ public class RoleController : MonoBehaviour
             Destroy(shadowObject);
         }
         shadowObject = Instantiate(gameObject, recordedPosition, recordedRotation);
-
+        
         Rigidbody2D shadowRb = shadowObject.GetComponent<Rigidbody2D>();
         RoleController shadowController = shadowObject.GetComponent<RoleController>();
         BoxCollider2D shadowCollider = shadowObject.GetComponent<BoxCollider2D>();
@@ -592,11 +594,12 @@ public class RoleController : MonoBehaviour
             shadowCollider.isTrigger = true; // 勾选isTrigger属性
         }
         shadowObject.name = $"Shadow_{recordedMaterial}_{Time.time}";
-        shadowObject.tag = "Shadow";
+        shadowObject.tag = shadowTag;
         shadowSpriteRenderer.color = new Color(0.5f, 0.5f, 0.5f, 0.8f); // 半透明灰色
 
         // 生成箭头预制体
-        SpawnArrowForShadow(shadowObject, recordedVelocity);
+        if (recordedVelocity.magnitude > 0.01f)
+            SpawnArrowForShadow(shadowObject, recordedVelocity);
 
         Debug.Log($"已记录状态：位置 {recordedPosition}, 速度 ({recordedVelocityX}, {recordedVelocityY}), 材质 {recordedMaterial}");
     }
@@ -618,7 +621,7 @@ public class RoleController : MonoBehaviour
             arrow.transform.parent = shadowObject.transform;
             
             // 实现箭头朝向与速度相同的逻辑
-            if (velocity.magnitude > 0.1f) // 避免除零错误
+            if (velocity.magnitude > 0.01f) // 避免除零错误
             {
                 // 计算角度
                 float angle = Mathf.Atan2(velocity.y, velocity.x) * Mathf.Rad2Deg;
@@ -626,18 +629,20 @@ public class RoleController : MonoBehaviour
                 arrow.transform.rotation = Quaternion.Euler(0, 0, angle);
                 
                 // 实现箭头大小与速度呈正比例缩放的逻辑
-                float scaleFactor = velocity.magnitude * 0.1f; // 调整0.1f以获得合适的缩放比例
+                float scaleFactor = velocity.magnitude * 0.05f; // 调整0.1f以获得合适的缩放比例
                 // 确保最小缩放
                 //scaleFactor = Mathf.Max(0.2f, scaleFactor);
                 // 应用缩放
                 arrow.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
             }
             //应用校准
-            spawnPosition.x+=0.02f;
-            spawnPosition.y+=0.12f;
-            arrow.transform.position = spawnPosition;
-            
-            Debug.Log($"已生成箭头预制体，速度方向：{velocity}, 缩放因子：{velocity.magnitude * 0.0001f}");
+
+            Vector3 pos = arrow.transform.position;
+            //pos.y += boxCollider.size.y * 0.5f;
+            pos.y += 0.6f;
+            arrow.transform.position = pos;
+
+            Debug.Log($"已生成箭头预制体，速度方向：{velocity}, 缩放因子：{velocity.magnitude * 0.05f}");
         }
         else
         {

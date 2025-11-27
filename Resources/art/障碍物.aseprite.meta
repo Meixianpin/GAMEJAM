@@ -165,6 +165,11 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
+    uuid:
+      value0: 0
+      value1: 0
+      value2: 0
+      value3: 0
     guid: -1803116296
     name: "\u969C\u788D\u7269"
     layerFlags: 0
