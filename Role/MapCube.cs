@@ -14,37 +14,40 @@ public class MapCube : MonoBehaviour
         Sand,
         Honey,
         Au,
-        Lightning
+        Lightning,
+        Ghost
     }
     [Header("材质系统")]
     [Tooltip("复制体当前使用的材质类型")]
-    public CharacterMaterial clonecurrentMaterial;
+    public CharacterMaterial mapcurrentMaterial;
 
     [Tooltip("不同材质对应的预制体")]
-    public GameObject CloneCloudPrefab;
-    public GameObject CloneSlimePrefab;
-    public GameObject CloneDirtPrefab;
-    public GameObject CloneStonePrefab;
-    public GameObject CloneSandPrefab;
-    public GameObject CloneHoneyPrefab;
-    public GameObject CloneAuPrefab;
-    public GameObject CloneLightningPrefab;
+    public GameObject MapCloudPrefab;
+    public GameObject MapSlimePrefab;
+    public GameObject MapDirtPrefab;
+    public GameObject MapStonePrefab;
+    public GameObject MapSandPrefab;
+    public GameObject MapHoneyPrefab;
+    public GameObject MapAuPrefab;
+    public GameObject MapLightningPrefab;
+    public GameObject MapGhostPrefab;
 
-    [Tooltip("不同材质对应的CloneSprite（用于角色本体显示）")]
-    public Sprite CloneCloudSprite;
-    public Sprite CloneSlimeSprite;
-    public Sprite CloneDirtSprite;
-    public Sprite CloneStoneSprite;
-    public Sprite CloneSandSprite;
-    public Sprite CloneHoneySprite;
-    public Sprite CloneAuSprite;
-    public Sprite CloneLightningSprite;
+    [Tooltip("不同材质对应的MapSprite（用于角色本体显示）")]
+    public Sprite MapCloudSprite;
+    public Sprite MapSlimeSprite;
+    public Sprite MapDirtSprite;
+    public Sprite MapStoneSprite;
+    public Sprite MapSandSprite;
+    public Sprite MapHoneySprite;
+    public Sprite MapAuSprite;
+    public Sprite MapLightningSprite;
+    public Sprite MapGhostSprite;
     //test for Sprite
     public string playerTag = "Player";//玩家标签   
 
-    [Header("材质切换设置")]
-    [Tooltip("材质切换冷却时间（秒）")]
-    public float materialSwitchCooldown = 0.5f;
+    // [Header("材质切换设置")]
+    // [Tooltip("材质切换冷却时间（秒）")]
+    // public float materialSwitchCooldown = 0.5f;
 
     [Header("特殊能力设置")]
     [Tooltip("Honey材质的摩擦力系数")]
@@ -58,6 +61,13 @@ public class MapCube : MonoBehaviour
     [Tooltip("默认材质的bodyType")]
     private RigidbodyType2D originalBodyType; // 原始bodyType
     
+    // 生命周期相关字段
+    // [Header("生命周期设置")]
+    // [Tooltip("复制体存在的总时长（秒）")]
+    // public float totalLifetime = 15f;
+    // private float currentLifetime = 0f; // 当前已存在的时间
+    // private Color originalColor; // 原始颜色
+    
     // 蜂蜜材质相关字段
     private FixedJoint2D honeyJoint; // 用于黏附的关节组件
     private Rigidbody2D attachedRigidbody; // 被黏附的物体的刚体
@@ -66,64 +76,73 @@ public class MapCube : MonoBehaviour
     // 状态存储变量
     [Header("状态存储")]
     [Tooltip("复制体当前位置")]
-    [SerializeField] private Vector2 cloneCurrentPosition;
+    [SerializeField] private Vector2 mapCurrentPosition;
     [Tooltip("复制体当前旋转")]
-    [SerializeField] private Quaternion cloneCurrentRotation;
+    [SerializeField] private Quaternion mapCurrentRotation;
     
     [Tooltip("复制体X轴速度分量")]
-    [SerializeField] private float cloneVelocityX;
+    [SerializeField] private float mapVelocityX;
 
     [Tooltip("复制体Y轴速度分量")]
-    [SerializeField] private float cloneVelocityY;
+    [SerializeField] private float mapVelocityY;
 
     // 组件引用
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer;
-    private bool isColliderWithPlayer; // 是否与玩家碰撞
-    private Vector2 cloneStartPosition; // 起始位置（使用Vector2）
+    //private bool isColliderWithPlayer; // 是否与玩家碰撞
+    private Vector2 mapStartPosition; // 起始位置（使用Vector2）
 
         // 新增：材质切换相关变量
-    private float lastMaterialSwitchTime = -Mathf.Infinity;
+    //private float lastMaterialSwitchTime = -Mathf.Infinity;
     private Dictionary<string, CharacterMaterial> materialTagMap;
     
     // 材质映射字典
-    private Dictionary<CharacterMaterial, GameObject> cloneMaterialPrefabDict;
-    private Dictionary<CharacterMaterial, Sprite> cloneMaterialSpriteDict;
+    private Dictionary<CharacterMaterial, GameObject> mapMaterialPrefabDict;
+    private Dictionary<CharacterMaterial, Sprite> mapMaterialSpriteDict;
 
     // Start is called before the first frame update
 
     private void Awake()
     {
         // 加载预制体资源
-        CloneCloudPrefab = Resources.Load<GameObject>("Prefabs/Clone/CloneCloudPrefab");
-        CloneSlimePrefab = Resources.Load<GameObject>("Prefabs/Clone/CloneSlimePrefab");
-        CloneDirtPrefab = Resources.Load<GameObject>("Prefabs/Clone/CloneDirtPrefab");
-        CloneStonePrefab = Resources.Load<GameObject>("Prefabs/Clone/CloneStonePrefab");
-        CloneSandPrefab = Resources.Load<GameObject>("Prefabs/Clone/CloneSandPrefab");
-        CloneHoneyPrefab = Resources.Load<GameObject>("Prefabs/Clone/CloneHoneyPrefab");
-        CloneLightningPrefab = Resources.Load<GameObject>("Prefabs/Clone/CloneLightningPrefab");
+        MapCloudPrefab = Resources.Load<GameObject>("Prefabs/environment/MapCloudPrefab");
+        MapSlimePrefab = Resources.Load<GameObject>("Prefabs/environment/MapSlimePrefab");
+        MapDirtPrefab = Resources.Load<GameObject>("Prefabs/environment/MapDirtPrefab");
+        MapStonePrefab = Resources.Load<GameObject>("Prefabs/environment/MapStonePrefab");
+        MapSandPrefab = Resources.Load<GameObject>("Prefabs/environment/MapSandPrefab");
+        MapHoneyPrefab = Resources.Load<GameObject>("Prefabs/environment/MapHoneyPrefab");
+        MapLightningPrefab = Resources.Load<GameObject>("Prefabs/environment/MapLightningPrefab");
+        MapGhostPrefab = Resources.Load<GameObject>("Prefabs/environment/MapGhostPrefab");
             
         // 加载精灵资源
-        CloneCloudSprite = Resources.Load<Sprite>("Sprites/CloudSprite");
-        CloneSlimeSprite = Resources.Load<Sprite>("Sprites/SlimeSprite");
-        CloneDirtSprite = Resources.Load<Sprite>("Sprites/DirtSprite");
-        CloneStoneSprite = Resources.Load<Sprite>("Sprites/StoneSprite");
-        CloneSandSprite = Resources.Load<Sprite>("Sprites/SandSprite");
-        CloneHoneySprite = Resources.Load<Sprite>("Sprites/HoneySprite");
-        CloneLightningSprite = Resources.Load<Sprite>("Sprites/LightningSprite");
+        MapCloudSprite = Resources.Load<Sprite>("Sprites/CloudSprite");
+        MapSlimeSprite = Resources.Load<Sprite>("Sprites/SlimeSprite");
+        MapDirtSprite = Resources.Load<Sprite>("Sprites/DirtSprite");
+        MapStoneSprite = Resources.Load<Sprite>("Sprites/StoneSprite");
+        MapSandSprite = Resources.Load<Sprite>("Sprites/SandSprite");
+        MapHoneySprite = Resources.Load<Sprite>("Sprites/HoneySprite");
+        MapLightningSprite = Resources.Load<Sprite>("Sprites/LightningSprite");
+        MapGhostSprite = Resources.Load<Sprite>("Sprites/GhostSprite");
     }
     
-    void Start()
-    {
+    void Start()    
+    {        
         rb = GetComponent<Rigidbody2D>();
         rb.freezeRotation = true;
         spriteRenderer = GetComponent<SpriteRenderer>();
-
+        
+        // 记录原始颜色
+        // if (spriteRenderer != null)
+        // {    
+        //     originalColor = spriteRenderer.color;
+        // }
 
         // 记录原始摩擦力
         originalDrag = rb.drag;
         // 记录原始重力
         originalGravityScale = rb.gravityScale;
+        // 记录原始bodyType
+        originalBodyType = RigidbodyType2D.Kinematic;
         
         // 初始化材质映射
         InitializeMaterialMappings();
@@ -137,12 +156,15 @@ public class MapCube : MonoBehaviour
         ApplyMaterialProperties();
         ApplyMaterialSpecialEffects();
 
+        // 设置初始Layer
+        UpdateLayer();
+
         //rb.bodyType = RigidbodyType2D.Kinematic;
-        rb.mass = 100f;//声音的重量
+        //rb.mass = 100f;//声音的重量
 
         // 记录起始位置
-        cloneStartPosition = transform.position;
-        Debug.Log($"当前材质设置为：{clonecurrentMaterial}");
+        mapStartPosition = transform.position;
+        Debug.Log($"当前材质设置为：{mapcurrentMaterial}");
     }
 
     private void InitializeMaterialTagMapping()
@@ -156,41 +178,47 @@ public class MapCube : MonoBehaviour
             { "Sand", CharacterMaterial.Sand },
             { "Honey", CharacterMaterial.Honey },
             { "Au", CharacterMaterial.Au },
-            { "Lightning", CharacterMaterial.Lightning }
+            { "Lightning", CharacterMaterial.Lightning },
+            { "Ghost", CharacterMaterial.Ghost }
         };
     }
     private void InitializeMaterialMappings()
     {
         // 材质-预制体映射
-        cloneMaterialPrefabDict = new Dictionary<CharacterMaterial, GameObject>()
+        mapMaterialPrefabDict = new Dictionary<CharacterMaterial, GameObject>()
         {
-            { CharacterMaterial.Cloud, CloneCloudPrefab },
-            { CharacterMaterial.Slime, CloneSlimePrefab },
-            { CharacterMaterial.Dirt, CloneDirtPrefab },
-            { CharacterMaterial.Stone, CloneStonePrefab },
-            { CharacterMaterial.Sand, CloneSandPrefab },
-            { CharacterMaterial.Honey, CloneHoneyPrefab },
-            { CharacterMaterial.Au, CloneAuPrefab },
-            { CharacterMaterial.Lightning, CloneLightningPrefab }
+            { CharacterMaterial.Cloud, MapCloudPrefab },
+            { CharacterMaterial.Slime, MapSlimePrefab },
+            { CharacterMaterial.Dirt, MapDirtPrefab },
+            { CharacterMaterial.Stone, MapStonePrefab },
+            { CharacterMaterial.Sand, MapSandPrefab },
+            { CharacterMaterial.Honey, MapHoneyPrefab },
+            { CharacterMaterial.Au, MapAuPrefab },
+            { CharacterMaterial.Lightning, MapLightningPrefab },
+            { CharacterMaterial.Ghost, MapGhostPrefab }
         };
 
         // 材质-Sprite映射（用于角色本体显示）
-        cloneMaterialSpriteDict = new Dictionary<CharacterMaterial, Sprite>()
+        mapMaterialSpriteDict = new Dictionary<CharacterMaterial, Sprite>()
         {
-            { CharacterMaterial.Cloud, CloneCloudSprite },
-            { CharacterMaterial.Slime, CloneSlimeSprite },
-            { CharacterMaterial.Dirt, CloneDirtSprite },
-            { CharacterMaterial.Stone, CloneStoneSprite },
-            { CharacterMaterial.Sand, CloneSandSprite },
-            { CharacterMaterial.Honey, CloneHoneySprite },
-            { CharacterMaterial.Au, CloneAuSprite },
-            { CharacterMaterial.Lightning, CloneLightningSprite }
+            { CharacterMaterial.Cloud, MapCloudSprite },
+            { CharacterMaterial.Slime, MapSlimeSprite },
+            { CharacterMaterial.Dirt, MapDirtSprite },
+            { CharacterMaterial.Stone, MapStoneSprite },
+            { CharacterMaterial.Sand, MapSandSprite },
+            { CharacterMaterial.Honey, MapHoneySprite },
+            { CharacterMaterial.Au, MapAuSprite },
+            { CharacterMaterial.Lightning, MapLightningSprite },
+            { CharacterMaterial.Ghost, MapGhostSprite }
         };
     }
 
     // Update is called once per frame
     void Update()
     {
+        // 更新生命周期计时器
+        //UpdateLifetime();
+        
         // 更新当前状态显示
         UpdateCurrentState();
 
@@ -198,104 +226,154 @@ public class MapCube : MonoBehaviour
         ApplyMaterialProperties();
 
         // 检测功能键输入切换材质
-        CheckFunctionKeys();
+        //CheckFunctionKeys();
 
         //应用材质特殊效果
         ApplyMaterialSpecialEffects();
     }
+    
+    // // 更新生命周期和透明度渐变
+    // private void UpdateLifetime()
+    // {
+    //     // 增加当前生命周期
+    //     currentLifetime += Time.deltaTime;
+        
+    //     // 计算生命周期比例（0-1）
+    //     float lifetimeRatio = Mathf.Clamp01(currentLifetime / totalLifetime);
+        
+    //     // 更新透明度：从完全不透明到几乎透明（0.05作为最小透明度，避免完全透明不可见）
+    //     if (spriteRenderer != null)
+    //     {
+    //         Color newColor = originalColor;
+    //         // 线性减少透明度，保留5%的最小透明度
+    //         newColor.a = Mathf.Lerp(1f, 0.05f, lifetimeRatio);
+    //         spriteRenderer.color = newColor;
+    //     }
+        
+    //     // 当生命周期结束时，销毁对象
+    //     if (currentLifetime >= totalLifetime)
+    //     {
+    //         // 如果当前是蜂蜜材质且有连接，先移除连接
+    //         if (mapcurrentMaterial == CharacterMaterial.Honey)
+    //         {
+    //             RemoveHoneyAttachment();
+    //         }
+            
+    //         Debug.Log($"复制体生命周期结束，即将销毁: {gameObject.name}");
+    //         Destroy(gameObject);
+    //     }
+    // }
 
     // 应用当前材质的物理特性
     
     /*
-    蜂蜜复制体摩擦力大，碰撞后保持与被碰撞的物体静止。？
-    可以借助史莱姆复制体来反弹。？
+    蜂蜜复制体摩擦力大，碰撞后保持与被碰撞的物体静止。
+    可以借助史莱姆复制体来反弹。
     云朵复制体无重力。
     雷电复制体充电。？
     泥土复制体无效果。
     岩石复制体挂空中。
-    沙子复制体无效果。
+    沙子复制体可穿过幽灵方块。
     */
     private void ApplyMaterialProperties()
     {
-        switch (clonecurrentMaterial)
+        switch (mapcurrentMaterial)
         {
             case CharacterMaterial.Honey:
                 // Honey材质增加摩擦力
                 rb.drag = honeyFriction;
                 rb.gravityScale = originalGravityScale;
-                //rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.bodyType = originalBodyType;
                 break;
             case CharacterMaterial.Slime:
                 // Slime材质恢复默认摩擦力
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.bodyType = originalBodyType;
                 break;
             case CharacterMaterial.Cloud:
                 // Cloud材质恢复默认摩擦力
                 rb.drag = originalDrag;
                 rb.gravityScale = cloudGravityScale;
-                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.bodyType = originalBodyType;
                 break;
             case CharacterMaterial.Lightning:
                 // Lightning材质恢复默认摩擦力
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.bodyType = originalBodyType;
                 break;
             case CharacterMaterial.Dirt:
                 // Dirt材质无效果，Dirt复制体无效果。
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.bodyType = originalBodyType;
                 break;
             case CharacterMaterial.Stone:
                 // Stone材质无效果，Stone复制体挂空中。
-                rb.bodyType = RigidbodyType2D.Static;
+                rb.drag = originalDrag;
+                rb.gravityScale = originalGravityScale;
+                rb.bodyType = originalBodyType;
                 break;
             case CharacterMaterial.Sand:
                 // Sand材质速度快重力小，Sand复制体无效果。
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.bodyType = originalBodyType;
                 break;
+            case CharacterMaterial.Ghost:
+                // Ghost材质无效果，Ghost复制体无效果。
+                rb.drag = originalDrag;
+                rb.gravityScale = originalGravityScale;
+                rb.bodyType = originalBodyType;
+                break;
+            
             default:
                 // 其他材质（包括新增的Au）使用原始摩擦力
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.bodyType = originalBodyType;
                 break;
         }
     }
 
     /*
-    蜂蜜复制体摩擦力大，碰撞后保持与被碰撞的物体静止。？
-    可以借助史莱姆复制体来反弹。？
+    蜂蜜复制体摩擦力大，碰撞后保持与被碰撞的物体静止。
+    可以借助史莱姆复制体来反弹。
     云朵复制体无重力。
     雷电复制体充电。？
     泥土复制体无效果。
     岩石复制体挂空中。
-    沙子复制体无效果。
+    沙子复制体可穿过幽灵方块。
     */
     private void ApplyMaterialSpecialEffects()
     {
-        switch (clonecurrentMaterial)
+        switch (mapcurrentMaterial)
         {
             case CharacterMaterial.Honey:
                 // 蜂蜜材质特殊效果：保持碰撞状态检测
                 // 注意：实际的碰撞检测和连接逻辑在OnCollisionEnter2D中处理
+
+                // 非蜂蜜材质时，移除所有连接
+                RemoveHoneyAttachment();
                 break;
 
             case CharacterMaterial.Slime:
-                
+                // Slime材质特殊效果：当与玩家碰撞时实现完全反弹
+                // 实际碰撞处理在BoxCollider2D中实现
+
+                // 非蜂蜜材质时，移除所有连接
+                RemoveHoneyAttachment();
                 break;
 
             case CharacterMaterial.Cloud:
-                
+                // 非蜂蜜材质时，移除所有连接
+                RemoveHoneyAttachment();
                 break;
 
             case CharacterMaterial.Lightning:
-                
+                // 非蜂蜜材质时，移除所有连接
+                RemoveHoneyAttachment();
                 break;
             
             case CharacterMaterial.Dirt:
@@ -309,6 +387,11 @@ public class MapCube : MonoBehaviour
                 break;
 
             case CharacterMaterial.Sand:
+                // 非蜂蜜材质时，移除所有连接
+                RemoveHoneyAttachment();
+                break;
+
+            case CharacterMaterial.Ghost:
                 // 非蜂蜜材质时，移除所有连接
                 RemoveHoneyAttachment();
                 break;
@@ -324,7 +407,7 @@ public class MapCube : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         // 仅在材质为Honey且未连接时处理
-        if (clonecurrentMaterial == CharacterMaterial.Honey && !isAttached)
+        if (mapcurrentMaterial == CharacterMaterial.Honey && !isAttached)
         {
             Rigidbody2D otherRb = collision.rigidbody;
             
@@ -370,57 +453,75 @@ public class MapCube : MonoBehaviour
     }
     
     // 当材质改变时调用此方法，清除任何连接
-    public void SetCloneMaterial(CharacterMaterial newMaterial)
-    {
+    public void SetMapMaterial(CharacterMaterial newMaterial)
+    {        
         // 如果从蜂蜜材质切换到其他材质，移除连接
-        if (clonecurrentMaterial == CharacterMaterial.Honey && newMaterial != CharacterMaterial.Honey)
-        {
+        if (mapcurrentMaterial == CharacterMaterial.Honey && newMaterial != CharacterMaterial.Honey)
+        {            
             RemoveHoneyAttachment();
         }
         
-        clonecurrentMaterial = newMaterial;
+        mapcurrentMaterial = newMaterial;
         UpdateCharacterAppearance();
         ApplyMaterialProperties();
+        UpdateLayer();
+    }
+    
+    // 根据当前材质更新物体的Layer
+    private void UpdateLayer()
+    {        
+        if (mapcurrentMaterial == CharacterMaterial.Ghost)
+        {            
+            gameObject.layer = LayerMask.NameToLayer("Ghost");
+            Debug.Log($"{gameObject.name} 的Layer已设置为Ghost");
+        }
+        else
+        {            
+            gameObject.layer = LayerMask.NameToLayer("NotGhost");
+            Debug.Log($"{gameObject.name} 的Layer已设置为NotGhost");
+        }
     }
     private void UpdateCurrentState()
     {
         
-        cloneCurrentPosition = transform.position;
+        mapCurrentPosition = transform.position;
         //取消下述注释使得复制体的旋转角度不变
-        //transform.rotation = cloneCurrentRotation;
+        //transform.rotation = mapCurrentRotation;
         rb.freezeRotation = true;
         if (rb != null)
         {
-            cloneVelocityX = rb.velocity.x;
-            cloneVelocityY = rb.velocity.y;
+            mapVelocityX = rb.velocity.x;
+            mapVelocityY = rb.velocity.y;
         }
     }
 
     private void UpdateCharacterAppearance()
     {
-        if (spriteRenderer == null || cloneMaterialSpriteDict == null) return;
+        if (spriteRenderer == null || mapMaterialSpriteDict == null) return;
 
-        if (cloneMaterialSpriteDict.TryGetValue(clonecurrentMaterial, out Sprite targetSprite) && targetSprite != null)
+        if (mapMaterialSpriteDict.TryGetValue(mapcurrentMaterial, out Sprite targetSprite) && targetSprite != null)
         {
             spriteRenderer.sprite = targetSprite;
-            Debug.Log($"角色外观已更新为：{clonecurrentMaterial}");
+            Debug.Log($"角色外观已更新为：{mapcurrentMaterial}");
+            
         }
         
     }
 
 
-    private void CheckFunctionKeys()
-    {
-        if (Input.GetKeyDown(KeyCode.Keypad1)) { SetCloneMaterial(CharacterMaterial.Cloud); }
-        if (Input.GetKeyDown(KeyCode.Keypad2)) { SetCloneMaterial(CharacterMaterial.Slime); }
-        if (Input.GetKeyDown(KeyCode.Keypad3)) { SetCloneMaterial(CharacterMaterial.Dirt); }
-        if (Input.GetKeyDown(KeyCode.Keypad4)) { SetCloneMaterial(CharacterMaterial.Stone); }
-        if (Input.GetKeyDown(KeyCode.Keypad5)) { SetCloneMaterial(CharacterMaterial.Sand); }
-        if (Input.GetKeyDown(KeyCode.Keypad6)) { SetCloneMaterial(CharacterMaterial.Honey); }
-        if (Input.GetKeyDown(KeyCode.Keypad7)) { SetCloneMaterial(CharacterMaterial.Au); }
-        if (Input.GetKeyDown(KeyCode.Keypad8)) { SetCloneMaterial(CharacterMaterial.Lightning); }
+    // private void CheckFunctionKeys()
+    // {
+    //     if (Input.GetKeyDown(KeyCode.Keypad1)) { SetMapMaterial(CharacterMaterial.Cloud); }
+    //     if (Input.GetKeyDown(KeyCode.Keypad2)) { SetMapMaterial(CharacterMaterial.Slime); }
+    //     if (Input.GetKeyDown(KeyCode.Keypad3)) { SetMapMaterial(CharacterMaterial.Dirt); }
+    //     if (Input.GetKeyDown(KeyCode.Keypad4)) { SetMapMaterial(CharacterMaterial.Stone); }
+    //     if (Input.GetKeyDown(KeyCode.Keypad5)) { SetMapMaterial(CharacterMaterial.Sand); }
+    //     if (Input.GetKeyDown(KeyCode.Keypad6)) { SetMapMaterial(CharacterMaterial.Honey); }
+    //     if (Input.GetKeyDown(KeyCode.Keypad7)) { SetMapMaterial(CharacterMaterial.Au); }
+    //     if (Input.GetKeyDown(KeyCode.Keypad8)) { SetMapMaterial(CharacterMaterial.Lightning); }
+    //     if (Input.GetKeyDown(KeyCode.Keypad9)) { SetMapMaterial(CharacterMaterial.Ghost); }
 
-    }
+    // }
 
 
 }
