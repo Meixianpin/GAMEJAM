@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 76b0cf46f5a3e4a40bb2f34deb24f462
+guid: 7db7cf59424e03044b836ceba9725272
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -98,7 +98,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 638998588492659124
+  platformSettingsDirtyTick: 638998588556305822
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -122,10 +122,10 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: "\u6C99\u5B50"
+  - name: "\u8702\u871C\u5757"
     originalName: 
     pivot: {x: 0.5, y: 0.5}
-    alignment: 9
+    alignment: 0
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
@@ -133,7 +133,7 @@ ScriptedImporter:
       y: 4
       width: 32
       height: 32
-    spriteID: 34ccbc9b535c2f24b99025d22eae0eef
+    spriteID: 0fd38e5d3cfd2f648b067b787b6a8f30
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -145,13 +145,18 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    guid: -1105058075
-    name: "\u6C99\u5B50"
+    uuid:
+      value0: 0
+      value1: 0
+      value2: 0
+      value3: 0
+    guid: -683063603
+    name: "\u8702\u871C\u5757"
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: "\u6C99\u5B50"
+    - name: HoneySprite
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
@@ -159,7 +164,7 @@ ScriptedImporter:
         y: 0
         width: 32
         height: 32
-      spriteId: 34ccbc9b535c2f24b99025d22eae0eef
+      spriteId: 0fd38e5d3cfd2f648b067b787b6a8f30
     linkedCells: []
     parentIndex: -1
   platformSettings:

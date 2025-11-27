@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: b238064941d350641a421fc4f14de61f
+guid: 2dca955262b55fa409d116fdb702138b
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -98,7 +98,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 638998588556305822
+  platformSettingsDirtyTick: 638998587980196579
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -122,10 +122,10 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: "\u8702\u871C\u5757"
+  - name: "\u4E91"
     originalName: 
     pivot: {x: 0.5, y: 0.5}
-    alignment: 9
+    alignment: 0
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
@@ -133,7 +133,7 @@ ScriptedImporter:
       y: 4
       width: 32
       height: 32
-    spriteID: 0fd38e5d3cfd2f648b067b787b6a8f30
+    spriteID: df0ddbbe1548dd34cbc051f259997286
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -145,13 +145,18 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
-    guid: -683063603
-    name: "\u8702\u871C\u5757"
+    uuid:
+      value0: 0
+      value1: 0
+      value2: 0
+      value3: 0
+    guid: 372047149
+    name: "\u4E91"
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: "\u8702\u871C\u5757"
+    - name: CloudSprite
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
@@ -159,7 +164,7 @@ ScriptedImporter:
         y: 0
         width: 32
         height: 32
-      spriteId: 0fd38e5d3cfd2f648b067b787b6a8f30
+      spriteId: df0ddbbe1548dd34cbc051f259997286
     linkedCells: []
     parentIndex: -1
   platformSettings:

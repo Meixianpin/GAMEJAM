@@ -29,9 +29,9 @@ Transform:
   m_GameObject: {fileID: 2611591122475738583}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.000000056839788, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: -5.6113167, z: 0}
   m_LocalScale: {x: 5, y: 5, z: 5}
-  m_ConstrainProportionsScale: 1
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -76,7 +76,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -1939676526033249983, guid: 0cb1a4d9f2667354db7305114acbd69a, type: 3}
+  m_Sprite: {fileID: -3051351478815061912, guid: 7db7cf59424e03044b836ceba9725272, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -119,18 +119,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.15}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0}
-    oldSize: {x: 0.3, y: 0.3}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.32, y: 0.32}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.3, y: 0.3}
+  m_Size: {x: 0.32, y: 0.32}
   m_EdgeRadius: 0
 --- !u!50 &8551013755976503310
 Rigidbody2D:
@@ -145,7 +145,7 @@ Rigidbody2D:
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 1
-  m_LinearDrag: 0
+  m_LinearDrag: 5
   m_AngularDrag: 0.05
   m_GravityScale: 1
   m_Material: {fileID: 0}
@@ -158,7 +158,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!114 &8109896970105247240
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,18 +178,36 @@ MonoBehaviour:
   StonePrefab: {fileID: 8145932064639481336, guid: 734b6e73b2afaba4f9d14e643ed2ca38, type: 3}
   SandPrefab: {fileID: 6556326755884440111, guid: b7660db09be0ab54b9d97c278e10d0df, type: 3}
   HoneyPrefab: {fileID: 2611591122475738583}
-  CloudSprite: {fileID: -7107973756314043165, guid: 351050516f12db94db131957cc5692a0, type: 3}
-  SlimeSprite: {fileID: -6720623259273952594, guid: df4d76207e55ff742a8e38ce7c629716, type: 3}
-  DirtSprite: {fileID: -5470269554340035905, guid: 1aaea09d3827c114ea8c0b9c728187ac, type: 3}
-  StoneSprite: {fileID: -77573424256960086, guid: 58cf337890ac21a4da3800df1a15ca4c, type: 3}
-  SandSprite: {fileID: -8738671261588637886, guid: ab52a429d4877f54d82ed8e2b6135806, type: 3}
-  HoneySprite: {fileID: -1939676526033249983, guid: 0cb1a4d9f2667354db7305114acbd69a, type: 3}
+  AuPrefab: {fileID: 0}
+  LightningPrefab: {fileID: 4070726217645119589, guid: c4720aff519557d4c9088e8d0704a111, type: 3}
+  CloudSprite: {fileID: -3042221908844239610, guid: a7d69a72f51a13e44909467300b84872, type: 3}
+  SlimeSprite: {fileID: -719181056730093099, guid: 1cb97ab3e4698f540bdf2b94cb7ca32b, type: 3}
+  DirtSprite: {fileID: 1196683098660142845, guid: 1cb1bfd77d9f63045b904646f7e79655, type: 3}
+  StoneSprite: {fileID: -2141213346117124169, guid: f4e217825e97041478a8c393b6b9b491, type: 3}
+  SandSprite: {fileID: 9022494667585259958, guid: 174fe235e637f8b418c85a929cb09454, type: 3}
+  HoneySprite: {fileID: -3051351478815061912, guid: 7db7cf59424e03044b836ceba9725272, type: 3}
+  AuSprite: {fileID: 0}
+  LightningSprite: {fileID: -3950554078958224788, guid: 8dfe02b87ef36124c831a24a45409bcd, type: 3}
+  materialSwitchCooldown: 0.5
+  doubleJumpEnabled: 1
+  doubleJumpForceRatio: 0.8
+  honeyFriction: 5
+  climbSpeed: 4
+  climbCheckDistance: 0.6
+  honeyKeyword: Honey
+  shadowKeyword: Shadow
+  isClimbing: 0
+  currentClimbTarget: {fileID: 0}
+  dashForce: 25
+  dashDuration: 0.2
+  dashCooldown: 1
   spawnCooldown: 0.1
   groundTag: Jumpable
-  currentPosition: {x: 0, y: 0}
-  currentRotation: {x: 0, y: 0, z: 0, w: 1}
+  shadowTag: Shadow
+  currentPosition: {x: 0, y: -5.6113167}
+  currentRotation: {x: 0, y: 0, z: 0.000000056839788, w: 1}
   velocityX: 0
-  velocityY: 0
+  velocityY: -1.9619977
   recordedPosition: {x: 0, y: 0}
   recordedRotation: {x: 0, y: 0, z: 0, w: 1}
   recordedVelocityX: 0

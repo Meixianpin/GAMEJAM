@@ -124,8 +124,8 @@ ScriptedImporter:
   animatedSpriteImportData:
   - name: "\u8702\u871C\u5757"
     originalName: 
-    pivot: {x: 0.5, y: 0}
-    alignment: 9
+    pivot: {x: 0.5, y: 0.5}
+    alignment: 0
     border: {x: 0, y: 0, z: 0, w: 0}
     rect:
       serializedVersion: 2
@@ -145,6 +145,11 @@ ScriptedImporter:
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
+    uuid:
+      value0: 0
+      value1: 0
+      value2: 0
+      value3: 0
     guid: -683063603
     name: "\u8702\u871C\u5757"
     layerFlags: 0

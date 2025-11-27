@@ -119,10 +119,10 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.16}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
-    pivot: {x: 0.5, y: 0}
+    pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 0.32, y: 0.32}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
@@ -172,26 +172,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clonecurrentMaterial: 2
-  CloneCloudPrefab: {fileID: 0}
-  CloneSlimePrefab: {fileID: 0}
-  CloneDirtPrefab: {fileID: 0}
-  CloneStonePrefab: {fileID: 0}
+  CloneCloudPrefab: {fileID: 5266058347319513072, guid: e9cbf98c5d8eb1b49837a81257bd99b5, type: 3}
+  CloneSlimePrefab: {fileID: 6443310020768467276, guid: b45a3f0aeb99dc5488023d3663dc188a, type: 3}
+  CloneDirtPrefab: {fileID: 7909193773582851731, guid: cb7c339450a38ae4dae489424b675584, type: 3}
+  CloneStonePrefab: {fileID: 8806285930005217425, guid: b35c1c58ab27e9d4cbf140ea11c5493e, type: 3}
   CloneSandPrefab: {fileID: 7994087356006597965, guid: b6eed24e1806a8742a9d78c02da6a4b9, type: 3}
   CloneHoneyPrefab: {fileID: 1453364989654088248, guid: f15a8ceb7ca816042acbf93a2b25f9e1, type: 3}
   CloneAuPrefab: {fileID: -2253911629886400664, guid: 50068cb9d3da4534e84a7081f10c8729, type: 3}
   CloneLightningPrefab: {fileID: 1188468656173989035}
-  CloneCloudSprite: {fileID: 0}
-  CloneSlimeSprite: {fileID: 0}
-  CloneDirtSprite: {fileID: 0}
-  CloneStoneSprite: {fileID: 0}
-  CloneSandSprite: {fileID: 0}
-  CloneHoneySprite: {fileID: 0}
+  CloneCloudSprite: {fileID: -3042221908844239610, guid: a7d69a72f51a13e44909467300b84872, type: 3}
+  CloneSlimeSprite: {fileID: -719181056730093099, guid: 1cb97ab3e4698f540bdf2b94cb7ca32b, type: 3}
+  CloneDirtSprite: {fileID: 1196683098660142845, guid: 1cb1bfd77d9f63045b904646f7e79655, type: 3}
+  CloneStoneSprite: {fileID: -2141213346117124169, guid: f4e217825e97041478a8c393b6b9b491, type: 3}
+  CloneSandSprite: {fileID: 9022494667585259958, guid: 174fe235e637f8b418c85a929cb09454, type: 3}
+  CloneHoneySprite: {fileID: -3051351478815061912, guid: 7db7cf59424e03044b836ceba9725272, type: 3}
   CloneAuSprite: {fileID: 0}
-  CloneLightningSprite: {fileID: 0}
+  CloneLightningSprite: {fileID: -3950554078958224788, guid: 8dfe02b87ef36124c831a24a45409bcd, type: 3}
   playerTag: Clone
   materialSwitchCooldown: 0
   honeyFriction: 0
   cloudGravityScale: 0
+  totalLifetime: 15
   cloneCurrentPosition: {x: 0, y: 0}
   cloneCurrentRotation: {x: 0, y: 0, z: 0, w: 0}
   cloneVelocityX: 0

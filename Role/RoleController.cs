@@ -70,6 +70,7 @@ public class RoleController : MonoBehaviour
     [SerializeField] private bool isClimbing = false;
     [SerializeField] private GameObject currentClimbTarget;
     private Collider2D characterCollider; // 角色碰撞体引用
+    private Vector2 jumpBoxSize = new Vector2(0.3f, 0.3f); // 跳跃检测框大小
 
     [Header("Lightning材质设置")]
     [Tooltip("冲刺力度")]
@@ -135,7 +136,7 @@ public class RoleController : MonoBehaviour
     // 组件引用
     private Rigidbody2D rb;
     private SpriteRenderer spriteRenderer; // 角色Sprite渲染器
-    private BoxCollider2D boxCollider; // 角色碰撞器
+    //private BoxCollider2D boxCollider; // 角色碰撞器
     private bool isGrounded; // 是否在地面上
     private GameObject cloneObject; // 复制体对象
     private GameObject shadowObject; // 阴影体对象
@@ -166,15 +167,36 @@ public class RoleController : MonoBehaviour
     // 新增：阴影检测相关（检测名称含"Shadow"的对象）
     private bool isInShadow = false; // 是否处于阴影区域（名称含"Shadow"的对象内）
 
+    private void Awake()
+    {
+        // 加载预制体资源
+        CloudPrefab = Resources.Load<GameObject>("Prefabs/Player/CloudPrefab");
+        SlimePrefab = Resources.Load<GameObject>("Prefabs/Player/SlimePrefab");
+        DirtPrefab = Resources.Load<GameObject>("Prefabs/Player/DirtPrefab");
+        StonePrefab = Resources.Load<GameObject>("Prefabs/Player/StonePrefab");
+        SandPrefab = Resources.Load<GameObject>("Prefabs/Player/SandPrefab");
+        HoneyPrefab = Resources.Load<GameObject>("Prefabs/Player/HoneyPrefab");
+        LightningPrefab = Resources.Load<GameObject>("Prefabs/Player/LightningPrefab");
+            
+        // 加载精灵资源
+        CloudSprite = Resources.Load<Sprite>("Sprites/CloudSprite");
+        SlimeSprite = Resources.Load<Sprite>("Sprites/SlimeSprite");
+        DirtSprite = Resources.Load<Sprite>("Sprites/DirtSprite");
+        StoneSprite = Resources.Load<Sprite>("Sprites/StoneSprite");
+        SandSprite = Resources.Load<Sprite>("Sprites/SandSprite");
+        HoneySprite = Resources.Load<Sprite>("Sprites/HoneySprite");
+        LightningSprite = Resources.Load<Sprite>("Sprites/LightningSprite");
+    }
+
     void Start()
     {
         // 获取组件引用
         rb = GetComponent<Rigidbody2D>();
         rb.freezeRotation = true;
         spriteRenderer = GetComponent<SpriteRenderer>();
-        boxCollider = GetComponent<BoxCollider2D>();
+        //boxCollider = GetComponent<BoxCollider2D>();
         characterCollider = GetComponent<Collider2D>(); // 获取碰撞体引用
-
+        jumpBoxSize = new Vector2(characterCollider.bounds.size.x * 0.9f, 0.1f);
         // 保存原始摩擦力设置
         originalDrag = rb.drag;
 
@@ -305,9 +327,10 @@ public class RoleController : MonoBehaviour
         foreach (var direction in directions)
         {
             // 检测点严格限定在角色侧面中部，避免偏下
-            Vector2 checkPosition = (Vector2)transform.position + direction * (characterCollider.bounds.extents.x + 0.05f);
+            Vector2 checkPosition = (Vector2)transform.position +
+             direction * (characterCollider.bounds.extents.x + 0.05f);
             // 将检测点上移，避开脚底区域
-            checkPosition.y = transform.position.y;
+            checkPosition.y -= characterCollider.bounds.extents.y * 0.9f;
 
             // 缩小检测半径，精确检测侧面
             Collider2D[] hitColliders = Physics2D.OverlapCircleAll(checkPosition, 0.1f);
@@ -774,9 +797,9 @@ public class RoleController : MonoBehaviour
                 arrow.transform.localScale = new Vector3(scaleFactor, scaleFactor, scaleFactor);
             }
 
-            Vector3 pos = arrow.transform.position;
-            pos.y += 0.6f;
-            arrow.transform.position = pos;
+            // Vector3 pos = arrow.transform.position;
+            // pos.y += 0.6f;
+            // arrow.transform.position = pos;
 
             Debug.Log($"已生成箭头预制体，速度方向：{velocity}, 缩放因子：{velocity.magnitude * 0.05f}");
         }
@@ -863,7 +886,7 @@ public class RoleController : MonoBehaviour
         // 补充完整的地面检测逻辑
         Vector2 checkPosition = (Vector2)transform.position + Vector2.down * (characterCollider.bounds.extents.y + 0.1f);
 
-        Vector2 boxSize = new Vector2(0.3f, 0.1f);
+        Vector2 boxSize = jumpBoxSize;
         Collider2D[] hitColliders = Physics2D.OverlapBoxAll(checkPosition, boxSize, 0f);
         isGrounded = false;
 
@@ -874,6 +897,57 @@ public class RoleController : MonoBehaviour
                 isGrounded = true;
                 break;
             }
+        }
+    }
+
+    // 合并的Gizmos绘制函数 - 包含触底检测和攀爬检测可视化
+    private void OnDrawGizmos()
+    {
+        // 仅在场景视图中显示
+        if (characterCollider == null)
+        {
+            return;
+        }
+
+        // 1. 绘制触底检测碰撞箱
+        Vector2 checkPosition = (Vector2)transform.position + Vector2.down * (characterCollider.bounds.extents.y + 0.1f);
+        Vector2 boxSize = jumpBoxSize;
+
+        // 根据是否可跳跃设置不同的边框颜色
+        if (isGrounded)
+        {
+            Gizmos.color = Color.green;
+        }
+        else
+        {
+            Gizmos.color = Color.red;
+        }
+
+        // 绘制碰撞箱的边框
+        Gizmos.DrawWireCube(checkPosition, boxSize);
+        
+        // 绘制碰撞箱的填充（带透明度，便于观察）
+        Gizmos.color = new Color(Gizmos.color.r, Gizmos.color.g, Gizmos.color.b, 0.3f);
+        Gizmos.DrawCube(checkPosition, boxSize);
+
+        // 2. 绘制攀爬检测区域（仅侧面）
+        Gizmos.color = isClimbing ? Color.green : Color.yellow;
+
+        Vector2[] directions = { Vector2.left, Vector2.right };
+        foreach (var direction in directions)
+        {
+            Vector2 climbCheckPosition = (Vector2)transform.position + direction * (characterCollider.bounds.extents.x + 0.05f);
+            // 将检测点下移，与CheckHoneyClimb函数保持一致
+            climbCheckPosition.y -= characterCollider.bounds.extents.y * 0.9f;
+            Gizmos.DrawWireSphere(climbCheckPosition, 0.1f);
+            Gizmos.DrawLine(climbCheckPosition, climbCheckPosition + (Vector2)direction * 0.2f);
+        }
+
+        // 3. 如果正在攀爬，绘制到攀爬目标的连线
+        if (currentClimbTarget != null)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(transform.position, currentClimbTarget.transform.position);
         }
     }
 
@@ -1028,37 +1102,6 @@ public class RoleController : MonoBehaviour
         if (string.IsNullOrEmpty(shadowKeyword))
         {
             shadowKeyword = "Shadow";
-        }
-    }
-
-    // Gizmos绘制调试
-    void OnDrawGizmos()
-    {
-        if (characterCollider != null)
-        {
-            // 绘制攀爬检测区域（仅侧面）
-            Gizmos.color = isClimbing ? Color.green : Color.yellow;
-
-            Vector2[] directions = { Vector2.left, Vector2.right };
-            foreach (var direction in directions)
-            {
-                Vector2 checkPosition = (Vector2)transform.position + direction * (characterCollider.bounds.extents.x + 0.05f);
-                checkPosition.y = transform.position.y; // 保持在角色中心高度
-                Gizmos.DrawWireSphere(checkPosition, 0.1f);
-                Gizmos.DrawLine(checkPosition, checkPosition + (Vector2)direction * 0.2f);
-            }
-
-            // 如果正在攀爬，绘制到攀爬目标的连线
-            if (currentClimbTarget != null)
-            {
-                Gizmos.color = Color.cyan;
-                Gizmos.DrawLine(transform.position, currentClimbTarget.transform.position);
-            }
-
-            // 绘制脚底检测区域（红色）
-            Gizmos.color = Color.red;
-            Vector2 groundCheckPos = (Vector2)transform.position + Vector2.down * (characterCollider.bounds.extents.y + 0.1f);
-            Gizmos.DrawWireSphere(groundCheckPos, 0.1f);
         }
     }
 }

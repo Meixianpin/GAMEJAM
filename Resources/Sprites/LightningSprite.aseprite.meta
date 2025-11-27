@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: b98bb3b003c06c44080163a5cb7145e0
+guid: 8dfe02b87ef36124c831a24a45409bcd
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -98,7 +98,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 638998584457548427
+  platformSettingsDirtyTick: 638998583406882678
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -122,7 +122,7 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: "\u5CA9\u77F3"
+  - name: "\u95EA\u7535\u5757"
     originalName: 
     pivot: {x: 0.5, y: 0.5}
     alignment: 9
@@ -133,7 +133,7 @@ ScriptedImporter:
       y: 4
       width: 32
       height: 32
-    spriteID: dfded4cc45f77de49b5dfbc46aaab470
+    spriteID: 2e925c6afef248448a6b8918e62ee086
     spriteBone: []
     spriteOutline: []
     vertices: []
@@ -150,13 +150,13 @@ ScriptedImporter:
       value1: 0
       value2: 0
       value3: 0
-    guid: -1943124230
-    name: "\u5CA9\u77F3"
+    guid: 23766600
+    name: "\u95EA\u7535\u5757"
     layerFlags: 0
     layerType: 0
     blendMode: 0
     cells:
-    - name: "\u5CA9\u77F3"
+    - name: LightningSprite
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
@@ -164,7 +164,7 @@ ScriptedImporter:
         y: 0
         width: 32
         height: 32
-      spriteId: dfded4cc45f77de49b5dfbc46aaab470
+      spriteId: 2e925c6afef248448a6b8918e62ee086
     linkedCells: []
     parentIndex: -1
   platformSettings:
