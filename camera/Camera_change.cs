@@ -15,7 +15,7 @@ public class Camera_change : MonoBehaviour
     }
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.CompareTag("playerTag"))
+        if (other.CompareTag("Player"))
         {
             if (previousCamera != null)
                 previousCamera.enabled = false;
