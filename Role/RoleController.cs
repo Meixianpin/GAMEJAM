@@ -146,6 +146,8 @@ public class RoleController : MonoBehaviour
     // 特殊能力状态
     private bool hasJumped = false; // 是否已经使用过二段跳
     private float originalDrag; // 原始摩擦力
+    private float lastFootstepTime; // 上次播放脚步声的时间
+    private float footstepInterval = 0.3f; // 脚步声播放间隔（秒）
 
     // Lightning材质冲刺相关变量
     private bool isDashing = false;
@@ -216,6 +218,12 @@ public class RoleController : MonoBehaviour
         // 调试信息
         Debug.Log($"当前材质设置为：{currentMaterial}");
         Debug.Log($"冷却时间设置为：{spawnCooldown}秒");
+
+        // 检查SFXManager是否存在
+        if (SFXManager.Instance == null)
+        {
+            Debug.LogWarning("SFXManager未找到，请确保场景中有SFXManager实例");
+        }
     }
 
     // 新增：初始化材质标签映射
@@ -465,6 +473,12 @@ public class RoleController : MonoBehaviour
             }
 
             StartDash(horizontalInput);
+            
+            // 播放冲刺音效
+            if (SFXManager.Instance != null)
+            {
+                SFXManager.Instance.PlayDashSound();
+            }
         }
     }
 
@@ -648,11 +662,22 @@ public class RoleController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.J))
         {
             RecordCurrentState();
+            // 播放J键音效
+            if (SFXManager.Instance != null)
+            {
+                SFXManager.Instance.PlayKeyInputJSound();
+            }
         }
 
         // K键：根据记录的状态创建对象（带冷却和阴影检测）
         if (Input.GetKeyDown(KeyCode.K))
         {
+            // 播放K键音效
+            if (SFXManager.Instance != null)
+            {
+                SFXManager.Instance.PlayKeyInputKSound();
+            }
+            
             // 新增：检查是否处于阴影区域（名称含Shadow的对象）
             if (isInShadow)
             {
@@ -686,6 +711,11 @@ public class RoleController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.R))
         {
             ResetToStart();
+            // 播放R键音效
+            if (SFXManager.Instance != null)
+            {
+                SFXManager.Instance.PlayKeyInputRSound();
+            }
         }
 
         // 保留数字键切换材质（用于测试）
@@ -889,6 +919,7 @@ public class RoleController : MonoBehaviour
 
         Vector2 boxSize = jumpBoxSize;
         Collider2D[] hitColliders = Physics2D.OverlapBoxAll(checkPosition, boxSize, 0f);
+        bool wasGrounded = isGrounded;
         isGrounded = false;
 
         foreach (var hitCollider in hitColliders)
@@ -896,8 +927,28 @@ public class RoleController : MonoBehaviour
             if (hitCollider.CompareTag(groundTag) && hitCollider.gameObject != gameObject)
             {
                 isGrounded = true;
+                
+                // 如果从空中落地，播放脚步声
+                if (!wasGrounded && rb != null && Mathf.Abs(rb.velocity.y) > 0.1f)
+                {
+                    PlayFootstepSound();
+                }
+                
                 break;
             }
+        }
+    }
+    
+    // 播放脚步声效
+    private void PlayFootstepSound()
+    {
+        if (SFXManager.Instance != null && isGrounded)
+        {
+            // 将当前材质转换为SFXManager的材质枚举类型
+            SFXManager.CharacterMaterial sfxMaterial = (SFXManager.CharacterMaterial)System.Enum.Parse(
+                typeof(SFXManager.CharacterMaterial), currentMaterial.ToString());
+            
+            SFXManager.Instance.PlayFootstepSound(sfxMaterial);
         }
     }
 
@@ -966,6 +1017,14 @@ public class RoleController : MonoBehaviour
         else
         {
             HandleMovement();
+            
+            // 在地面上且有水平移动时播放脚步声（基于时间的间隔控制）
+            float horizontalInput = Input.GetAxisRaw("Horizontal");
+            if (isGrounded && Mathf.Abs(horizontalInput) > 0.1f && Time.time - lastFootstepTime >= footstepInterval)
+            {
+                PlayFootstepSound();
+                lastFootstepTime = Time.time; // 更新计时器
+            }
         }
     }
 
@@ -1000,6 +1059,9 @@ public class RoleController : MonoBehaviour
 
     void HandleJumpInput()
     {
+        // 冲刺时不能跳跃
+        if (isDashing) return;
+        
         // 攀爬时的跳跃（跳离蜂蜜块）
         if (isClimbing && Input.GetKeyDown(KeyCode.Space))
         {
@@ -1011,6 +1073,13 @@ public class RoleController : MonoBehaviour
             // 向远离攀爬目标的方向跳跃
             Vector2 jumpDirection = spriteRenderer.flipX ? Vector2.right : Vector2.left;
             rb.velocity = new Vector2(jumpDirection.x * moveSpeed * 0.8f, jumpForce);
+            
+            // 播放跳跃音效
+            if (SFXManager.Instance != null)
+            {
+                SFXManager.Instance.PlayJumpSound();
+            }
+            
             return;
         }
 
@@ -1028,6 +1097,12 @@ public class RoleController : MonoBehaviour
             {
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce);
                 hasJumped = false;
+                
+                // 播放跳跃音效
+                if (SFXManager.Instance != null)
+                {
+                    SFXManager.Instance.PlayJumpSound();
+                }
             }
             // Cloud材质专属：二段跳
             else if (currentMaterial == CharacterMaterial.Cloud && doubleJumpEnabled && !hasJumped)
@@ -1035,6 +1110,12 @@ public class RoleController : MonoBehaviour
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce * doubleJumpForceRatio);
                 hasJumped = true;
                 Debug.Log("使用Cloud二段跳！");
+                
+                // 播放跳跃音效
+                if (SFXManager.Instance != null)
+                {
+                    SFXManager.Instance.PlayJumpSound();
+                }
             }
         }
     }
