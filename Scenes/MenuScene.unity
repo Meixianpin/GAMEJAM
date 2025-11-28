@@ -179,10 +179,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: "\u5F00\u59CB\u6E38\u620F"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: ba817ede6d0c93f438b6a9403a469240, type: 2}
-  m_sharedMaterial: {fileID: 8833892788520548901, guid: ba817ede6d0c93f438b6a9403a469240, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 2d08291337f46224daeefa8df6b98fcb, type: 2}
+  m_sharedMaterial: {fileID: 8566442180917602297, guid: 2d08291337f46224daeefa8df6b98fcb, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -555,10 +555,10 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Button
+  m_text: "\u9000\u51FA\u6E38\u620F"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 2d08291337f46224daeefa8df6b98fcb, type: 2}
+  m_sharedMaterial: {fileID: 8566442180917602297, guid: 2d08291337f46224daeefa8df6b98fcb, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -736,6 +736,7 @@ GameObject:
   - component: {fileID: 702966142}
   - component: {fileID: 702966141}
   - component: {fileID: 702966140}
+  - component: {fileID: 702966144}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -828,6 +829,21 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &702966144
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 702966139}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a9545ef7cebf824cb4742d0fcec7ad5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  titleText: {fileID: 1372041910}
+  startButton: {fileID: 514875163}
+  quitButton: {fileID: 268889204}
 --- !u!1 &1058369545
 GameObject:
   m_ObjectHideFlags: 0
