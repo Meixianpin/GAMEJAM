@@ -1,11 +1,14 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D), typeof(SpriteRenderer))]
-public class ButtonTrigger : MonoBehaviour
+public class LightButtonTrigger : MonoBehaviour
 {
     [Header("按钮设置")]
     [Tooltip("检测名称中包含的关键词（Player/Clone）")]
     public string[] detectKeywords = new string[] { "Player", "Spawned" };
+
+    [Tooltip("必须包含此关键词的对象才能触发按钮（Lighting）")]
+    public string requiredTriggerKeyword = "Lighting";
 
     [Header("绑定目标设置")]
     [Tooltip("按钮控制的目标对象")]
@@ -25,6 +28,7 @@ public class ButtonTrigger : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Collider2D buttonCollider;
     private int triggerCount = 0; // 跟踪触发器内符合条件的对象数量
+    private int lightingTriggerCount = 0; // 跟踪包含Lighting关键词的对象数量
     private bool isButtonPressed = false; // 按钮当前状态
 
     void Start()
@@ -51,6 +55,12 @@ public class ButtonTrigger : MonoBehaviour
             detectKeywords = new string[] { "Player", "Spawned" };
         }
 
+        // 初始化必需触发关键词
+        if (string.IsNullOrEmpty(requiredTriggerKeyword))
+        {
+            requiredTriggerKeyword = "Lighting";
+        }
+
         // 记录Barrier对象的初始位置
         if (targetObject != null && targetObject.name.ToLower().Contains("barrier"))
         {
@@ -64,7 +74,15 @@ public class ButtonTrigger : MonoBehaviour
         if (IsTargetObject(other.gameObject))
         {
             triggerCount++;
-            SetButtonPressed(true);
+
+            // 检查是否包含必需的Lighting关键词
+            if (IsRequiredTriggerObject(other.gameObject))
+            {
+                lightingTriggerCount++;
+            }
+
+            // 只有当有Lighting对象在触发器内时才激活按钮
+            UpdateButtonState();
         }
     }
 
@@ -74,15 +92,29 @@ public class ButtonTrigger : MonoBehaviour
         if (IsTargetObject(other.gameObject))
         {
             triggerCount--;
+
+            // 检查是否包含必需的Lighting关键词
+            if (IsRequiredTriggerObject(other.gameObject))
+            {
+                lightingTriggerCount--;
+            }
+
             // 确保计数不为负
             triggerCount = Mathf.Max(0, triggerCount);
+            lightingTriggerCount = Mathf.Max(0, lightingTriggerCount);
 
-            // 如果没有目标对象在触发器内，恢复默认状态
-            if (triggerCount == 0)
-            {
-                SetButtonPressed(false);
-            }
+            // 更新按钮状态
+            UpdateButtonState();
         }
+    }
+
+    /// <summary>
+    /// 更新按钮状态，只有当有Lighting对象时才激活
+    /// </summary>
+    private void UpdateButtonState()
+    {
+        bool shouldPress = lightingTriggerCount > 0;
+        SetButtonPressed(shouldPress);
     }
 
     /// <summary>
@@ -193,11 +225,24 @@ public class ButtonTrigger : MonoBehaviour
         return false;
     }
 
+    /// <summary>
+    /// 检查对象是否包含必需的触发关键词（Lighting）
+    /// </summary>
+    /// <param name="obj">要检查的对象</param>
+    /// <returns>是否为必需的触发对象</returns>
+    private bool IsRequiredTriggerObject(GameObject obj)
+    {
+        if (obj == null || string.IsNullOrEmpty(obj.name) || string.IsNullOrEmpty(requiredTriggerKeyword))
+            return false;
+
+        return obj.name.ToLower().Contains(requiredTriggerKeyword.ToLower());
+    }
+
     // 绘制调试Gizmos
     private void OnDrawGizmosSelected()
     {
-        // 绘制按钮触发器范围
-        Gizmos.color = triggerCount > 0 ? Color.green : Color.yellow;
+        // 绘制按钮触发器范围（绿色表示有Lighting对象，黄色表示没有）
+        Gizmos.color = lightingTriggerCount > 0 ? Color.green : Color.yellow;
         if (buttonCollider != null)
         {
             Gizmos.DrawWireCube(transform.position, buttonCollider.bounds.size);
