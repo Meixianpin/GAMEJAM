@@ -859,6 +859,7 @@ public class RoleController : MonoBehaviour
         CloneCube cloneCubeScript = cloneObject.AddComponent<CloneCube>();
 
         cloneCubeScript.clonecurrentMaterial = (CloneCube.CharacterMaterial)recordedMaterial;
+        cloneObject.tag="Jumpable";
 
         cloneObject.name = $"Spawned_{recordedMaterial}_{Time.time}";
 
