@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 8109896970105247240}
   m_Layer: 0
   m_Name: HoneyPrefab
-  m_TagString: Jumpable
+  m_TagString: playerTag
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

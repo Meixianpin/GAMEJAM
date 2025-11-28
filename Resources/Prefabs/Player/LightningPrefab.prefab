@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 1020264830725006237}
   m_Layer: 0
   m_Name: LightningPrefab
-  m_TagString: Jumpable
+  m_TagString: playerTag
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
