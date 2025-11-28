@@ -76,8 +76,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -7107973756314043165, guid: 351050516f12db94db131957cc5692a0, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: -3042221908844239610, guid: a7d69a72f51a13e44909467300b84872, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.84724987}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -96,7 +96,7 @@ BoxCollider2D:
   m_GameObject: {fileID: 5266058347319513072}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: e6e3bed64a3c2bb42ac7658e3844734e, type: 2}
   m_IncludeLayers:
     serializedVersion: 2
     m_Bits: 0
@@ -119,18 +119,18 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.00007221848}
+  m_Offset: {x: 0, y: 0}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.3, y: 0.3}
+    oldSize: {x: 0.32, y: 0.32}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 0.3, y: 0.30013227}
+  m_Size: {x: 0.32, y: 0.32}
   m_EdgeRadius: 0
 --- !u!50 &427735173117666141
 Rigidbody2D:
@@ -140,14 +140,14 @@ Rigidbody2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5266058347319513072}
-  m_BodyType: 0
+  m_BodyType: 1
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
   m_Mass: 100
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -171,28 +171,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b57f14b0cc457ba4aa1f9537f5529a1c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  clonecurrentMaterial: 0
-  CloneCloudPrefab: {fileID: 5266058347319513072, guid: e9cbf98c5d8eb1b49837a81257bd99b5, type: 3}
-  CloneSlimePrefab: {fileID: 6443310020768467276, guid: b45a3f0aeb99dc5488023d3663dc188a, type: 3}
-  CloneDirtPrefab: {fileID: 7909193773582851731, guid: cb7c339450a38ae4dae489424b675584, type: 3}
-  CloneStonePrefab: {fileID: 8806285930005217425, guid: b35c1c58ab27e9d4cbf140ea11c5493e, type: 3}
-  CloneSandPrefab: {fileID: 7994087356006597965, guid: b6eed24e1806a8742a9d78c02da6a4b9, type: 3}
-  CloneHoneyPrefab: {fileID: 1453364989654088248, guid: f15a8ceb7ca816042acbf93a2b25f9e1, type: 3}
-  CloneAuPrefab: {fileID: 0}
-  CloneLightningPrefab: {fileID: 0}
-  CloneCloudSprite: {fileID: -7107973756314043165, guid: 351050516f12db94db131957cc5692a0, type: 3}
-  CloneSlimeSprite: {fileID: 6756564049228997836, guid: df4d76207e55ff742a8e38ce7c629716, type: 3}
-  CloneDirtSprite: {fileID: -4028215072339609950, guid: 1aaea09d3827c114ea8c0b9c728187ac, type: 3}
-  CloneStoneSprite: {fileID: -77573424256960086, guid: 58cf337890ac21a4da3800df1a15ca4c, type: 3}
-  CloneSandSprite: {fileID: -8738671261588637886, guid: ab52a429d4877f54d82ed8e2b6135806, type: 3}
-  CloneHoneySprite: {fileID: -1939676526033249983, guid: 0cb1a4d9f2667354db7305114acbd69a, type: 3}
-  CloneAuSprite: {fileID: 0}
-  CloneLightningSprite: {fileID: 0}
+  mapcurrentMaterial: 0
+  MapCloudPrefab: {fileID: 5266058347319513072}
+  MapSlimePrefab: {fileID: 6443310020768467276, guid: 0ae6b782a27291440a5ca60c98e0b285, type: 3}
+  MapDirtPrefab: {fileID: 7909193773582851731, guid: eef498d53df5a8f46b30c2e96fe59ef4, type: 3}
+  MapStonePrefab: {fileID: 8806285930005217425, guid: 980df515ab736cc4da4a0bc988f75950, type: 3}
+  MapSandPrefab: {fileID: 7994087356006597965, guid: c7d063c74d61cd94cbcfeab1e56506c9, type: 3}
+  MapHoneyPrefab: {fileID: 1453364989654088248, guid: f3a0ea7b1170d314482a6d14e1a69769, type: 3}
+  MapAuPrefab: {fileID: 0}
+  MapLightningPrefab: {fileID: 1188468656173989035, guid: 5158cf33d52a4e541a63956c17448813, type: 3}
+  MapGhostPrefab: {fileID: 2049120999926381953, guid: b3956d404cb34e046ac68166ffec7246, type: 3}
+  MapCloudSprite: {fileID: -3042221908844239610, guid: a7d69a72f51a13e44909467300b84872, type: 3}
+  MapSlimeSprite: {fileID: -719181056730093099, guid: 1cb97ab3e4698f540bdf2b94cb7ca32b, type: 3}
+  MapDirtSprite: {fileID: 1196683098660142845, guid: 1cb1bfd77d9f63045b904646f7e79655, type: 3}
+  MapStoneSprite: {fileID: -2141213346117124169, guid: f4e217825e97041478a8c393b6b9b491, type: 3}
+  MapSandSprite: {fileID: 9022494667585259958, guid: 174fe235e637f8b418c85a929cb09454, type: 3}
+  MapHoneySprite: {fileID: -3051351478815061912, guid: 7db7cf59424e03044b836ceba9725272, type: 3}
+  MapAuSprite: {fileID: 0}
+  MapLightningSprite: {fileID: -3950554078958224788, guid: 8dfe02b87ef36124c831a24a45409bcd, type: 3}
+  MapGhostSprite: {fileID: -2346599024515042913, guid: 9ad5856999e03b540b6f14b0c82b0549, type: 3}
   playerTag: Player
-  materialSwitchCooldown: 0.5
   honeyFriction: 5
   cloudGravityScale: 0
-  cloneCurrentPosition: {x: 0, y: 0}
-  cloneCurrentRotation: {x: 0, y: 0, z: 0, w: 0}
-  cloneVelocityX: 0
-  cloneVelocityY: 0
+  mapCurrentPosition: {x: 0, y: 0}
+  mapCurrentRotation: {x: 0, y: 0, z: 0, w: 0}
+  mapVelocityX: 0
+  mapVelocityY: 0

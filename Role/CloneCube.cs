@@ -150,6 +150,9 @@ public class CloneCube : MonoBehaviour
         UpdateCharacterAppearance();
         ApplyMaterialProperties();
         ApplyMaterialSpecialEffects();
+        
+        // 设置初始Layer
+        UpdateLayer();
 
         //rb.bodyType = RigidbodyType2D.Kinematic;
         //rb.mass = 100f;//声音的重量
@@ -256,13 +259,13 @@ public class CloneCube : MonoBehaviour
     // 应用当前材质的物理特性
     
     /*
-    蜂蜜复制体摩擦力大，碰撞后保持与被碰撞的物体静止。？
-    可以借助史莱姆复制体来反弹。？
+    蜂蜜复制体摩擦力大，碰撞后保持与被碰撞的物体静止。
+    可以借助史莱姆复制体来反弹。
     云朵复制体无重力。
     雷电复制体充电。？
     泥土复制体无效果。
     岩石复制体挂空中。
-    沙子复制体无效果。
+    沙子复制体可穿过幽灵方块。
     */
     private void ApplyMaterialProperties()
     {
@@ -318,13 +321,13 @@ public class CloneCube : MonoBehaviour
     }
 
     /*
-    蜂蜜复制体摩擦力大，碰撞后保持与被碰撞的物体静止。？
-    可以借助史莱姆复制体来反弹。？
+    蜂蜜复制体摩擦力大，碰撞后保持与被碰撞的物体静止。
+    可以借助史莱姆复制体来反弹。
     云朵复制体无重力。
     雷电复制体充电。？
     泥土复制体无效果。
     岩石复制体挂空中。
-    沙子复制体无效果。
+    沙子复制体可穿过幽灵方块。
     */
     private void ApplyMaterialSpecialEffects()
     {
@@ -333,18 +336,27 @@ public class CloneCube : MonoBehaviour
             case CharacterMaterial.Honey:
                 // 蜂蜜材质特殊效果：保持碰撞状态检测
                 // 注意：实际的碰撞检测和连接逻辑在OnCollisionEnter2D中处理
+
+                // 非蜂蜜材质时，移除所有连接
+                RemoveHoneyAttachment();
                 break;
 
             case CharacterMaterial.Slime:
-                
+                // Slime材质特殊效果：当与玩家碰撞时实现完全反弹
+                // 实际碰撞处理在BoxCollider2D中实现
+
+                // 非蜂蜜材质时，移除所有连接
+                RemoveHoneyAttachment();
                 break;
 
             case CharacterMaterial.Cloud:
-                
+                // 非蜂蜜材质时，移除所有连接
+                RemoveHoneyAttachment();
                 break;
 
             case CharacterMaterial.Lightning:
-                
+                // 非蜂蜜材质时，移除所有连接
+                RemoveHoneyAttachment();
                 break;
             
             case CharacterMaterial.Dirt:
@@ -430,6 +442,23 @@ public class CloneCube : MonoBehaviour
         clonecurrentMaterial = newMaterial;
         UpdateCharacterAppearance();
         ApplyMaterialProperties();
+        UpdateLayer();
+    }
+    
+    // 根据材质类型更新Layer
+    private void UpdateLayer()
+    {
+        // 当材质为Sand时设置为Sand层，否则设置为NotSand层
+        if (clonecurrentMaterial == CharacterMaterial.Sand)
+        {
+            gameObject.layer = LayerMask.NameToLayer("Sand");
+            Debug.Log($"设置克隆体Layer为Sand: {gameObject.name}");
+        }
+        else
+        {
+            gameObject.layer = LayerMask.NameToLayer("NotSand");
+            Debug.Log($"设置克隆体Layer为NotSand: {gameObject.name}");
+        }
     }
     private void UpdateCurrentState()
     {
