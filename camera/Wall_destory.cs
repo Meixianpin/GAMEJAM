@@ -14,27 +14,30 @@ public class Wall_destory : MonoBehaviour
     private Color originalColor;
     private Color targetColor;
     private float fadeTimer;
-    private bool isFading = false;
+
+    private int collisionCount = 0; // 当前与玩家碰撞的碰撞器数量
+    private bool isFading = false;// 玩家是否在任意碰撞器内
+
 
     void Start()
     {
-        // 获取 Tilemap 组件
         tilemap = GetComponent<Tilemap>();
-
         if (tilemap == null)
         {
             Debug.LogError("Tilemap 组件未找到！");
             return;
         }
 
-        // 保存原始颜色
         originalColor = tilemap.color;
         targetColor = originalColor;
+
+        // 可选：输出碰撞器信息用于调试
+        Collider2D[] colliders = GetComponents<Collider2D>();
+        Debug.Log($"找到 {colliders.Length} 个碰撞器");
     }
 
     void Update()
     {
-        // 处理透明度渐变
         if (isFading)
         {
             fadeTimer += Time.deltaTime;
@@ -48,43 +51,35 @@ public class Wall_destory : MonoBehaviour
         }
     }
 
-    // 触发器进入
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
-            SetTransparent();
+            collisionCount++;
+            Debug.Log($"Player entered. Current collision count: {collisionCount}");
+            // 只有当玩家第一次进入任意碰撞器时才触发
+            if (collisionCount!=0)
+            {
+                SetTransparent();
+            }
         }
     }
 
-    // 触发器退出
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.CompareTag("Player"))
         {
-            SetNormal();
+            collisionCount--;
+            Debug.Log($"Player exit. Current collision count: {collisionCount}");
+            // 只有当玩家离开所有碰撞器时才恢复正常
+            if (collisionCount==0)
+            {
+                SetNormal();
+            }
         }
     }
 
-    // 碰撞器进入（如果使用碰撞检测而非触发器）
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            SetTransparent();
-        }
-    }
 
-    // 碰撞器退出
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Player"))
-        {
-            SetNormal();
-        }
-    }
-
-    // 设置为透明
     private void SetTransparent()
     {
         targetColor = new Color(originalColor.r, originalColor.g, originalColor.b, transparentAlpha);
@@ -92,7 +87,6 @@ public class Wall_destory : MonoBehaviour
         isFading = true;
     }
 
-    // 恢复正常
     private void SetNormal()
     {
         targetColor = new Color(originalColor.r, originalColor.g, originalColor.b, normalAlpha);
@@ -100,10 +94,10 @@ public class Wall_destory : MonoBehaviour
         isFading = true;
     }
 
-    // 可选：立即设置透明度（无渐变）
     public void SetTransparencyImmediate(float alpha)
     {
         tilemap.color = new Color(originalColor.r, originalColor.g, originalColor.b, alpha);
         isFading = false;
     }
+
 }
