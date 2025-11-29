@@ -6,8 +6,8 @@ using static UnityEngine.GraphicsBuffer;
 public class ButtonTrigger : MonoBehaviour
 {
     [Header("按钮设置")]
-    [Tooltip("检测名称中包含的关键词（Player/Spwaned）")]
-    public string[] detectKeywords = new string[] { "Player", "Spawned" };
+    [Tooltip("检测名称中包含的关键词（Player/Spwaned/Map）")]
+    public string[] detectKeywords = new string[] { "Player", "Spawned","Map" };
 
     [Header("绑定目标设置")]
     [Tooltip("按钮控制的目标对象")]
@@ -51,7 +51,7 @@ public class ButtonTrigger : MonoBehaviour
         // 初始化关键词数组（防止为空）
         if (detectKeywords == null || detectKeywords.Length == 0)
         {
-            detectKeywords = new string[] { "Player", "Spawned" };
+            detectKeywords = new string[] { "Player", "Spawned","Map" };
         }
 
         // 记录Barrier对象的初始位置
