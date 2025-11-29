@@ -1,64 +1,65 @@
-ï»¿using UnityEngine;
+using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 [RequireComponent(typeof(Collider2D), typeof(SpriteRenderer))]
 public class ButtonTrigger : MonoBehaviour
 {
-    [Header("æŒ‰é’®è®¾ç½®")]
-    [Tooltip("æ£€æµ‹åç§°ä¸­åŒ…å«çš„å…³é”®è¯ï¼ˆPlayer/Cloneï¼‰")]
+    [Header("°´Å¥ÉèÖÃ")]
+    [Tooltip("¼ì²âÃû³ÆÖĞ°üº¬µÄ¹Ø¼ü´Ê£¨Player/Spwaned£©")]
     public string[] detectKeywords = new string[] { "Player", "Spawned" };
 
-    [Header("ç»‘å®šç›®æ ‡è®¾ç½®")]
-    [Tooltip("æŒ‰é’®æ§åˆ¶çš„ç›®æ ‡å¯¹è±¡")]
+    [Header("°ó¶¨Ä¿±êÉèÖÃ")]
+    [Tooltip("°´Å¥¿ØÖÆµÄÄ¿±ê¶ÔÏó")]
     public GameObject targetObject;
 
-    [Header("Spriteè®¾ç½®")]
-    [Tooltip("æŒ‰é’®é»˜è®¤çŠ¶æ€Sprite")]
+    [Header("SpriteÉèÖÃ")]
+    [Tooltip("°´Å¥Ä¬ÈÏ×´Ì¬Sprite")]
     public Sprite defaultSprite;
 
-    [Tooltip("æŒ‰é’®æŒ‰ä¸‹çŠ¶æ€Sprite")]
+    [Tooltip("°´Å¥°´ÏÂ×´Ì¬Sprite")]
     public Sprite pressedSprite;
 
-    // ç”¨äºå­˜å‚¨Barrierå¯¹è±¡çš„åŸå§‹ä½ç½®
+    // ÓÃÓÚ´æ´¢Barrier¶ÔÏóµÄÔ­Ê¼Î»ÖÃ
     private Vector3 originalBarrierPosition;
 
-    // ç»„ä»¶å¼•ç”¨
+    // ×é¼şÒıÓÃ
     private SpriteRenderer spriteRenderer;
     private Collider2D buttonCollider;
-    private int triggerCount = 0; // è·Ÿè¸ªè§¦å‘å™¨å†…ç¬¦åˆæ¡ä»¶çš„å¯¹è±¡æ•°é‡
-    private bool isButtonPressed = false; // æŒ‰é’®å½“å‰çŠ¶æ€
+    private int triggerCount = 0; // ¸ú×Ù´¥·¢Æ÷ÄÚ·ûºÏÌõ¼şµÄ¶ÔÏóÊıÁ¿
+    private bool isButtonPressed = false; // °´Å¥µ±Ç°×´Ì¬
 
     void Start()
     {
-        // è·å–ç»„ä»¶
+        // »ñÈ¡×é¼ş
         spriteRenderer = GetComponent<SpriteRenderer>();
         buttonCollider = GetComponent<Collider2D>();
 
-        // è®¾ç½®ç¢°æ’ä½“ä¸ºè§¦å‘å™¨
+        // ÉèÖÃÅö×²ÌåÎª´¥·¢Æ÷
         if (buttonCollider != null)
         {
             buttonCollider.isTrigger = true;
         }
 
-        // è®¾ç½®åˆå§‹Sprite
+        // ÉèÖÃ³õÊ¼Sprite
         if (spriteRenderer != null && defaultSprite != null)
         {
             spriteRenderer.sprite = defaultSprite;
         }
 
-        // åˆå§‹åŒ–å…³é”®è¯æ•°ç»„ï¼ˆé˜²æ­¢ä¸ºç©ºï¼‰
+        // ³õÊ¼»¯¹Ø¼ü´ÊÊı×é£¨·ÀÖ¹Îª¿Õ£©
         if (detectKeywords == null || detectKeywords.Length == 0)
         {
             detectKeywords = new string[] { "Player", "Spawned" };
         }
 
-        // è®°å½•Barrierå¯¹è±¡çš„åˆå§‹ä½ç½®
+        // ¼ÇÂ¼Barrier¶ÔÏóµÄ³õÊ¼Î»ÖÃ
         if (targetObject != null && targetObject.name.ToLower().Contains("barrier"))
         {
             originalBarrierPosition = targetObject.transform.position;
         }
     }
 
-    // å¯¹è±¡è¿›å…¥è§¦å‘å™¨æ—¶æ£€æµ‹åç§°
+    // ¶ÔÏó½øÈë´¥·¢Æ÷Ê±¼ì²âÃû³Æ
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (IsTargetObject(other.gameObject))
@@ -68,16 +69,16 @@ public class ButtonTrigger : MonoBehaviour
         }
     }
 
-    // å¯¹è±¡ç¦»å¼€è§¦å‘å™¨æ—¶æ£€æµ‹åç§°
+    // ¶ÔÏóÀë¿ª´¥·¢Æ÷Ê±¼ì²âÃû³Æ
     private void OnTriggerExit2D(Collider2D other)
     {
         if (IsTargetObject(other.gameObject))
         {
             triggerCount--;
-            // ç¡®ä¿è®¡æ•°ä¸ä¸ºè´Ÿ
+            // È·±£¼ÆÊı²»Îª¸º
             triggerCount = Mathf.Max(0, triggerCount);
 
-            // å¦‚æœæ²¡æœ‰ç›®æ ‡å¯¹è±¡åœ¨è§¦å‘å™¨å†…ï¼Œæ¢å¤é»˜è®¤çŠ¶æ€
+            // Èç¹ûÃ»ÓĞÄ¿±ê¶ÔÏóÔÚ´¥·¢Æ÷ÄÚ£¬»Ö¸´Ä¬ÈÏ×´Ì¬
             if (triggerCount == 0)
             {
                 SetButtonPressed(false);
@@ -86,31 +87,31 @@ public class ButtonTrigger : MonoBehaviour
     }
 
     /// <summary>
-    /// è®¾ç½®æŒ‰é’®çŠ¶æ€å¹¶è°ƒç”¨ç›¸åº”çš„å¤„ç†å‡½æ•°
+    /// ÉèÖÃ°´Å¥×´Ì¬²¢µ÷ÓÃÏàÓ¦µÄ´¦Àíº¯Êı
     /// </summary>
-    /// <param name="isPressed">æ˜¯å¦æŒ‰ä¸‹</param>
+    /// <param name="isPressed">ÊÇ·ñ°´ÏÂ</param>
     private void SetButtonPressed(bool isPressed)
     {
-        if (isButtonPressed == isPressed) return; // çŠ¶æ€æœªå˜åŒ–åˆ™è¿”å›
+        if (isButtonPressed == isPressed) return; // ×´Ì¬Î´±ä»¯Ôò·µ»Ø
 
         isButtonPressed = isPressed;
 
-        // æ›´æ–°æŒ‰é’®Sprite
+        // ¸üĞÂ°´Å¥Sprite
         if (spriteRenderer != null)
         {
             if (isPressed && pressedSprite != null)
             {
                 spriteRenderer.sprite = pressedSprite;
-                Debug.Log("æŒ‰é’®æŒ‰ä¸‹");
+                Debug.Log("°´Å¥°´ÏÂ");
             }
             else if (!isPressed && defaultSprite != null)
             {
                 spriteRenderer.sprite = defaultSprite;
-                Debug.Log("æŒ‰é’®æ¾å¼€");
+                Debug.Log("°´Å¥ËÉ¿ª");
             }
         }
 
-        // è°ƒç”¨å¯¹åº”çš„å¤„ç†å‡½æ•°
+        // µ÷ÓÃ¶ÔÓ¦µÄ´¦Àíº¯Êı
         if (isPressed)
         {
             OnButtonPressed();
@@ -122,69 +123,84 @@ public class ButtonTrigger : MonoBehaviour
     }
 
     /// <summary>
-    /// æŒ‰é’®æŒ‰ä¸‹æ—¶çš„è‡ªå®šä¹‰å¤„ç†é€»è¾‘
+    /// °´Å¥°´ÏÂÊ±µÄ×Ô¶¨Òå´¦ÀíÂß¼­
     /// </summary>
     private void OnButtonPressed()
     {
-        // æ’­æ”¾æŒ‰é’®ç‚¹å‡»éŸ³æ•ˆ
-Â  Â  Â  Â  if (SFXManager.Instance != null)
-        {
-            SFXManager.Instance.PlayButtonDownSound();
-        }
         if (targetObject != null)
         {
             string targetName = targetObject.name.ToLower();
 
-            // å¦‚æœç›®æ ‡å¯¹è±¡åç§°åŒ…å«"barrier"ï¼Œå°†å…¶ç§»å¼€
+            // Èç¹ûÄ¿±ê¶ÔÏóÃû³Æ°üº¬"barrier"£¬½«ÆäÒÆ¿ª
             if (targetName.Contains("barrier"))
             {
-                // å°†Barrierç§»åˆ°å±å¹•å¤–æˆ–æŒ‡å®šä½ç½®ï¼ˆè¿™é‡Œå‘ä¸Šç§»åŠ¨10ä¸ªå•ä½ï¼‰
+                // ½«BarrierÒÆµ½ÆÁÄ»Íâ»òÖ¸¶¨Î»ÖÃ£¨ÕâÀïÏòÉÏÒÆ¶¯10¸öµ¥Î»£©
                 targetObject.transform.position = originalBarrierPosition + Vector3.up * 10f;
-                Debug.Log($"ç§»å¼€éšœç¢ç‰©ï¼š{targetObject.name}");
+                Debug.Log($"ÒÆ¿ªÕÏ°­Îï£º{targetObject.name}");
             }
-            // å¦‚æœç›®æ ‡å¯¹è±¡åç§°åŒ…å«"fire"ï¼Œå°†å…¶è®¾ç½®ä¸ºä¸æ´»è·ƒ
+            // Èç¹ûÄ¿±ê¶ÔÏóÃû³Æ°üº¬"fire"£¬½«ÆäÉèÖÃÎª²»»îÔ¾
             else if (targetName.Contains("fire"))
             {
                 targetObject.SetActive(false);
-                Debug.Log($"å…³é—­ç«ç„°ï¼š{targetObject.name}");
+                Debug.Log($"¹Ø±Õ»ğÑæ£º{targetObject.name}");
+            }
+            //Èç¹ûÊÇ¡°hide¡±¸ü¸ÄRigidbodyÀàĞÍÎªStatic
+            else if (targetName.Contains("hide"))
+            {
+                // »ñÈ¡Ä¿±ê¶ÔÏóµÄRigidbody2D×é¼ş
+                Rigidbody2D targetRb = targetObject.GetComponent<Rigidbody2D>();
+                if (targetRb != null)
+                {
+                    targetRb.bodyType = RigidbodyType2D.Dynamic;
+                    Debug.Log($"½«{targetObject.name}µÄ¸ÕÌåÉèÖÃÎªÔË¶¯Ñ§");
+                }
+                else
+                {
+                    Debug.LogWarning($"{targetObject.name}Ã»ÓĞRigidbody2D×é¼ş£¡");
+                }
             }
         }
     }
 
     /// <summary>
-    /// æŒ‰é’®æ¾å¼€æ—¶çš„è‡ªå®šä¹‰å¤„ç†é€»è¾‘
+    /// °´Å¥ËÉ¿ªÊ±µÄ×Ô¶¨Òå´¦ÀíÂß¼­
     /// </summary>
     private void OnButtonReleased()
     {
-        // æ’­æ”¾æŒ‰é’®ç‚¹å‡»éŸ³æ•ˆ
-Â  Â  Â  Â  if (SFXManager.Instance != null)
-        {
-            SFXManager.Instance.PlayButtonUpSound();
-        }
         if (targetObject != null)
         {
             string targetName = targetObject.name.ToLower();
 
-            // å¦‚æœç›®æ ‡å¯¹è±¡åç§°åŒ…å«"barrier"ï¼Œæ¢å¤å…¶åŸå§‹ä½ç½®
+            // Èç¹ûÄ¿±ê¶ÔÏóÃû³Æ°üº¬"barrier"£¬»Ö¸´ÆäÔ­Ê¼Î»ÖÃ
             if (targetName.Contains("barrier"))
             {
                 targetObject.transform.position = originalBarrierPosition;
-                Debug.Log($"æ¢å¤éšœç¢ç‰©ï¼š{targetObject.name}");
+                Debug.Log($"»Ö¸´ÕÏ°­Îï£º{targetObject.name}");
             }
-            // å¦‚æœç›®æ ‡å¯¹è±¡åç§°åŒ…å«"fire"ï¼Œå°†å…¶è®¾ç½®ä¸ºæ´»è·ƒ
+            // Èç¹ûÄ¿±ê¶ÔÏóÃû³Æ°üº¬"fire"£¬½«ÆäÉèÖÃÎª»îÔ¾
             else if (targetName.Contains("fire"))
             {
                 targetObject.SetActive(true);
-                Debug.Log($"å¼€å¯ç«ç„°ï¼š{targetObject.name}");
+                Debug.Log($"¿ªÆô»ğÑæ£º{targetObject.name}");
+            }
+            // Èç¹ûÊÇ¡°hide¡±£¬»Ö¸´¸ÕÌåÎª¶¯Ì¬£¨¿ÉÑ¡£©
+            else if (targetName.Contains("hide"))
+            {
+                Rigidbody2D targetRb = targetObject.GetComponent<Rigidbody2D>();
+                if (targetRb != null)
+                {
+                    targetRb.bodyType = RigidbodyType2D.Static;
+                    Debug.Log($"½«{targetObject.name}µÄ¸ÕÌå»Ö¸´Îª¾²Ì¬");
+                }
             }
         }
     }
 
     /// <summary>
-    /// æ£€æŸ¥å¯¹è±¡æ˜¯å¦æ˜¯ç›®æ ‡å¯¹è±¡ï¼ˆåç§°åŒ…å«æŒ‡å®šå…³é”®è¯ï¼‰
+    /// ¼ì²é¶ÔÏóÊÇ·ñÊÇÄ¿±ê¶ÔÏó£¨Ãû³Æ°üº¬Ö¸¶¨¹Ø¼ü´Ê£©
     /// </summary>
-    /// <param name="obj">è¦æ£€æŸ¥çš„å¯¹è±¡</param>
-    /// <returns>æ˜¯å¦ä¸ºç›®æ ‡å¯¹è±¡</returns>
+    /// <param name="obj">Òª¼ì²éµÄ¶ÔÏó</param>
+    /// <returns>ÊÇ·ñÎªÄ¿±ê¶ÔÏó</returns>
     private bool IsTargetObject(GameObject obj)
     {
         if (obj == null || string.IsNullOrEmpty(obj.name))
@@ -203,10 +219,10 @@ public class ButtonTrigger : MonoBehaviour
         return false;
     }
 
-    // ç»˜åˆ¶è°ƒè¯•Gizmos
+    // »æÖÆµ÷ÊÔGizmos
     private void OnDrawGizmosSelected()
     {
-        // ç»˜åˆ¶æŒ‰é’®è§¦å‘å™¨èŒƒå›´
+        // »æÖÆ°´Å¥´¥·¢Æ÷·¶Î§
         Gizmos.color = triggerCount > 0 ? Color.green : Color.yellow;
         if (buttonCollider != null)
         {
@@ -217,7 +233,7 @@ public class ButtonTrigger : MonoBehaviour
             Gizmos.DrawWireCube(transform.position, Vector3.one);
         }
 
-        // ç»˜åˆ¶åˆ°ç›®æ ‡å¯¹è±¡çš„è¿çº¿
+        // »æÖÆµ½Ä¿±ê¶ÔÏóµÄÁ¬Ïß
         if (targetObject != null)
         {
             Gizmos.color = Color.blue;
