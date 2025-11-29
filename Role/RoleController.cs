@@ -689,19 +689,17 @@ public class RoleController : MonoBehaviour
         // K键：根据记录的状态创建对象（带冷却和阴影检测，只有不在Stop区域才生效）
         if (!inStopZone && Input.GetKeyDown(KeyCode.K))
         {
-            // 播放K键音效
-            if (SFXManager.Instance != null)
-            {
-                SFXManager.Instance.PlayKeyInputKSound();
-            }
+            
 
             // 新增：检查是否处于阴影区域（名称含Shadow的对象）
             if (isInShadow)
             {
+                
                 Debug.LogWarning("角色处于阴影区域，无法使用K键功能！");
                 return;
             }
 
+            
             // 检查是否满足所有条件
             if (!isStateRecorded)
             {
@@ -859,6 +857,11 @@ public class RoleController : MonoBehaviour
     // 根据记录的状态创建对应材质的预制体
     private void SpawnFromRecordedState()
     {
+        // 播放K键音效
+        if (SFXManager.Instance != null)
+        {
+            SFXManager.Instance.PlayKeyInputKSound();
+        }
         // 如果已有复制体，先销毁
         if (cloneObject != null)
         {
