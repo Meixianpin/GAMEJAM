@@ -1,10 +1,11 @@
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 [RequireComponent(typeof(Collider2D), typeof(SpriteRenderer))]
 public class ButtonTrigger : MonoBehaviour
 {
     [Header("按钮设置")]
-    [Tooltip("检测名称中包含的关键词（Player/Clone）")]
+    [Tooltip("检测名称中包含的关键词（Player/Spwaned）")]
     public string[] detectKeywords = new string[] { "Player", "Spawned" };
 
     [Header("绑定目标设置")]
@@ -143,6 +144,21 @@ public class ButtonTrigger : MonoBehaviour
                 targetObject.SetActive(false);
                 Debug.Log($"关闭火焰：{targetObject.name}");
             }
+            //如果是“hide”更改Rigidbody类型为Static
+            else if (targetName.Contains("hide"))
+            {
+                // 获取目标对象的Rigidbody2D组件
+                Rigidbody2D targetRb = targetObject.GetComponent<Rigidbody2D>();
+                if (targetRb != null)
+                {
+                    targetRb.bodyType = RigidbodyType2D.Dynamic;
+                    Debug.Log($"将{targetObject.name}的刚体设置为运动学");
+                }
+                else
+                {
+                    Debug.LogWarning($"{targetObject.name}没有Rigidbody2D组件！");
+                }
+            }
         }
     }
 
@@ -166,6 +182,16 @@ public class ButtonTrigger : MonoBehaviour
             {
                 targetObject.SetActive(true);
                 Debug.Log($"开启火焰：{targetObject.name}");
+            }
+            // 如果是“hide”，恢复刚体为动态（可选）
+            else if (targetName.Contains("hide"))
+            {
+                Rigidbody2D targetRb = targetObject.GetComponent<Rigidbody2D>();
+                if (targetRb != null)
+                {
+                    targetRb.bodyType = RigidbodyType2D.Static;
+                    Debug.Log($"将{targetObject.name}的刚体恢复为静态");
+                }
             }
         }
     }
