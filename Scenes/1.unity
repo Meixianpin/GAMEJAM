@@ -9551,6 +9551,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5870903818054516065, guid: 6b0feffde4631d54b897dd18646e00fe, type: 3}
+      propertyPath: spawnCooldown
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 7800847375535023753, guid: 6b0feffde4631d54b897dd18646e00fe, type: 3}
       propertyPath: m_Name
       value: DirtPrefab
