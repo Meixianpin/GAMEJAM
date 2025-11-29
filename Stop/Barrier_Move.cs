@@ -11,7 +11,7 @@ public class Barrier_Move : MonoBehaviour
 
     private Vector3 originalPosition;   // 原始位置
     private Vector3 targetPosition;     // 目标位置
-    private bool triggersPressed = false; // 按钮按下状态
+    [SerializeField]private bool triggersPressed = false; // 按钮按下状态
     private bool isMoving = false;      // 是否正在移动
 
     private Barrier_get_button_press barrier_Get_Button_Press;
