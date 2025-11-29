@@ -810,7 +810,7 @@ public class RoleController : MonoBehaviour
         shadowSpriteRenderer.color = new Color(0.5f, 0.5f, 0.5f, 0.8f); // 半透明灰色
 
         // 生成箭头预制体
-        if (recordedVelocity.magnitude > 0.01f)
+        if (recordedVelocity.magnitude > 0.01f && recordedMaterial != CharacterMaterial.Stone)
             SpawnArrowForShadow(shadowObject, recordedVelocity);
 
         Debug.Log($"已记录状态：位置 {recordedPosition}, 速度 ({recordedVelocityX}, {recordedVelocityY}), 材质 {recordedMaterial}");
@@ -946,7 +946,7 @@ public class RoleController : MonoBehaviour
                 isGrounded = true;
 
                 // 如果从空中落地，播放脚步声
-                if (!wasGrounded && rb != null && Mathf.Abs(rb.velocity.y) > 0.1f)
+                if (!wasGrounded && rb != null && Mathf.Abs(rb.velocity.y) > 0.1f && Mathf.Abs(rb.velocity.x) < 0.1f)
                 {
                     PlayFootstepSound();
                 }
