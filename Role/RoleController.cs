@@ -179,7 +179,7 @@ public class RoleController : MonoBehaviour
         SandPrefab = Resources.Load<GameObject>("Prefabs/Clone/CloneSandPrefab");
         HoneyPrefab = Resources.Load<GameObject>("Prefabs/Clone/CloneHoneyPrefab");
         LightningPrefab = Resources.Load<GameObject>("Prefabs/Clone/CloneLightningPrefab");
-            
+
         // 加载精灵资源
         CloudSprite = Resources.Load<Sprite>("Sprites/CloudSprite");
         SlimeSprite = Resources.Load<Sprite>("Sprites/SlimeSprite");
@@ -473,7 +473,7 @@ public class RoleController : MonoBehaviour
             }
 
             StartDash(horizontalInput);
-            
+
             // 播放冲刺音效
             if (SFXManager.Instance != null)
             {
@@ -658,8 +658,25 @@ public class RoleController : MonoBehaviour
 
     private void CheckFunctionKeys()
     {
-        // J键：记录当前位置和速度信息
-        if (Input.GetKeyDown(KeyCode.J))
+        // 检查是否在Stop触发器内
+        Collider2D[] stopColliders = Physics2D.OverlapBoxAll(
+            GetComponent<Collider2D>().bounds.center,
+            GetComponent<Collider2D>().bounds.size,
+            0f
+        );
+
+        bool inStopZone = false;
+        foreach (var collider in stopColliders)
+        {
+            if (collider != null && collider.CompareTag("Stop") && collider.isTrigger)
+            {
+                inStopZone = true;
+                break;
+            }
+        }
+
+        // J键：记录当前位置和速度信息（只有不在Stop区域才生效）
+        if (!inStopZone && Input.GetKeyDown(KeyCode.J))
         {
             RecordCurrentState();
             // 播放J键音效
@@ -669,15 +686,15 @@ public class RoleController : MonoBehaviour
             }
         }
 
-        // K键：根据记录的状态创建对象（带冷却和阴影检测）
-        if (Input.GetKeyDown(KeyCode.K))
+        // K键：根据记录的状态创建对象（带冷却和阴影检测，只有不在Stop区域才生效）
+        if (!inStopZone && Input.GetKeyDown(KeyCode.K))
         {
             // 播放K键音效
             if (SFXManager.Instance != null)
             {
                 SFXManager.Instance.PlayKeyInputKSound();
             }
-            
+
             // 新增：检查是否处于阴影区域（名称含Shadow的对象）
             if (isInShadow)
             {
@@ -707,7 +724,7 @@ public class RoleController : MonoBehaviour
             Debug.Log($"K键冷却已更新，下次可用时间：{Time.time + spawnCooldown}");
         }
 
-        // R键：回到起始点，重置地图
+        // R键：回到起始点，重置地图（不受Stop区域影响）
         if (Input.GetKeyDown(KeyCode.R))
         {
             ResetToStart();
@@ -761,7 +778,7 @@ public class RoleController : MonoBehaviour
             Destroy(shadowObject);
         }
         shadowObject = Instantiate(gameObject, recordedPosition, recordedRotation);
-        
+
         // 删除shadowObject中的Main Camera子物体，避免摄像机复制问题
         Transform mainCameraTransform = shadowObject.transform.Find("Main Camera");
         if (mainCameraTransform != null)
@@ -889,7 +906,7 @@ public class RoleController : MonoBehaviour
         CloneCube cloneCubeScript = cloneObject.AddComponent<CloneCube>();
 
         cloneCubeScript.clonecurrentMaterial = (CloneCube.CharacterMaterial)recordedMaterial;
-        cloneObject.tag="Jumpable";
+        cloneObject.tag = "Jumpable";
 
         cloneObject.name = $"Spawned_{recordedMaterial}_{Time.time}";
 
@@ -927,18 +944,18 @@ public class RoleController : MonoBehaviour
             if (hitCollider.CompareTag(groundTag) && hitCollider.gameObject != gameObject)
             {
                 isGrounded = true;
-                
+
                 // 如果从空中落地，播放脚步声
                 if (!wasGrounded && rb != null && Mathf.Abs(rb.velocity.y) > 0.1f)
                 {
                     PlayFootstepSound();
                 }
-                
+
                 break;
             }
         }
     }
-    
+
     // 播放脚步声效
     private void PlayFootstepSound()
     {
@@ -947,7 +964,7 @@ public class RoleController : MonoBehaviour
             // 将当前材质转换为SFXManager的材质枚举类型
             SFXManager.CharacterMaterial sfxMaterial = (SFXManager.CharacterMaterial)System.Enum.Parse(
                 typeof(SFXManager.CharacterMaterial), currentMaterial.ToString());
-            
+
             SFXManager.Instance.PlayFootstepSound(sfxMaterial);
         }
     }
@@ -977,7 +994,7 @@ public class RoleController : MonoBehaviour
 
         // 绘制碰撞箱的边框
         Gizmos.DrawWireCube(checkPosition, boxSize);
-        
+
         // 绘制碰撞箱的填充（带透明度，便于观察）
         Gizmos.color = new Color(Gizmos.color.r, Gizmos.color.g, Gizmos.color.b, 0.3f);
         Gizmos.DrawCube(checkPosition, boxSize);
@@ -1017,7 +1034,7 @@ public class RoleController : MonoBehaviour
         else
         {
             HandleMovement();
-            
+
             // 在地面上且有水平移动时播放脚步声（基于时间的间隔控制）
             float horizontalInput = Input.GetAxisRaw("Horizontal");
             if (isGrounded && Mathf.Abs(horizontalInput) > 0.1f && Time.time - lastFootstepTime >= footstepInterval)
@@ -1061,7 +1078,7 @@ public class RoleController : MonoBehaviour
     {
         // 冲刺时不能跳跃
         if (isDashing) return;
-        
+
         // 攀爬时的跳跃（跳离蜂蜜块）
         if (isClimbing && Input.GetKeyDown(KeyCode.Space))
         {
@@ -1073,13 +1090,13 @@ public class RoleController : MonoBehaviour
             // 向远离攀爬目标的方向跳跃
             Vector2 jumpDirection = spriteRenderer.flipX ? Vector2.right : Vector2.left;
             rb.velocity = new Vector2(jumpDirection.x * moveSpeed * 0.8f, jumpForce);
-            
+
             // 播放跳跃音效
             if (SFXManager.Instance != null)
             {
                 SFXManager.Instance.PlayJumpSound();
             }
-            
+
             return;
         }
 
@@ -1097,7 +1114,7 @@ public class RoleController : MonoBehaviour
             {
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce);
                 hasJumped = false;
-                
+
                 // 播放跳跃音效
                 if (SFXManager.Instance != null)
                 {
@@ -1110,7 +1127,7 @@ public class RoleController : MonoBehaviour
                 rb.velocity = new Vector2(rb.velocity.x, jumpForce * doubleJumpForceRatio);
                 hasJumped = true;
                 Debug.Log("使用Cloud二段跳！");
-                
+
                 // 播放跳跃音效
                 if (SFXManager.Instance != null)
                 {
