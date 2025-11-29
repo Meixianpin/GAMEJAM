@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 5531864462929992406}
   m_Layer: 0
   m_Name: CloudPrefab
-  m_TagString: playerTag
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

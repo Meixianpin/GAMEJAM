@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 865191772691110098}
   m_Layer: 0
   m_Name: SlimePrefab
-  m_TagString: playerTag
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
