@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
-public class Wall_destory : MonoBehaviour
+public class Wall_transparent : MonoBehaviour
 {
     [Header("Õ∏√˜∂»…Ë÷√")]
     [SerializeField] private float normalAlpha = 1f;

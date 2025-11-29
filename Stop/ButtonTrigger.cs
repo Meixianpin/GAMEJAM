@@ -1,3 +1,4 @@
+using UnityEditor.Presets;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -19,6 +20,7 @@ public class ButtonTrigger : MonoBehaviour
     [Tooltip("按钮按下状态Sprite")]
     public Sprite pressedSprite;
 
+    public bool Press = false;
     // 用于存储Barrier对象的原始位置
     private Vector3 originalBarrierPosition;
 
@@ -127,6 +129,7 @@ public class ButtonTrigger : MonoBehaviour
     /// </summary>
     private void OnButtonPressed()
     {
+        Press= true;
         if (targetObject != null)
         {
             string targetName = targetObject.name.ToLower();
@@ -134,6 +137,7 @@ public class ButtonTrigger : MonoBehaviour
             // 如果目标对象名称包含"barrier"，将其移开
             if (targetName.Contains("barrier"))
             {
+                
                 // 将Barrier移到屏幕外或指定位置（这里向上移动10个单位）
                 targetObject.transform.position = originalBarrierPosition + Vector3.up * 10f;
                 Debug.Log($"移开障碍物：{targetObject.name}");
@@ -169,6 +173,7 @@ public class ButtonTrigger : MonoBehaviour
     {
         if (targetObject != null)
         {
+            Press=false;
             string targetName = targetObject.name.ToLower();
 
             // 如果目标对象名称包含"barrier"，恢复其原始位置
