@@ -5844,7 +5844,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   collectibleKeyword: collect
   playerTag: Player
-  collectSound: {fileID: 0}
+  collectSound: {fileID: 8300000, guid: b9dae6e0747b7734f9931946bc503606, type: 3}
 --- !u!61 &780617772
 BoxCollider2D:
   m_ObjectHideFlags: 0
