@@ -327,7 +327,7 @@ public class SFXManager : MonoBehaviour
     // 播放收集硬币音效（随机选择变体）
     public void PlayCoinSound()
     {
-        PlayRandomSoundFromGroup("GetCoinGroup", 0.7f);
+        PlayRandomSoundFromGroup("GetCoinGroup", 1.5f);
     }
 
     // 播放UI按钮音效
