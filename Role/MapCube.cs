@@ -142,7 +142,7 @@ public class MapCube : MonoBehaviour
         // 记录原始重力
         originalGravityScale = rb.gravityScale;
         // 记录原始bodyType
-        originalBodyType = RigidbodyType2D.Kinematic;
+        //originalBodyType = RigidbodyType2D.Kinematic;
         
         // 初始化材质映射
         InitializeMaterialMappings();
@@ -283,56 +283,56 @@ public class MapCube : MonoBehaviour
                 // Honey材质增加摩擦力
                 rb.drag = honeyFriction;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = originalBodyType;
+                //rb.bodyType = originalBodyType;
                 break;
             case CharacterMaterial.Slime:
                 // Slime材质恢复默认摩擦力
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = originalBodyType;
+                //rb.bodyType = originalBodyType;
                 break;
             case CharacterMaterial.Cloud:
                 // Cloud材质恢复默认摩擦力
                 rb.drag = originalDrag;
                 rb.gravityScale = cloudGravityScale;
-                rb.bodyType = originalBodyType;
+                //rb.bodyType = originalBodyType;
                 break;
             case CharacterMaterial.Lightning:
                 // Lightning材质恢复默认摩擦力
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = originalBodyType;
+                //rb.bodyType = originalBodyType;
                 break;
             case CharacterMaterial.Dirt:
                 // Dirt材质无效果，Dirt复制体无效果。
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = originalBodyType;
+                //rb.bodyType = originalBodyType;
                 break;
             case CharacterMaterial.Stone:
                 // Stone材质无效果，Stone复制体挂空中。
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = originalBodyType;
+                //rb.bodyType = originalBodyType;
                 break;
             case CharacterMaterial.Sand:
                 // Sand材质速度快重力小，Sand复制体无效果。
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = originalBodyType;
+                //rb.bodyType = originalBodyType;
                 break;
             case CharacterMaterial.Ghost:
                 // Ghost材质无效果，Ghost复制体无效果。
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = originalBodyType;
+                //rb.bodyType = originalBodyType;
                 break;
             
             default:
                 // 其他材质（包括新增的Au）使用原始摩擦力
                 rb.drag = originalDrag;
                 rb.gravityScale = originalGravityScale;
-                rb.bodyType = originalBodyType;
+                //rb.bodyType = originalBodyType;
                 break;
         }
     }

@@ -1,63 +1,67 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using TMPro; // ÒıÈëTextMeshProÃüÃû¿Õ¼ä
-using UnityEngine.UI; // Èç¹û»ìºÏÊ¹ÓÃÆÕÍ¨Button£¬ĞèÒª±£Áô
+using TMPro; // ï¿½ï¿½ï¿½ï¿½TextMeshProï¿½ï¿½ï¿½ï¿½ï¿½Õ¼ï¿½
+using UnityEngine.UI; // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê¹ï¿½ï¿½ï¿½ï¿½Í¨Buttonï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½
 
 public class MenuController : MonoBehaviour
 {
-    // ¿ÉÒÔÍ¨¹ıInspectorÃæ°åÖ¸¶¨°´Å¥£¬»òÕßÖ±½ÓÍ¨¹ıÃû³Æ²éÕÒ
-    [Header("UIÔªËØÒıÓÃ")]
-    public TMP_Text titleText; // TMPÎÄ±¾
-    public Button startButton; // ÆÕÍ¨Button»òTMP_Button¶¼¼æÈİ
+    // ï¿½ï¿½ï¿½ï¿½Í¨ï¿½ï¿½Inspectorï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½Å¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö±ï¿½ï¿½Í¨ï¿½ï¿½ï¿½ï¿½ï¿½Æ²ï¿½ï¿½ï¿½
+    [Header("UIÔªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
+    public TMP_Text titleText; // TMPï¿½Ä±ï¿½
+    public Button startButton; // ï¿½ï¿½Í¨Buttonï¿½ï¿½TMP_Buttonï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     public Button quitButton;
 
     void Start()
     {
-        // ÕıÈ·¼ìË÷TMP_Text×é¼ş
+        // ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½TMP_Textï¿½ï¿½ï¿½
         if (titleText == null)
             titleText = GameObject.Find("TitleText")?.GetComponent<TMP_Text>();
 
-        // ¼ìË÷Button×é¼ş£¨¼æÈİÆÕÍ¨ButtonºÍTMP_Button£©
+        // ï¿½ï¿½ï¿½ï¿½Buttonï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¨Buttonï¿½ï¿½TMP_Buttonï¿½ï¿½
         if (startButton == null)
             startButton = GameObject.Find("StartButton")?.GetComponent<Button>();
 
         if (quitButton == null)
             quitButton = GameObject.Find("QuitButton")?.GetComponent<Button>();
 
-        // Èç¹ûÈ·¶¨Ê¹ÓÃTMP_Button£¬¿ÉÒÔÕâÑùĞ´£º
+        // ï¿½ï¿½ï¿½È·ï¿½ï¿½Ê¹ï¿½ï¿½TMP_Buttonï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ğ´ï¿½ï¿½
         // if (startButton == null)
         //     startButton = GameObject.Find("StartButton")?.GetComponent<TMP_Button>();
 
-        // Ìí¼Ó°´Å¥µã»÷ÊÂ¼ş
+        // ï¿½ï¿½ï¿½Ó°ï¿½Å¥ï¿½ï¿½ï¿½ï¿½Â¼ï¿½
         if (startButton != null)
             startButton.onClick.AddListener(StartGame);
 
         if (quitButton != null)
             quitButton.onClick.AddListener(QuitGame);
 
-        // ÉèÖÃ±êÌâÑùÊ½
+        // ï¿½ï¿½ï¿½Ã±ï¿½ï¿½ï¿½ï¿½ï¿½Ê½
         if (titleText != null)
         {
             titleText.fontSize = 60;
-            titleText.alignment = TextAlignmentOptions.Center; // TMPµÄ¶ÔÆë·½Ê½
-            titleText.text = "ÓÎÏ·±êÌâ";
+            titleText.alignment = TextAlignmentOptions.Center; // TMPï¿½Ä¶ï¿½ï¿½ë·½Ê½
+            titleText.text = "ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½";
             titleText.fontStyle = FontStyles.Bold;
         }
     }
 
     /// <summary>
-    /// ¿ªÊ¼ÓÎÏ·£¬ÇĞ»»µ½Scene1³¡¾°
+    /// ï¿½ï¿½Ê¼ï¿½ï¿½Ï·ï¿½ï¿½ï¿½Ğ»ï¿½ï¿½ï¿½Scene1ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public void StartGame()
     {
+        // æ’­æ”¾æ¸¸æˆå¼€å§‹éŸ³æ•ˆ
+        SFXManager.Instance.PlayGameStartSound();
         SceneManager.LoadScene("1");
     }
 
     /// <summary>
-    /// ÍË³öÓÎÏ·
+    /// ï¿½Ë³ï¿½ï¿½ï¿½Ï·
     /// </summary>
     public void QuitGame()
     {
+        // æ’­æ”¾æŒ‰é’®æŒ‰ä¸‹éŸ³æ•ˆ
+        SFXManager.Instance.PlayUISound();
 #if UNITY_EDITOR
         UnityEditor.EditorApplication.isPlaying = false;
 #else

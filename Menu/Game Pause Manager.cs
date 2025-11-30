@@ -5,18 +5,18 @@ using UnityEngine.UI;
 
 public class GamePauseManager : MonoBehaviour
 {
-    [Header("ÔÝÍ£UIÔªËØ")]
+    [Header("ï¿½ï¿½Í£UIÔªï¿½ï¿½")]
     public GameObject pauseMenuUI;
     public Button resumeButton;
     public Button mainMenuButton;
     public TMP_Text pauseTitleText;
 
-    [Header("³¡¾°ÉèÖÃ")]
+    [Header("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½")]
     public string mainMenuSceneName = "MenuScene";
 
     private bool isPaused = false;
     private float originalTimeScale;
-    // ´æ´¢ÐèÒª½ûÓÃµÄÊäÈë½Å±¾£¨¸ù¾ÝÄãµÄÏîÄ¿Ìí¼ÓÊµ¼ÊµÄÊäÈë½Å±¾ÀàÐÍ£©
+    // ï¿½æ´¢ï¿½ï¿½Òªï¿½ï¿½ï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½Å±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½Êµï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½Å±ï¿½ï¿½ï¿½ï¿½Í£ï¿½
     private MonoBehaviour[] inputScripts;
 
     void Start()
@@ -26,10 +26,10 @@ public class GamePauseManager : MonoBehaviour
             pauseMenuUI.SetActive(false);
         }
 
-        // È·±£°´Å¥ÊÂ¼þ°ó¶¨ÕýÈ·
+        // È·ï¿½ï¿½ï¿½ï¿½Å¥ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½È·
         if (resumeButton != null)
         {
-            resumeButton.onClick.RemoveAllListeners(); // Çå³ý¾ÉµÄ¼àÌý
+            resumeButton.onClick.RemoveAllListeners(); // ï¿½ï¿½ï¿½ï¿½ÉµÄ¼ï¿½ï¿½ï¿½
             resumeButton.onClick.AddListener(ResumeGame);
         }
 
@@ -41,41 +41,43 @@ public class GamePauseManager : MonoBehaviour
 
         if (pauseTitleText != null)
         {
-            pauseTitleText.text = "ÓÎÏ·ÔÝÍ£";
+            pauseTitleText.text = "ï¿½ï¿½Ï·ï¿½ï¿½Í£";
             pauseTitleText.fontSize = 50;
             pauseTitleText.alignment = TextAlignmentOptions.Center;
         }
 
         originalTimeScale = Time.timeScale;
 
-        // »ñÈ¡³¡¾°ÖÐµÄÊäÈëÏà¹Ø½Å±¾£¨ÀýÈçÍæ¼Ò¿ØÖÆÆ÷£©
-        inputScripts = FindObjectsOfType<RoleController>(); // Ìæ»»ÎªÄãµÄÊµ¼ÊÊäÈë½Å±¾
+        // ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø½Å±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        inputScripts = FindObjectsOfType<RoleController>(); // ï¿½æ»»Îªï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å±ï¿½
     }
 
     void Update()
     {
-        // Ö»ÓÐ·ÇÔÝÍ£×´Ì¬ÏÂ²ÅÏìÓ¦ÔÝÍ£¼ü
+        // Ö»ï¿½Ð·ï¿½ï¿½ï¿½Í£×´Ì¬ï¿½Â²ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½Í£ï¿½ï¿½
         if (!isPaused)
         {
             if (Input.GetKeyDown(KeyCode.Escape) || Input.GetKeyDown(KeyCode.P))
             {
+                // æ’­æ”¾æŒ‰é’®æŒ‰ä¸‹éŸ³æ•ˆ
+                SFXManager.Instance.PlayUISound();
                 PauseGame();
             }
         }
-        // ÔÝÍ£Ê±²»´¦ÀíÈÎºÎ¼üÅÌÊäÈë£¬µ«±£ÁôÊó±êUI½»»¥
+        // ï¿½ï¿½Í£Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÎºÎ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ë£¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½UIï¿½ï¿½ï¿½ï¿½
         else
         {
-            // Ö»ÏûºÄÓÎÏ·Ïà¹ØµÄ°´¼ü£¬±£ÁôUIÐèÒªµÄÊäÈë
+            // Ö»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ØµÄ°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½UIï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
             ConsumeGameInputs();
         }
     }
 
     /// <summary>
-    /// Ö»ÏûºÄÓÎÏ·²Ù×÷°´¼ü£¬²»Ó°ÏìUI½»»¥
+    /// Ö»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½UIï¿½ï¿½ï¿½ï¿½
     /// </summary>
     private void ConsumeGameInputs()
     {
-        // ÕâÀïÁÐ³öÄãÓÎÏ·ÖÐÊ¹ÓÃµÄ°´¼ü£¬±ÜÃâÓ°ÏìUI²Ù×÷
+        // ï¿½ï¿½ï¿½ï¿½ï¿½Ð³ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½Ê¹ï¿½ÃµÄ°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó°ï¿½ï¿½UIï¿½ï¿½ï¿½ï¿½
         KeyCode[] gameKeys = { KeyCode.W, KeyCode.A, KeyCode.S, KeyCode.D, KeyCode.Space,
                               KeyCode.LeftShift, KeyCode.Mouse0, KeyCode.Mouse1 };
 
@@ -83,23 +85,23 @@ public class GamePauseManager : MonoBehaviour
         {
             if (Input.GetKey(key))
             {
-                // ÏûºÄ°´¼üÊäÈë
+                // ï¿½ï¿½ï¿½Ä°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 Input.GetKeyUp(key);
             }
         }
     }
 
     /// <summary>
-    /// ÔÝÍ£ÓÎÏ·
+    /// ï¿½ï¿½Í£ï¿½ï¿½Ï·
     /// </summary>
     public void PauseGame()
     {
-        if (isPaused) return; // ·ÀÖ¹ÖØ¸´ÔÝÍ£
+        if (isPaused) return; // ï¿½ï¿½Ö¹ï¿½Ø¸ï¿½ï¿½ï¿½Í£
 
         isPaused = true;
         Time.timeScale = 0f;
 
-        // ½ûÓÃÓÎÏ·ÊäÈë½Å±¾£¬µ«±£ÁôUI½»»¥
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½Å±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½UIï¿½ï¿½ï¿½ï¿½
         if (inputScripts != null)
         {
             foreach (var script in inputScripts)
@@ -113,24 +115,24 @@ public class GamePauseManager : MonoBehaviour
 
         pauseMenuUI?.SetActive(true);
 
-        // ½âËøÊó±êÓÃÓÚUI²Ù×÷
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½UIï¿½ï¿½ï¿½ï¿½
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
 
-        Debug.Log("ÓÎÏ·ÒÑÔÝÍ£");
+        Debug.Log("ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½Í£");
     }
 
     /// <summary>
-    /// »Ö¸´ÓÎÏ·£¨¹Ø¼üÐÞ¸´£ºÈ·±£°´Å¥ÄÜÕý³£´¥·¢£©
+    /// ï¿½Ö¸ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½Ø¼ï¿½ï¿½Þ¸ï¿½ï¿½ï¿½È·ï¿½ï¿½ï¿½ï¿½Å¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     /// </summary>
     public void ResumeGame()
     {
-        if (!isPaused) return; // ·ÀÖ¹ÖØ¸´»Ö¸´
+        if (!isPaused) return; // ï¿½ï¿½Ö¹ï¿½Ø¸ï¿½ï¿½Ö¸ï¿½
 
         isPaused = false;
         Time.timeScale = originalTimeScale;
 
-        // »Ö¸´ÓÎÏ·ÊäÈë½Å±¾
+        // ï¿½Ö¸ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½Å±ï¿½
         if (inputScripts != null)
         {
             foreach (var script in inputScripts)
@@ -144,22 +146,22 @@ public class GamePauseManager : MonoBehaviour
 
         pauseMenuUI?.SetActive(false);
 
-        // Ëø¶¨Êó±ê£¨¸ù¾ÝÄãµÄÓÎÏ·ÐèÇó£©
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ê£¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ï·ï¿½ï¿½ï¿½ï¿½
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
 
-        // Çå³ý²ÐÁôµÄÊäÈë×´Ì¬
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
         Input.ResetInputAxes();
 
-        Debug.Log("ÓÎÏ·ÒÑ»Ö¸´");
+        Debug.Log("ï¿½ï¿½Ï·ï¿½Ñ»Ö¸ï¿½");
     }
 
     /// <summary>
-    /// ·µ»ØÖ÷²Ëµ¥
+    /// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½
     /// </summary>
     public void GoToMainMenu()
     {
-        // È·±£»Ö¸´Ê±¼äËõ·ÅºÍÊäÈë
+        // È·ï¿½ï¿½ï¿½Ö¸ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Åºï¿½ï¿½ï¿½ï¿½ï¿½
         Time.timeScale = originalTimeScale;
         isPaused = false;
 
@@ -174,12 +176,12 @@ public class GamePauseManager : MonoBehaviour
             }
         }
 
-        // ¼ÓÔØÖ÷²Ëµ¥³¡¾°
+        // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½ï¿½
         SceneManager.LoadScene(mainMenuSceneName);
-        Debug.Log("·µ»ØÖ÷²Ëµ¥");
+        Debug.Log("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½");
     }
 
-    // È·±£³¡¾°ÇÐ»»Ê±»Ö¸´Õý³£×´Ì¬
+    // È·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½Ê±ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½×´Ì¬
     void OnApplicationQuit()
     {
         Time.timeScale = 1f;

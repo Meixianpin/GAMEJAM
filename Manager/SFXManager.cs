@@ -85,7 +85,7 @@ public class SFXManager : MonoBehaviour
         LoadAudioClip("GetCoin3");
         
         // 其他主要音效
-        LoadAudioClip("StartGame");
+        LoadAudioClip("GameStart");
         LoadAudioClip("UIButtons");
         LoadAudioClip("KeyInputL_Dash");
         LoadAudioClip("ButtonDown");
@@ -334,6 +334,12 @@ public class SFXManager : MonoBehaviour
     public void PlayUISound()
     {
         PlaySFX("UIButtons", 0.6f);
+    }
+    
+    // 播放游戏开始音效
+    public void PlayGameStartSound()
+    {
+        PlaySFX("GameStart", 0.8f);
     }
     
     // 播放按钮按下音效
