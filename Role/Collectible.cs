@@ -5,9 +5,7 @@ using UnityEngine;
 /// </summary>
 public class Collectible : MonoBehaviour
 {
-    // 可配置的收集品标签，便于在Inspector中修改
-    [Tooltip("收集品名称中包含的关键词")]
-    public string collectibleKeyword = "collect";
+    
 
     // 可配置的玩家标签
     [Tooltip("玩家对象的标签")]
@@ -34,10 +32,10 @@ public class Collectible : MonoBehaviour
     /// <summary>
     /// 当有碰撞体进入触发器时调用
     /// </summary>
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         // 检查碰撞对象是否是玩家，并且当前物体是收集品
-        if (other.CompareTag(playerTag) && gameObject.name.ToLower().Contains(collectibleKeyword.ToLower()))
+        if (other.CompareTag(playerTag))
         {
             Collect();
         }
