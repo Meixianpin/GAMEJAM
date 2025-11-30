@@ -4207,7 +4207,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -9.513468, y: 3.005367}
+  m_Offset: {x: -9.513468, y: 2.953092}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -4218,7 +4218,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1.0073814, y: 6.01887}
+  m_Size: {x: 1.0073814, y: 5.91432}
   m_EdgeRadius: 0
 --- !u!483693784 &276299183
 TilemapRenderer:
@@ -9957,11 +9957,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7800847375535023753, guid: 6b0feffde4631d54b897dd18646e00fe, type: 3}
       propertyPath: m_Name
-      value: DirtPrefab
+      value: Player
       objectReference: {fileID: 0}
     - target: {fileID: 7800847375535023753, guid: 6b0feffde4631d54b897dd18646e00fe, type: 3}
       propertyPath: m_TagString
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 8052861216762807774, guid: 6b0feffde4631d54b897dd18646e00fe, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8052861216762807774, guid: 6b0feffde4631d54b897dd18646e00fe, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8052861216762807774, guid: 6b0feffde4631d54b897dd18646e00fe, type: 3}
       propertyPath: m_LocalPosition.x

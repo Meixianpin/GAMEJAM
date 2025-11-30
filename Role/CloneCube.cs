@@ -218,7 +218,7 @@ public class CloneCube : MonoBehaviour
         ApplyMaterialProperties();
 
         // 检测功能键输入切换材质
-        CheckFunctionKeys();
+        //CheckFunctionKeys();
 
         //应用材质特殊效果
         ApplyMaterialSpecialEffects();
@@ -303,7 +303,9 @@ public class CloneCube : MonoBehaviour
                 break;
             case CharacterMaterial.Stone:
                 // Stone材质无效果，Stone复制体挂空中。
-                rb.bodyType = RigidbodyType2D.Static;
+                rb.velocity = Vector2.zero;
+                rb.bodyType = RigidbodyType2D.Kinematic;
+                
                 break;
             case CharacterMaterial.Sand:
                 // Sand材质速度快重力小，Sand复制体无效果。
@@ -488,18 +490,18 @@ public class CloneCube : MonoBehaviour
     }
 
 
-    private void CheckFunctionKeys()
-    {
-        if (Input.GetKeyDown(KeyCode.Keypad1)) { SetCloneMaterial(CharacterMaterial.Cloud); }
-        if (Input.GetKeyDown(KeyCode.Keypad2)) { SetCloneMaterial(CharacterMaterial.Slime); }
-        if (Input.GetKeyDown(KeyCode.Keypad3)) { SetCloneMaterial(CharacterMaterial.Dirt); }
-        if (Input.GetKeyDown(KeyCode.Keypad4)) { SetCloneMaterial(CharacterMaterial.Stone); }
-        if (Input.GetKeyDown(KeyCode.Keypad5)) { SetCloneMaterial(CharacterMaterial.Sand); }
-        if (Input.GetKeyDown(KeyCode.Keypad6)) { SetCloneMaterial(CharacterMaterial.Honey); }
-        if (Input.GetKeyDown(KeyCode.Keypad7)) { SetCloneMaterial(CharacterMaterial.Au); }
-        if (Input.GetKeyDown(KeyCode.Keypad8)) { SetCloneMaterial(CharacterMaterial.Lightning); }
+    // private void CheckFunctionKeys()
+    // {
+    //     if (Input.GetKeyDown(KeyCode.Keypad1)) { SetCloneMaterial(CharacterMaterial.Cloud); }
+    //     if (Input.GetKeyDown(KeyCode.Keypad2)) { SetCloneMaterial(CharacterMaterial.Slime); }
+    //     if (Input.GetKeyDown(KeyCode.Keypad3)) { SetCloneMaterial(CharacterMaterial.Dirt); }
+    //     if (Input.GetKeyDown(KeyCode.Keypad4)) { SetCloneMaterial(CharacterMaterial.Stone); }
+    //     if (Input.GetKeyDown(KeyCode.Keypad5)) { SetCloneMaterial(CharacterMaterial.Sand); }
+    //     if (Input.GetKeyDown(KeyCode.Keypad6)) { SetCloneMaterial(CharacterMaterial.Honey); }
+    //     if (Input.GetKeyDown(KeyCode.Keypad7)) { SetCloneMaterial(CharacterMaterial.Au); }
+    //     if (Input.GetKeyDown(KeyCode.Keypad8)) { SetCloneMaterial(CharacterMaterial.Lightning); }
 
-    }
+    // }
 
 
 }
