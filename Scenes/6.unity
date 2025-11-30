@@ -4614,7 +4614,7 @@ GameObject:
   - component: {fileID: 862056907}
   - component: {fileID: 862056909}
   - component: {fileID: 862056910}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: collect (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -9658,7 +9658,7 @@ GameObject:
   - component: {fileID: 1090343489}
   - component: {fileID: 1090343491}
   - component: {fileID: 1090343492}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: collect
   m_TagString: Untagged
   m_Icon: {fileID: 0}

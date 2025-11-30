@@ -1102,6 +1102,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: "\u969C\u788D\u72691-2 (1)"
       objectReference: {fileID: 0}
+    - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
+      propertyPath: m_TagString
+      value: Jumpable
+      objectReference: {fileID: 0}
     - target: {fileID: 5372316531967272632, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
       propertyPath: m_Size.x
       value: 0.16290674
@@ -1168,6 +1172,7 @@ GameObject:
   - component: {fileID: 305793678}
   - component: {fileID: 305793677}
   - component: {fileID: 305793676}
+  - component: {fileID: 305793680}
   m_Layer: 0
   m_Name: Camera4
   m_TagString: MainCamera
@@ -1307,6 +1312,19 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &305793680
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 305793674}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c192645e086c3684ab8479620a3b690b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  previousCamera: {fileID: 1528579548}
 --- !u!1 &319403091
 GameObject:
   m_ObjectHideFlags: 0
@@ -1318,7 +1336,7 @@ GameObject:
   - component: {fileID: 319403092}
   m_Layer: 0
   m_Name: 3
-  m_TagString: Untagged
+  m_TagString: Jumpable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1604,6 +1622,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: "\u969C\u788D\u72691-3"
       objectReference: {fileID: 0}
+    - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
+      propertyPath: m_TagString
+      value: Jumpable
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1681,6 +1703,10 @@ PrefabInstance:
     - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
       propertyPath: m_Name
       value: "\u969C\u788D\u72691-4"
+      objectReference: {fileID: 0}
+    - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
+      propertyPath: m_TagString
+      value: Jumpable
       objectReference: {fileID: 0}
     - target: {fileID: 5372316531967272632, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
       propertyPath: m_Size.x
@@ -1858,7 +1884,7 @@ GameObject:
   - component: {fileID: 641677025}
   m_Layer: 0
   m_Name: 2
-  m_TagString: Untagged
+  m_TagString: Jumpable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -2101,6 +2127,10 @@ PrefabInstance:
     - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
       propertyPath: m_Name
       value: "\u969C\u788D\u72693-2"
+      objectReference: {fileID: 0}
+    - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
+      propertyPath: m_TagString
+      value: Jumpable
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -2770,6 +2800,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: "\u969C\u788D\u72693-1"
       objectReference: {fileID: 0}
+    - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
+      propertyPath: m_TagString
+      value: Jumpable
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -3059,6 +3093,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: "\u969C\u788D\u72692-2"
       objectReference: {fileID: 0}
+    - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
+      propertyPath: m_TagString
+      value: Jumpable
+      objectReference: {fileID: 0}
     - target: {fileID: 5372316531967272632, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
       propertyPath: m_Size.x
       value: 0.16290674
@@ -3161,6 +3199,10 @@ PrefabInstance:
     - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
       propertyPath: m_Name
       value: "\u969C\u788D\u72691-1"
+      objectReference: {fileID: 0}
+    - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
+      propertyPath: m_TagString
+      value: Jumpable
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -3681,6 +3723,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: "\u969C\u788D\u72692-1"
       objectReference: {fileID: 0}
+    - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
+      propertyPath: m_TagString
+      value: Jumpable
+      objectReference: {fileID: 0}
     - target: {fileID: 5372316531967272632, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
       propertyPath: m_Size.x
       value: 0.16290674
@@ -3787,6 +3833,10 @@ PrefabInstance:
     - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
       propertyPath: m_Name
       value: "\u969C\u788D\u72693-4"
+      objectReference: {fileID: 0}
+    - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
+      propertyPath: m_TagString
+      value: Jumpable
       objectReference: {fileID: 0}
     - target: {fileID: 5372316531967272632, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
       propertyPath: m_Size.x
@@ -4103,6 +4153,10 @@ PrefabInstance:
     - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
       propertyPath: m_Name
       value: "\u969C\u788D\u72693-3"
+      objectReference: {fileID: 0}
+    - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
+      propertyPath: m_TagString
+      value: Jumpable
       objectReference: {fileID: 0}
     - target: {fileID: 5372316531967272632, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
       propertyPath: m_Size.x
@@ -4565,6 +4619,7 @@ GameObject:
   - component: {fileID: 1528579547}
   - component: {fileID: 1528579546}
   - component: {fileID: 1528579545}
+  - component: {fileID: 1528579549}
   m_Layer: 0
   m_Name: Camera3
   m_TagString: MainCamera
@@ -4704,6 +4759,19 @@ Camera:
   m_OcclusionCulling: 1
   m_StereoConvergence: 10
   m_StereoSeparation: 0.022
+--- !u!114 &1528579549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1528579543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c192645e086c3684ab8479620a3b690b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  previousCamera: {fileID: 305793679}
 --- !u!1001 &1547664636
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5167,6 +5235,10 @@ PrefabInstance:
     - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
       propertyPath: m_Name
       value: "\u969C\u788D\u72693-5"
+      objectReference: {fileID: 0}
+    - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
+      propertyPath: m_TagString
+      value: Jumpable
       objectReference: {fileID: 0}
     - target: {fileID: 5372316531967272632, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
       propertyPath: m_Size.x
@@ -5673,26 +5745,6 @@ Tilemap:
       dummyAlignment: 0
       m_AllTileFlags: 2147483649
   - first: {x: -19, y: -31, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 0
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 2147483649
-  - first: {x: -13, y: -31, z: 0}
-    second:
-      serializedVersion: 2
-      m_TileIndex: 0
-      m_TileSpriteIndex: 0
-      m_TileMatrixIndex: 0
-      m_TileColorIndex: 0
-      m_TileObjectToInstantiateIndex: 65535
-      dummyAlignment: 0
-      m_AllTileFlags: 2147483649
-  - first: {x: -11, y: -31, z: 0}
     second:
       serializedVersion: 2
       m_TileIndex: 0
@@ -10534,13 +10586,13 @@ Tilemap:
       m_AllTileFlags: 2147483649
   m_AnimatedTiles: {}
   m_TileAssetArray:
-  - m_RefCount: 515
+  - m_RefCount: 513
     m_Data: {fileID: 11400000, guid: 5db231bd62da8fe4da7aa49a5bf39f36, type: 2}
   m_TileSpriteArray:
-  - m_RefCount: 515
+  - m_RefCount: 513
     m_Data: {fileID: -5468364621373620089, guid: 50068cb9d3da4534e84a7081f10c8729, type: 3}
   m_TileMatrixArray:
-  - m_RefCount: 515
+  - m_RefCount: 513
     m_Data:
       e00: 1
       e01: 0
@@ -10559,7 +10611,7 @@ Tilemap:
       e32: 0
       e33: 1
   m_TileColorArray:
-  - m_RefCount: 515
+  - m_RefCount: 513
     m_Data: {r: 1, g: 1, b: 1, a: 1}
   m_TileObjectToInstantiateArray: []
   m_AnimationFrameRate: 1
@@ -10948,14 +11000,6 @@ CompositeCollider2D:
         Y: -80000000
       - X: 30000000
         Y: -80000000
-    - - X: 110000000
-        Y: -80000000
-      - X: 100000000
-        Y: -80000000
-      - X: 100000000
-        Y: -90000000
-      - X: 110000000
-        Y: -90000000
     - - X: 170000000
         Y: -80000000
       - X: 160000000
@@ -10964,14 +11008,14 @@ CompositeCollider2D:
         Y: -90000000
       - X: 170000000
         Y: -90000000
-    - - X: 120000000
+    - - X: 110000000
+        Y: -80000000
+      - X: 100000000
+        Y: -80000000
+      - X: 100000000
         Y: -90000000
       - X: 110000000
         Y: -90000000
-      - X: 110000000
-        Y: -100000000
-      - X: 120000000
-        Y: -100000000
     - - X: 160000000
         Y: -90000000
       - X: 150000000
@@ -10979,6 +11023,14 @@ CompositeCollider2D:
       - X: 150000000
         Y: -100000000
       - X: 160000000
+        Y: -100000000
+    - - X: 120000000
+        Y: -90000000
+      - X: 110000000
+        Y: -90000000
+      - X: 110000000
+        Y: -100000000
+      - X: 120000000
         Y: -100000000
     - - X: 30000000
         Y: -100000000
@@ -11060,22 +11112,6 @@ CompositeCollider2D:
         Y: -260000000
       - X: 0
         Y: -260000000
-    - - X: -100000000
-        Y: -300000000
-      - X: -110000000
-        Y: -300000000
-      - X: -110000000
-        Y: -310000000
-      - X: -100000000
-        Y: -310000000
-    - - X: -120000000
-        Y: -300000000
-      - X: -130000000
-        Y: -300000000
-      - X: -130000000
-        Y: -310000000
-      - X: -120000000
-        Y: -310000000
     - - X: -130000000
         Y: -310000000
       - X: -140000000
@@ -11300,22 +11336,14 @@ CompositeCollider2D:
       - {x: -0.000029300001, y: -25}
       - {x: -3, y: -25.000029}
       - {x: -2.999971, y: -26}
-    - - {x: -10.00003, y: -31}
-      - {x: -10.00003, y: -30}
-      - {x: -11, y: -30.000029}
-      - {x: -10.99997, y: -31}
-    - - {x: -12.00003, y: -31}
-      - {x: -12.00003, y: -30}
-      - {x: -13, y: -30.000029}
-      - {x: -12.99997, y: -31}
-    - - {x: -9.00003, y: -32}
-      - {x: -9.00003, y: -31}
-      - {x: -10, y: -31.000029}
-      - {x: -9.99997, y: -32}
     - - {x: -13.00003, y: -32}
       - {x: -13.00003, y: -31}
       - {x: -14, y: -31.000029}
       - {x: -13.999971, y: -32}
+    - - {x: -9.00003, y: -32}
+      - {x: -9.00003, y: -31}
+      - {x: -10, y: -31.000029}
+      - {x: -9.99997, y: -32}
   m_VertexDistance: 0.0005
   m_OffsetDistance: 0.00005
   m_UseDelaunayMesh: 0
@@ -11847,7 +11875,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ChooseButton_PressWay: 2
-  button: {fileID: 0}
+  button: {fileID: 557334515}
 --- !u!114 &1651486972
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12128,6 +12156,10 @@ PrefabInstance:
     - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
       propertyPath: m_Name
       value: "\u969C\u788D\u72691-2"
+      objectReference: {fileID: 0}
+    - target: {fileID: 5333988531373405146, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
+      propertyPath: m_TagString
+      value: Jumpable
       objectReference: {fileID: 0}
     - target: {fileID: 5372316531967272632, guid: 882636ca209334f44a6e86d9c96657af, type: 3}
       propertyPath: m_Size.x
@@ -12544,7 +12576,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1987593487
 Transform:
   m_ObjectHideFlags: 0
@@ -13330,7 +13362,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7909193773582851731, guid: eef498d53df5a8f46b30c2e96fe59ef4, type: 3}
       propertyPath: m_Name
-      value: MapDirtPrefab (2)
+      value: "\u201CPlayerDirt\u201D"
       objectReference: {fileID: 0}
     - target: {fileID: 8955293671963270088, guid: eef498d53df5a8f46b30c2e96fe59ef4, type: 3}
       propertyPath: m_BodyType

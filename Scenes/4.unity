@@ -1338,7 +1338,7 @@ GameObject:
   - component: {fileID: 501495202}
   - component: {fileID: 501495204}
   - component: {fileID: 501495205}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: collect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1424,9 +1424,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4c9b716b92158941b067b1e2987c288, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collectibleKeyword: collect
   playerTag: Player
-  collectSound: {fileID: 8300000, guid: b9dae6e0747b7734f9931946bc503606, type: 3}
 --- !u!61 &501495205
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -2562,7 +2560,7 @@ GameObject:
   - component: {fileID: 853226646}
   - component: {fileID: 853226648}
   - component: {fileID: 853226649}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: collect (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2648,9 +2646,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b4c9b716b92158941b067b1e2987c288, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  collectibleKeyword: collect
   playerTag: Player
-  collectSound: {fileID: 8300000, guid: b9dae6e0747b7734f9931946bc503606, type: 3}
 --- !u!61 &853226649
 BoxCollider2D:
   m_ObjectHideFlags: 0

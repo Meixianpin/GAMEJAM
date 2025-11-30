@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(SpriteRenderer))] // 确保挂载必要组件
 public class RoleController : MonoBehaviour
@@ -101,6 +102,7 @@ public class RoleController : MonoBehaviour
 
     public string groundTag = "Jumpable";//接触后可跳跃的碰撞体
     public string shadowTag = "Shadow";//阴影体碰撞体
+    private bool isSceneLoading = false;
 
     // 状态存储变量
     [Header("状态存储")]
@@ -1133,42 +1135,32 @@ public class RoleController : MonoBehaviour
 
     private void ResetToStart()
     {
-        // 销毁复制体
-        if (cloneObject != null)
+        if (isSceneLoading) return; // 避免重复加载
+
+        // 播放R键音效
+        if (SFXManager.Instance != null)
         {
-            Destroy(cloneObject);
-            cloneObject = null;
-        }
-        if (shadowObject != null)
-        {
-            Destroy(shadowObject);
-            shadowObject = null;
+            SFXManager.Instance.PlayKeyInputRSound();
         }
 
-        // 重置记录状态
-        isStateRecorded = false;
+        // 标记为加载中
+        isSceneLoading = true;
 
-        // 重置特殊能力状态
-        hasJumped = false;
-        isClimbing = false;
-        currentClimbTarget = null;
+        // 重载当前场景
+        Scene currentScene = SceneManager.GetActiveScene();
+        SceneManager.LoadScene(currentScene.name, LoadSceneMode.Single);
 
-        // 重置冲刺状态
-        isDashing = false;
-        dashTimer = 0f;
-        dashDirection = 0f;
-        lastDashTime = -Mathf.Infinity;
+        // 场景加载完成后重置标记（可选，通过SceneManager回调）
+        SceneManager.sceneLoaded += OnSceneLoaded;
 
-        // 新增：重置材质切换冷却
-        lastMaterialSwitchTime = -Mathf.Infinity;
+        Debug.Log($"已重载场景：{currentScene.name}");
+    }
 
-        // 回到起始位置（2D）
-        transform.position = startPosition;
-        transform.rotation = Quaternion.identity;
-        rb.velocity = Vector2.zero;
-        rb.gravityScale = 1;
-
-        Debug.Log("已重置到起始位置，攀爬状态已重置");
+    // 场景加载完成回调（重置加载状态）
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        isSceneLoading = false;
+        SceneManager.sceneLoaded -= OnSceneLoaded; // 移除回调，避免内存泄漏
     }
 
     // 当在Inspector中修改材质时自动更新外观
