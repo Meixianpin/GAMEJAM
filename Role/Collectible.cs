@@ -1,40 +1,19 @@
 using UnityEngine;
 
 /// <summary>
-/// ÊÕ¼¯Æ·¿ØÖÆÆ÷£¬ÓÃÓÚ´¦ÀíÍæ¼ÒÓëÊÕ¼¯Æ·µÄ½»»¥
+/// æ”¶é›†å“æ§åˆ¶å™¨ï¼Œç”¨äºå¤„ç†ç©å®¶ä¸æ”¶é›†å“çš„äº¤äº’
 /// </summary>
 public class Collectible : MonoBehaviour
 {
-    
-
-    // ¿ÉÅäÖÃµÄÍæ¼Ò±êÇ©
-    [Tooltip("Íæ¼Ò¶ÔÏóµÄ±êÇ©")]
+    // å¯é…ç½®çš„ç©å®¶æ ‡ç­¾
+    [Tooltip("ç©å®¶å¯¹è±¡çš„æ ‡ç­¾")]
     public string playerTag = "Player";
-
-    // ¿ÉÑ¡£ºÊÕ¼¯ÒôĞ§
-    [Tooltip("ÊÕ¼¯ÎïÆ·Ê±²¥·ÅµÄÒôĞ§")]
-    public AudioClip collectSound;
-
-    // ÒôÆµÔ´×é¼şÒıÓÃ
-    private AudioSource audioSource;
-
-    private void Awake()
-    {
-        // »ñÈ¡»òÌí¼ÓÒôÆµÔ´×é¼ş
-        audioSource = GetComponent<AudioSource>();
-        if (audioSource == null)
-        {
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
-        audioSource.playOnAwake = false;
-    }
-
     /// <summary>
-    /// µ±ÓĞÅö×²Ìå½øÈë´¥·¢Æ÷Ê±µ÷ÓÃ
+    /// å½“æœ‰ç¢°æ’ä½“è¿›å…¥è§¦å‘å™¨æ—¶è°ƒç”¨
     /// </summary>
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // ¼ì²éÅö×²¶ÔÏóÊÇ·ñÊÇÍæ¼Ò£¬²¢ÇÒµ±Ç°ÎïÌåÊÇÊÕ¼¯Æ·
+        // æ£€æŸ¥ç¢°æ’å¯¹è±¡æ˜¯å¦æ˜¯ç©å®¶ï¼Œå¹¶ä¸”å½“å‰ç‰©ä½“æ˜¯æ”¶é›†å“
         if (other.CompareTag(playerTag))
         {
             Collect();
@@ -42,27 +21,17 @@ public class Collectible : MonoBehaviour
     }
 
     /// <summary>
-    /// ´¦ÀíÊÕ¼¯Âß¼­
+    /// å¤„ç†æ”¶é›†é€»è¾‘
     /// </summary>
     private void Collect()
     {
-        // ²¥·ÅÊÕ¼¯ÒôĞ§£¨Èç¹ûÓĞ£©
-        if (collectSound != null)
+        // æ’­æ”¾æ”¶é›†éŸ³æ•ˆï¼ˆå¦‚æœæœ‰ï¼‰
+        if (SFXManager.Instance != null)
         {
-            audioSource.PlayOneShot(collectSound);
+            SFXManager.Instance.PlayCoinSound();
         }
-
-        // Ïú»ÙÎïÌå£¨Èç¹ûÓĞÒôĞ§£¬ÑÓ³ÙÏú»ÙÒÔ±£Ö¤ÒôĞ§²¥·ÅÍê³É£©
-        if (collectSound != null)
-        {
-            Destroy(gameObject, collectSound.length);
-        }
-        else
-        {
-            Destroy(gameObject);
-        }
-
-        // ¿ÉÒÔÔÚÕâÀïÌí¼ÓÊÕ¼¯·´À¡£¬±ÈÈç¼Ó·Ö¡¢ÏÔÊ¾UIÌáÊ¾µÈ
-        Debug.Log($"ÊÕ¼¯ÁËÎïÆ·: {gameObject.name}");
+        Destroy(gameObject);
+        // å¯ä»¥åœ¨è¿™é‡Œæ·»åŠ æ”¶é›†åé¦ˆï¼Œæ¯”å¦‚åŠ åˆ†ã€æ˜¾ç¤ºUIæç¤ºç­‰
+        Debug.Log($"æ”¶é›†äº†ç‰©å“: {gameObject.name}");
     }
 }
