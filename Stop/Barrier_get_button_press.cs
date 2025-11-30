@@ -10,6 +10,8 @@ public class Barrier_get_button_press : MonoBehaviour
     private ButtonTrigger[] triggers;
 
     private bool triggersPressed = false; // 按钮按下状态
+    private int pressedButtonCount = 0; // 按下的按钮数量
+    private int buttonCount = 0;
     void Start()
     {
         triggers = new ButtonTrigger[buttons.Length];
@@ -36,6 +38,8 @@ public class Barrier_get_button_press : MonoBehaviour
         AnyButtonsPressed();
         AndButtonsPressed();
         ORButtonsPressed();
+        pressedButtonCount=GetPressedButtonCount();
+        buttonCount=GetTotalButtonCount();
     }
 
     public bool AnyButtonsPressed()
@@ -80,4 +84,20 @@ public class Barrier_get_button_press : MonoBehaviour
         }
     }//有且仅有唯一
 
+    public int GetPressedButtonCount()
+    {
+        int count = 0;
+        foreach (var trigger in triggers)
+        {
+            if (trigger != null && trigger.Press)
+            {
+                count++;
+            }
+        }
+        return count;
+    }
+    public int GetTotalButtonCount()
+    {
+        return triggers.Length;
+    }
 }
