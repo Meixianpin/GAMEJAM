@@ -1,0 +1,90 @@
+BGMManager 使用说明
+
+=== 功能介绍 ===
+BGMManager是一个背景音乐管理器脚本，用于循环播放Resources/BGM文件夹中的所有BGM音频文件。它提供了完整的背景音乐控制功能，包括播放、暂停、切换曲目等。
+
+=== 设置步骤 ===
+
+1. 创建BGM文件夹：
+   - 在Project窗口中找到Assets/Resources文件夹
+   - 如果Resources文件夹不存在，请创建它（右键Assets > Create > Folder，命名为Resources）
+   - 在Resources文件夹中创建BGM文件夹（右键Resources > Create > Folder，命名为BGM）
+   - 将所有背景音乐音频文件（.mp3, .wav等）放入这个BGM文件夹
+
+2. 添加BGMManager到场景：
+   - 在Hierarchy窗口中，右键 > Create Empty
+   - 将新建的GameObject重命名为"BGMManager"
+   - 选择这个GameObject，在Inspector窗口中点击"Add Component"
+   - 搜索并添加"BGMManager"脚本
+
+3. 配置BGMManager设置：
+   - 在Inspector窗口中，可以调整以下参数：
+     * Auto Play On Start: 游戏开始时是否自动播放BGM
+     * Volume: BGM音量（0-1之间）
+     * Loop Single Track: 是否循环播放单个曲目（true为循环单个，false为播放完一首自动切换到下一首）
+
+=== 代码中使用方法 ===
+
+BGMManager是单例模式，您可以在任何脚本中通过以下方式访问它：
+
+// 播放下一首BGM
+BGMManager.Instance.PlayNextBGM();
+
+// 播放上一首BGM
+BGMManager.Instance.PlayPreviousBGM();
+
+// 播放指定索引的BGM
+BGMManager.Instance.PlayBGMAtIndex(2); // 播放第3首BGM（索引从0开始）
+
+// 切换播放/暂停
+BGMManager.Instance.TogglePlayPause();
+
+// 暂停BGM
+BGMManager.Instance.Pause();
+
+// 恢复BGM播放
+BGMManager.Instance.Resume();
+
+// 停止BGM播放
+BGMManager.Instance.Stop();
+
+// 设置BGM音量
+BGMManager.Instance.SetVolume(0.7f);
+
+// 设置是否循环单个曲目
+BGMManager.Instance.SetLoopSingleTrack(true);
+
+// 获取当前播放的BGM名称
+string currentBgmName = BGMManager.Instance.GetCurrentBGMName();
+Debug.Log("当前播放: " + currentBgmName);
+
+// 获取BGM总数
+int totalBgmCount = BGMManager.Instance.GetBGMCount();
+Debug.Log("总BGM数: " + totalBgmCount);
+
+// 获取当前播放索引
+int currentIndex = BGMManager.Instance.GetCurrentIndex();
+Debug.Log("当前索引: " + currentIndex);
+
+=== 注意事项 ===
+
+1. 请确保所有BGM文件都放在正确的路径：Assets/Resources/BGM/
+2. BGM文件需要设置为Unity可识别的音频格式（MP3、WAV等）
+3. 为了避免内存问题，不要在BGM文件夹中放置过多或过大的音频文件
+4. 如果场景中同时存在多个BGMManager，系统会自动删除多余的实例，只保留一个
+5. 调试信息会在控制台输出，可以帮助确认BGM是否正确加载和播放
+
+=== 常见问题 ===
+
+Q: 为什么BGM没有播放？
+A: 检查以下几点：
+   - BGM文件是否放在正确的Resources/BGM文件夹中
+   - BGMManager是否已经添加到场景中
+   - Auto Play On Start是否设置为true，或者您是否手动调用了播放方法
+   - 检查控制台是否有错误信息
+
+Q: 如何在场景切换时保持BGM播放？
+A: BGMManager使用了DontDestroyOnLoad方法，默认会在场景切换时保留。如果需要在特定场景切换时停止或更改BGM，可以在场景切换时调用相应的方法。
+
+Q: 如何添加新的BGM？
+A: 只需将新的音频文件放入Resources/BGM文件夹即可。如果游戏已经运行，需要重新启动游戏以加载新的BGM。在实际游戏中，可以通过调用LoadAllBGM()方法来重新加载BGM列表。
