@@ -5,11 +5,13 @@ public class Barrier_Move : MonoBehaviour
     [Header("移动设置")]     
     public Vector3 moveOffset = new Vector3(0, 2f, 0); // 移动偏移量，可在Inspector中自定义
     public float moveSpeed = 2f;        // 移动速度
+    [Tooltip("选择按钮按下方式0:任意 1:或 2:且")]
+    public int ChooseButton_PressWay=0;  // 选择按钮按下方式 0:任意 1:或 2:且
     public bool willreturn = true;     // 是否返回原始位置
 
     private Vector3 originalPosition;   // 原始位置
     private Vector3 targetPosition;     // 目标位置
-    private bool triggersPressed = false; // 按钮按下状态
+    [SerializeField]private bool triggersPressed = false; // 按钮按下状态
     private bool isMoving = false;      // 是否正在移动
 
     private Barrier_get_button_press barrier_Get_Button_Press;
@@ -50,6 +52,21 @@ public class Barrier_Move : MonoBehaviour
         }
     }
 
+    bool Choose_PressWay()
+    {
+        if (ChooseButton_PressWay == 0)
+        {
+            return barrier_Get_Button_Press.AnyButtonsPressed();
+        }
+        else if (ChooseButton_PressWay == 1)
+        {
+            return barrier_Get_Button_Press.ORButtonsPressed();
+        }
+        else
+        {
+            return barrier_Get_Button_Press.AndButtonsPressed();
+        }
+    }
     /// <summary>
     /// 开始移动到指定位置
     /// </summary>
@@ -126,6 +143,8 @@ public class Barrier_Move : MonoBehaviour
     /// 在Inspector中可视化移动范围
     /// </summary>
     /// 
+
+    
     void OnDrawGizmosSelected()
     {
         // 绘制原始位置
