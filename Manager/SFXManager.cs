@@ -254,7 +254,7 @@ public class SFXManager : MonoBehaviour
     // 加载单个音效文件
     private void LoadAudioClip(string clipName)
     {
-        AudioClip clip = Resources.Load<AudioClip>("Audiotest1/" + clipName);
+        AudioClip clip = Resources.Load<AudioClip>("Audio/" + clipName);
         if (clip != null)
         {
             sfxDictionary[clipName] = clip;
