@@ -733,15 +733,6 @@ public class RoleController : MonoBehaviour
             }
         }
 
-        // 保留数字键切换材质（用于测试）
-        if (Input.GetKeyDown(KeyCode.Alpha1)) { SetMaterial(CharacterMaterial.Cloud); }
-        if (Input.GetKeyDown(KeyCode.Alpha2)) { SetMaterial(CharacterMaterial.Slime); }
-        if (Input.GetKeyDown(KeyCode.Alpha3)) { SetMaterial(CharacterMaterial.Dirt); }
-        if (Input.GetKeyDown(KeyCode.Alpha4)) { SetMaterial(CharacterMaterial.Stone); }
-        if (Input.GetKeyDown(KeyCode.Alpha5)) { SetMaterial(CharacterMaterial.Sand); }
-        if (Input.GetKeyDown(KeyCode.Alpha6)) { SetMaterial(CharacterMaterial.Honey); }
-        if (Input.GetKeyDown(KeyCode.Alpha7)) { SetMaterial(CharacterMaterial.Au); }       // 新增Au材质切换(实际游玩时无法切换）
-        if (Input.GetKeyDown(KeyCode.Alpha8)) { SetMaterial(CharacterMaterial.Lightning); } // 新增Lightning材质切换
     }
 
     // 设置材质并更新外观和特性
